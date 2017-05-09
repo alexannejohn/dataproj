@@ -1,0 +1,48 @@
+{% load static %}
+<html>
+  <head>
+    <title>dataproj</title>
+  </head>
+  <body>
+    <!-- place the custom tag anywhere inside the body -->
+    <filtering></filtering>
+    <button onclick="filter_students()">Click me too</button>
+    <!-- include the tag -->
+    <script type="riot/tag" src={% static "riot_tags/filter.tag" %}></script>
+    <!-- include riot.js -->
+    <script src="https://cdn.jsdelivr.net/riot/3.2/riot+compiler.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+    <script src={% static "javascript/ajaxhelpers.js" %}></script>
+  </body>
+</html>
+
+
+
+
+
+
+<script>
+    var to_filter = {};
+
+    var filter_form;
+    riot.compile(function() {
+      filter_form = riot.mount('filtering')[0]
+    })
+    
+
+    var filter_students = function(){
+        var form = InitializeForm();
+        form.append('filters', JSON.stringify(filter_form.to_filter))
+        var url = '/filterstudents/'
+        var settings = getPostSettings(url, form);
+
+        $.ajax(settings).done(function (response) {
+            console.log(JSON.parse(response))
+        }).fail(function (jqXHR) {
+            console.log(jqXHR);
+        });
+    }
+
+
+</script>
+
