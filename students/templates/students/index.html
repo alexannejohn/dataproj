@@ -4,11 +4,19 @@
     <title>dataproj</title>
   </head>
   <body>
-    <!-- place the custom tag anywhere inside the body -->
+
+
+
     <filtering></filtering>
-    <button onclick="filter_students()">Click me too</button>
-    <!-- include the tag -->
     <script type="riot/tag" src={% static "riot_tags/filter.tag" %}></script>
+
+    <button onclick="filter_students()">Filter</button>
+    <br>
+    <br>
+    <br>
+    <students></students>
+    <script type="riot/tag" src={% static "riot_tags/students.tag" %}></script>
+    
     <!-- include riot.js -->
     <script src="https://cdn.jsdelivr.net/riot/3.2/riot+compiler.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
@@ -22,11 +30,12 @@
 
 
 <script>
-    var to_filter = {};
 
     var filter_form;
+    var student_list;
     riot.compile(function() {
       filter_form = riot.mount('filtering')[0]
+      student_list = riot.mount('students')[0]
     })
     
 
@@ -37,12 +46,15 @@
         var settings = getPostSettings(url, form);
 
         $.ajax(settings).done(function (response) {
-            console.log(JSON.parse(response))
+            data = JSON.parse(response)
+            console.log(data)
+            student_list.students = data.students
+            student_list.count = data.count
+            student_list.update();
         }).fail(function (jqXHR) {
             console.log(jqXHR);
         });
     }
-
 
 </script>
 

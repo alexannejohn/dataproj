@@ -44,10 +44,15 @@ def filter_students(request):
     students = Student.objects.all()
 
     # Filter 1: filter by session enrolled in
-    students = students.filter(enroll__session__in=filters['enrolled_sessions']).distinct()
+    print (hasattr(filters, 'enrolled_sessions'))
+    if 'enrolled_sessions' in filters:
+        students = students.filter(enroll__session__in=filters['enrolled_sessions']).distinct()
 
     # Filter 2: filter by program enrolled in
-    students = students.filter(enroll__program__in=filters['enrolled_programs']).distinct()
+    if 'enrolled_programs' in filters:
+        students = students.filter(enroll__program__in=filters['enrolled_programs']).distinct()
+
+    response = {"count": students.count(), "students": students.values('given_name', 'student_number')}
 
 
-    return Response(students.values('given_name'))
+    return Response(response)
