@@ -32,7 +32,7 @@ class Session(AbstractModel):
 
 class Program(AbstractModel):
     program = models.CharField(primary_key=True, max_length=7)
-    name = models.CharField(max_length=50, blank=True, null=True)
+    name = models.CharField(max_length=100, blank=True, null=True)
     program_type = models.CharField(max_length=20, blank=True, null=True)
     level = models.CharField(max_length=20, blank=True, null=True)
 
@@ -41,9 +41,11 @@ class Program(AbstractModel):
 
 
 class Specialization(AbstractModel):
-    subject = models.CharField(primary_key=True, max_length=5)
-    code = models.IntegerField(blank=True, null=True)
-    name = models.CharField(max_length=20, blank=True, null=True)
+    code = models.IntegerField(primary_key=True)
+    subject = models.CharField(max_length=5)
+    name = models.CharField(max_length=100, blank=True, null=True)
+    program = models.ForeignKey(Program)
+    spec_type = models.CharField(max_length=20, blank=True, null=True) #honours, major
 
     def __str__(self):
         return '%s' % (self.subject,)
@@ -59,6 +61,7 @@ class Enroll(AbstractModel):
     sessional_average = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True)
     sessional_standing = models.CharField(max_length=5, blank=True, null=True)
     program_entry_year = models.IntegerField(validators=[MinValueValidator(1111), MaxValueValidator(3000)], blank=True, null=True)
+    specializations = models.ManyToManyField(Specialization, through='SpecEnrolled', blank=True, null=True)
 
     class Meta:
         unique_together = (('student_number', 'session'))
@@ -67,10 +70,14 @@ class Enroll(AbstractModel):
         return '%s %s' % (self.session, self.program)
 
 
-class EnrollSpec(AbstractModel):
-    category = models.CharField(max_length=20)
-    subject = models.ForeignKey(Specialization)
+class SpecEnrolled(models.Model):
+    specialization = models.ForeignKey(Specialization)
     enroll = models.ForeignKey(Enroll)
+    pri_sec = models.CharField(max_length=20)
+
+    def __str__(self):
+        return '%s %s' % self.specialization, self.enroll
+
 
 
 class Student(AbstractModel):

@@ -30,4 +30,5 @@ urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^filters/', views.get_filter_options, name='filters'),
     url(r'^filterstudents/', views.filter_students, name='filterstudents'),
+    url(r'^enrollprogramtype/', views.filter_enroll_program_type, name='enrollprogramtype'),
 ]

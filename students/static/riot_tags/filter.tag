@@ -10,7 +10,10 @@
       <div each={ checkboxes }>
         <h2>{ title }</h2>
         <span each={options} class="input-check">
-          <input  data-message="{ parent.field }" type="checkbox" name="{val}" value="{val}" onclick={ parent.update_to_filter }>{val}
+          <input  data-message="{ parent.field }" type="checkbox" name="{val}" value="{val}" onclick={ parent.update_to_filter }>
+            <span class="tooltip">{val}
+              <span if={ hover } class="tooltiptext">{ hover }</span>
+            </span>
         </span>
       </div>
     </div>  
@@ -52,11 +55,27 @@
           delete self.to_filter[field];
         }
       }
+
+      if (field == 'enroll_program_type' || field == 'enroll_program_level'){
+        url = '/enrollprogramtype?'
+          url += 'type='
+          if(self.to_filter['enroll_program_type']){
+            url += (self.to_filter['enroll_program_type'].join() || '')
+          }
+          url += '&' 
+          url += 'level='
+          if(self.to_filter['enroll_program_level']){
+            url += (self.to_filter['enroll_program_level'].join() || '')
+          } 
+          url += '&'
+        $.get(url, function (data) {
+          self.checkboxes[3].options = data;
+          self.update()
+        });
+      }
     }
 
     expand_hide(e){
-      console.log($(e.target).text())
-      console.log($(e.target).parent().siblings(".filter-frame"))
       if ($(e.target).text() == "+"){
         $(e.target).text("-");
       }else{
@@ -117,6 +136,35 @@
     .input-check{
       margin: 0 3px;
       font-family: sans-serif;
+    }
+
+    .tooltip {
+    position: relative;
+    display: inline-block;
+    }
+
+    /* Tooltip text */
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        padding: 5px 0;
+        border-radius: 6px;
+     
+        /* Position the tooltip text - see examples below! */
+        position: absolute;
+        z-index: 1;
+        width: 120px;
+        bottom: 100%;
+        left: 50%; 
+        margin-left: -60px;
+    }
+
+    /* Show the tooltip text when you mouse over the tooltip container */
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
     }
   </style>
 </filtering>
