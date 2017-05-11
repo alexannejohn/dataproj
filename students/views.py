@@ -9,7 +9,7 @@ from django.db.models import F
 
 
 def index(request):
-    context = {'test': 'test'}
+    context = {'user': request.user}
     return render(request, 'students/index.html', context)  
 
 

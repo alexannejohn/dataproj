@@ -48,7 +48,7 @@ class Specialization(AbstractModel):
     spec_type = models.CharField(max_length=20, blank=True, null=True) #honours, major
 
     def __str__(self):
-        return '%s' % (self.subject,)
+        return '%s' % (self.name,)
 
 
 

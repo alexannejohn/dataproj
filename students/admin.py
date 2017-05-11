@@ -1,9 +1,11 @@
 from django.contrib import admin
-from .models import Student, Enroll, Session, Program, Specialization
+from .models import Student, Enroll, Session, Program, Specialization, SpecEnrolled
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from django.core import urlresolvers
 from extended_filters.filters import CheckBoxListFilter
+from django.forms import ModelForm
+from django.forms.models import BaseInlineFormSet
 
 
 
@@ -73,13 +75,32 @@ class EnrollResource(ExtendedResource):
         model = Enroll
         import_id_fields = ['student_number', 'session']
 
+class MyFormSet(BaseInlineFormSet):
+    def get_form_kwargs(self, index):
+        kwargs = super().get_form_kwargs(index)
+        kwargs['parent_object'] = self.instance
+        return kwargs
+
+
+class SpecEnrolledForm(ModelForm):
+
+    def __init__(self, *args, parent_object, **kwargs): 
+        self.parent_object = parent_object     
+        super(SpecEnrolledForm, self).__init__(*args, **kwargs)
+        self.fields['specialization'].queryset = Specialization.objects.filter(program=self.parent_object.program)
+
+
+class SpecEnrolledInline(admin.TabularInline):
+    model = SpecEnrolled
+    formset = MyFormSet
+    form = SpecEnrolledForm
+    extra = 1 # how many rows to show
+
 
 class EnrollAdmin(ExtendedAdmin):
     resource_class = EnrollResource
     list_filter = (('session', CheckBoxListFilter), ('program', CheckBoxListFilter))
-    # def save_model(self, request, obj, form, change):
-    #   print ('when csv?')
-    #   super(EnrollAdmin, self).save_model(request, obj, form, change)
+    inlines = (SpecEnrolledInline,)
 
 
 admin.site.register(Enroll, EnrollAdmin)

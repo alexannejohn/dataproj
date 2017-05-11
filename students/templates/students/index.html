@@ -4,18 +4,35 @@
     <title>dataproj</title>
   </head>
   <body>
+    <div class="header-cont">
+        <div class="header">
+            <i>CEIH Student Database</i>
+            <span class="align-right">
+                {% if user.is_authenticated %}
+                    <p>hello, {{ user.username }}</p>
+                    <a href="/logout/?next={{ request.path }}">Logout</a>
+                {% else %}
+                    <a href="/login/?next={{ request.path }}">Login</a>
+                {% endif %}
+            </span>
+        </div>
+    </div>
 
+    <div class="content">
+        {% if user.is_authenticated %}
+            <filtering></filtering>
+            <script type="riot/tag" src={% static "riot_tags/filter.tag" %}></script>
 
-
-    <filtering></filtering>
-    <script type="riot/tag" src={% static "riot_tags/filter.tag" %}></script>
-
-    <button onclick="filter_students()">Filter</button>
-    <br>
-    <br>
-    <br>
-    <students></students>
-    <script type="riot/tag" src={% static "riot_tags/students.tag" %}></script>
+            <button onclick="filter_students()">Filter</button>
+            <br>
+            <br>
+            <br>
+            <students></students>
+            <script type="riot/tag" src={% static "riot_tags/students.tag" %}></script>
+        {% else %}
+            Please log in!
+        {% endif %}
+    </div>
     
     <!-- include riot.js -->
     <script src="https://cdn.jsdelivr.net/riot/3.2/riot+compiler.min.js"></script>
@@ -23,9 +40,6 @@
     <script src={% static "javascript/ajaxhelpers.js" %}></script>
   </body>
 </html>
-
-
-
 
 
 
@@ -62,6 +76,46 @@
 <style>
     body{
         background-color: #E0E0E0;
+    }
+    .header-cont {
+        width:100%;
+        position:fixed;
+        top:0px;
+        left: 0px;
+    }
+    .header {
+        height:24px;
+        background:#F0F0F0;
+        border:1px solid #CCC;
+        margin:0px auto;
+        padding: 6px;
+    }
+    .header i{
+        color: #09839E;
+        font-size: 20px;
+    }
+    .content{
+        position: fixed;
+        top: 60px;
+        left: 0px;
+        width: 100%;
+    }
+    .align-right{
+        position: fixed;
+        right: 10px;
+    }
+    .header p{
+        color: #09839E;
+        font-size: 20px;
+        display: inline-block;
+        margin-right: 10px;
+        margin-top: 0px;
+        margin-bottom: 0px;
+    }
+    .header a{
+        color: #09839E;
+        font-size: 20px;
+        display: inline-block;
     }
 </style>
 

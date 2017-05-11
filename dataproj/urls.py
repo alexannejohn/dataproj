@@ -18,12 +18,15 @@ from django.contrib import admin
 from students.viewsets import StudentViewSet
 from rest_framework import routers
 from students import views
+from django.contrib.auth import views as auth_views
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
 router.register(r'users', StudentViewSet)
 
 urlpatterns = [
+    url(r'^login/$', auth_views.login, {'template_name': 'students/login.html'}),
+    url(r'^logout/$', auth_views.logout, ),
     url(r'^$', views.index, name='index'),
     url(r'^admin/', admin.site.urls),
     url(r'^api/', include(router.urls)),
