@@ -53,23 +53,18 @@ admin.site.register(Student, StudentAdmin)
 
 class EnrollResource(ExtendedResource):
 
-    # subject_1 = None
-    # cat_1 = None
-    # code_1 = None
+    code_1 = None
 
-    # def before_import_row(self, row, **kwargs):
-    #     self.subject_1 = row['subject_1']
-    #     self.cat_1 = row['cat_1']
-    #     self.code_1 = row['code_1']
+    def before_import_row(self, row, **kwargs):
+        self.code_1 = row['code_1']
 
-    # def after_save_instance(self, instance, using_transactions, dry_run, *args, **kwargs):
-    #     print ('spec ' + str(self.subject_1) + ' ' + str(len(self.subject_1)))  
-    #     if len(self.subject_1) > 0:
-    #         spec = Specialization.objects.get(subject=self.subject_1)
-    #         enrollspec = EnrollSpec.objects.create(category=self.cat_1, subject=spec, enroll=instance)
-    #         enrollspec.save()
+    def after_save_instance(self, instance, using_transactions, dry_run, *args, **kwargs):
+        if len(self.code_1) > 0:
+            specialization = Specialization.objects.get(code=self.code_1)
+            enrollspec = SpecEnrolled.objects.create(enroll=instance, specialization=specialization, pri_sec="PRI")
+            enrollspec.save()
 
-    #     return super(EnrollResource, self).after_save_instance(instance, using_transactions, dry_run, *args, **kwargs)
+        return super(EnrollResource, self).after_save_instance(instance, using_transactions, dry_run, *args, **kwargs)
 
     class Meta:
         model = Enroll
@@ -149,10 +144,4 @@ class SpecializationAdmin(ExtendedAdmin):
 
 admin.site.register(Specialization, SpecializationAdmin)
 
-
-# class EnrollSpecAdmin(admin.ModelAdmin):
-#     pass
-
-
-# admin.site.register(EnrollSpec, EnrollSpecAdmin)
 

@@ -3,20 +3,38 @@
 
   <div class="filter-panel">
     <div class="title-frame">
-      <h1>Filter by Enrollment</h1>
+      <h1>Filter by Student Details</h1>
       <span class="expand-button" onclick={ expand_hide } >+</span>
     </div>  
     <div class="filter-frame">
-      <div each={ checkboxes }>
-        <h2>{ title }</h2>
-        <span each={options} class="input-check">
-          <input  data-message="{ parent.field }" type="checkbox" name="{val}" value="{val}" onclick={ parent.update_to_filter }>
-            <span class="tooltip">{val}
-              <span if={ hover } class="tooltiptext">{ hover }</span>
+      <div each={ row, i in student_options }>
+        <h2>{ row.title }</h2>
+        <span each={ check, i in row.options} class="input-check">
+          <input  data-message="{ row.field }" type="checkbox" name="{check.val}" value="{check.val}" onclick={ parent.update_to_filter }>
+            <span class="tooltip">{check.val}
+              <span if={ check.hover } class="tooltiptext">{ check.hover }</span>
             </span>
         </span>
       </div>
     </div>  
+  </div>
+
+  <div class="filter-panel">
+    <div class="title-frame">
+      <h1>Filter by Enrollment</h1>
+      <span class="expand-button" onclick={ expand_hide } >+</span>
+    </div>  
+    <div class="filter-frame">
+      <div each={ row, i in enroll_options }>
+        <h2>{ row.title }</h2>
+        <div each={ check, i in row.options} class={i > 15 ? 'input-check to-hide' : 'input-check'}>
+          <input  data-message="{ row.field }" type="checkbox" name="{check.val}" value="{check.val}" onclick={ parent.update_to_filter }>
+            <span class="tooltip">{check.val}
+              <span if={ check.hover } class="tooltiptext">{ check.hover }</span>
+            </span>
+        </div>
+      </div>
+    </div>
   </div>
 
 
@@ -31,13 +49,14 @@
 
     url = "/filters"
     $.get(url, function (data) {
-        self.checkboxes = data;
+        self.enroll_options = data.enroll_options;
+        self.student_options = data.student_options;
         self.update()
     });
 
     update_to_filter(e){
       var checked = e.target.checked;
-      var val = e.item.val;
+      var val = e.item.check.val;
       var field = e.target.dataset.message;
       
       if (checked == true){
@@ -69,8 +88,9 @@
           } 
           url += '&'
         $.get(url, function (data) {
-          self.checkboxes[3].options = data;
+          self.enroll_options[3].options = data;
           self.update()
+          delete self.to_filter['enroll_program']
         });
       }
     }
@@ -136,6 +156,8 @@
     .input-check{
       margin: 0 3px;
       font-family: sans-serif;
+      display: inline-block;
+      width: 100px;
     }
 
     .tooltip {
@@ -166,5 +188,8 @@
     .tooltip:hover .tooltiptext {
         visibility: visible;
     }
+    /*.to-hide{
+      display: none;
+    }*/
   </style>
 </filtering>

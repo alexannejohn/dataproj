@@ -16,28 +16,46 @@ def index(request):
 
 @api_view(['GET'])
 def get_filter_options(request):
-    filter_options = []
+
+    ###
+    #  Options for filtering by student details
+    ###
+    student_options = []
+
+    provinces_raw = Student._meta.get_field('province').choices
+    provinces = [{"val": a[0], "hover": a[1]} for a in provinces_raw]
+    student_provinces = {"field": "student_province", "title": "Province", "options": provinces}
+
+    student_options.append(student_provinces)
+
+
+    ###
+    #  Options for filtering by enrollment
+    ###
+    enroll_options = []
 
     sessions = Session.objects.all().annotate(val=F('session')).values("val")
     #sessions = Enroll.objects.all().annotate(val=F('session')).values("val").distinct()
-    enrolled_session = {"field": "enrolled_sessions", "title": "Session Enrolled", "options": sessions}
+    enroll_sessions = {"field": "enroll_session", "title": "Session Enrolled", "options": sessions}
 
     program_types = Program.objects.all().annotate(val=F('program_type')).values("val").distinct()
     enroll_program_types = {"field": "enroll_program_type", "title": "Program Type", "options": program_types}
 
-    program_level = Program.objects.all().annotate(val=F('level')).values("val").distinct()
-    enroll_program_levels = {"field": "enroll_program_level", "title": "Program Level", "options": program_level}
+    program_levels = Program.objects.all().annotate(val=F('level')).values("val").distinct()
+    enroll_program_levels = {"field": "enroll_program_level", "title": "Program Level", "options": program_levels}
 
     programs = Program.objects.all().annotate(val=F('program'), hover=F('name')).values("val", "hover")
     #programs = Enroll.objects.all().annotate(val=F('program')).values("val").distinct()
-    enrolled_program = {"field": "enrolled_programs", "title": "Program Enrolled", "options": programs}
+    enroll_programs = {"field": "enroll_program", "title": "Program Enrolled", "options": programs}
 
 
-    filter_options.append(enrolled_session)
-    filter_options.append(enroll_program_types)
-    filter_options.append(enroll_program_levels)
-    filter_options.append(enrolled_program)
-    return Response(filter_options)
+    enroll_options.append(enroll_sessions)
+    enroll_options.append(enroll_program_types)
+    enroll_options.append(enroll_program_levels)
+    enroll_options.append(enroll_programs)
+
+
+    return Response({"enroll_options": enroll_options, "student_options": student_options})
 
 @api_view(['GET'])
 def filter_enroll_program_type(request):
@@ -61,8 +79,19 @@ def filter_students(request):
     filters = json.loads(request.data['filters'])
     students = Student.objects.all()
 
-    if 'enrolled_sessions' in filters:
-        students = students.filter(enroll__session__in=filters['enrolled_sessions']).distinct()
+    ###
+    #  filtering by student details
+    ###
+
+    if 'student_province' in filters:
+        students = students.filter(province__in=filters['student_province'])
+
+    ###
+    #  filtering by enrollment
+    ###
+
+    if 'enroll_session' in filters:
+        students = students.filter(enroll__session__in=filters['enroll_session']).distinct()
 
     if 'enroll_program_type' in filters:
         students = students.filter(enroll__program__program_type__in=filters['enroll_program_type']).distinct()
@@ -70,9 +99,13 @@ def filter_students(request):
     if 'enroll_program_level' in filters:
         students = students.filter(enroll__program__level__in=filters['enroll_program_level']).distinct()
 
-    if 'enrolled_programs' in filters:
-        students = students.filter(enroll__program__in=filters['enrolled_programs']).distinct()
+    if 'enroll_program' in filters:
+        students = students.filter(enroll__program__in=filters['enroll_program']).distinct()
 
+
+    ###
+    #  return list of students
+    ###
     response = {"count": students.count(), "students": students.values('given_name', 'student_number')}
 
 

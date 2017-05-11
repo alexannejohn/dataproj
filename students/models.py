@@ -71,12 +71,20 @@ class Enroll(AbstractModel):
 
 
 class SpecEnrolled(models.Model):
+    PRI_SEC_CHOICES = (
+        ('PRI', 'Primary'),
+        ('SEC', 'Secondary'),
+    )
+
     specialization = models.ForeignKey(Specialization)
     enroll = models.ForeignKey(Enroll)
-    pri_sec = models.CharField(max_length=20)
+    pri_sec = models.CharField(max_length=20, choices=PRI_SEC_CHOICES) #primary or secondary
+
+    class Meta:
+        unique_together = (('enroll', 'pri_sec'))
 
     def __str__(self):
-        return '%s %s' % self.specialization, self.enroll
+        return '%s %s' % (self.specialization, self.enroll,)
 
 
 
@@ -85,6 +93,22 @@ class Student(AbstractModel):
         ('NATI', 'First Nations'),
         ('INUI', 'Inuit'),
         ('METI', 'Métis'),
+    )
+
+    PROVINCE_CHOICES = (
+        ('AB', 'Alberta'),
+        ('BC', 'British Columbia'),
+        ('MB', 'Manitoba'),
+        ('NB', 'New Brunswick'),
+        ('NL', 'Newfoundland and Labrador'),
+        ('NS', 'Nova Scotia'),
+        ('NT', 'Northwest Territories'),
+        ('NU', 'Nunavut'),
+        ('ON', 'Ontario'),
+        ('PE', 'Prince Edward Island'),
+        ('QC', 'Quebec'),
+        ('SK', 'Saskatchewan'),
+        ('YT', 'Yukon')
     )
 
 
@@ -96,6 +120,7 @@ class Student(AbstractModel):
     gender = models.CharField(max_length=10, null=True, blank=True)
     birthdate = models.DateField(null=True, blank=True)
     sub_type = models.CharField(max_length=4, blank=True, null=True, choices=SUB_TYPE_CHOICES)
+    province = models.CharField(max_length=2, blank=True, null=True, choices=PROVINCE_CHOICES)
 
 
     def __str__(self):
