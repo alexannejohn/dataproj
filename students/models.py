@@ -57,7 +57,7 @@ class Specialization(AbstractModel):
     description = models.CharField(max_length=150, blank=True, null=True)
 
     def __str__(self):
-        return '%s' % (self.name,)
+        return '%s' % (self.description,)
 
 
 class RegistrationStatus(AbstractModel):
@@ -106,6 +106,18 @@ class SpecEnrolled(models.Model):
         return '%s %s' % (self.specialization, self.enroll,)
 
 
+# class Graduation(AbstractModel):
+#     student_number = models.ForeignKey('Student')
+#     #first session applied
+#     #first session admitted
+#     #first session registered
+#     grad_application_status = models.CharField(max_length=10)
+#     status_reason = models.CharField(max_length=50, blank=True, null=True)
+#     transfer_credits = models.CharField(max_length=40, blank=True, null=True)
+#     program, specialization
+
+
+
 
 class Student(AbstractModel):
     SUB_TYPE_CHOICES = (
@@ -149,6 +161,7 @@ class Student(AbstractModel):
     def enrollments(self):
         enrol = Enroll.objects.filter(student_number=self.student_number).order_by('session__year')
         return enrol
+
 
 
 

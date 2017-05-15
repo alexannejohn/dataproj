@@ -1,40 +1,22 @@
 <filtering>
   
-
-  <div class="filter-panel">
+  <div class="filter-panel" each={ filter in filters }>
     <div class="title-frame">
-      <h1>Filter by Student Details</h1>
+      <h1>{ filter.header }</h1>
       <span class="expand-button" onclick={ expand_hide } >+</span>
     </div>  
     <div class="filter-frame">
-      <div each={ row, i in student_options }>
+      <div each={ row, i in filter.list }>
         <h2>{ row.title }</h2>
-        <span each={ check, i in row.options} class="input-check">
+        <span each={ check, i in row.options} class={i > 14 ? 'input-check to-hide' : 'input-check'}>
           <input  data-message="{ row.field }" type="checkbox" name="{check.val}" value="{check.val}" onclick={ parent.update_to_filter }>
             <span class="tooltip">{check.val}
               <span if={ check.hover } class="tooltiptext">{ check.hover }</span>
             </span>
         </span>
+        <span class="expand-text" if={ row.options.length > 15 } onclick={expand_hide_options } >see more >><span>
       </div>
     </div>  
-  </div>
-
-  <div class="filter-panel">
-    <div class="title-frame">
-      <h1>Filter by Enrollment</h1>
-      <span class="expand-button" onclick={ expand_hide } >+</span>
-    </div>  
-    <div class="filter-frame">
-      <div each={ row, i in enroll_options }>
-        <h2>{ row.title }</h2>
-        <div each={ check, i in row.options} class={i > 15 ? 'input-check to-hide' : 'input-check'}>
-          <input  data-message="{ row.field }" type="checkbox" name="{check.val}" value="{check.val}" onclick={ parent.update_to_filter }>
-            <span class="tooltip">{check.val}
-              <span if={ check.hover } class="tooltiptext">{ check.hover }</span>
-            </span>
-        </div>
-      </div>
-    </div>
   </div>
 
 
@@ -46,11 +28,16 @@
     var self = this;
 
     self.to_filter = {};
+    self.filters = {};
+    self.filters.student_options = {"header": "Filter by Student Details"};
+    self.filters.enroll_options = {"header": "Filter by Enrollment"};
+    
+
 
     url = "/filters"
     $.get(url, function (data) {
-        self.enroll_options = data.enroll_options;
-        self.student_options = data.student_options;
+        self.filters.enroll_options.list = data.enroll_options;
+        self.filters.student_options.list = data.student_options;
         self.update()
     });
 
@@ -88,7 +75,7 @@
           } 
           url += '&'
         $.get(url, function (data) {
-          self.enroll_options[3].options = data;
+          self.filters.enroll_options.list[3].options = data;
           self.update()
           delete self.to_filter['enroll_program']
         });
@@ -102,6 +89,17 @@
         $(e.target).text("+");
       }
       $(e.target).parent().siblings(".filter-frame").toggle()
+    }
+
+    expand_hide_options(e){
+      if ($(e.target).text().includes("more")){
+        $(e.target).text("<< see less");
+        $(e.target).siblings(".to-hide").css("display", "inline-block")
+      }else{
+        $(e.target).text("see more >>");
+        $(e.target).siblings(".to-hide").css("display", "none")
+      }
+      // $(e.target).siblings(".to-hide").toggle()
     }
 
   </script>
@@ -146,6 +144,16 @@
     .expand-button:hover{
       color: #0B3C75;
     }
+    .expand-text{
+      color: #09839E;
+      font-size: 14px;
+      font-family: sans-serif;
+      margin: 0 4px;
+      display: inline-block;
+    }
+    .expand-text:hover{
+      color: #0B3C75;
+    }
     .filter-frame h2{
       font-family: sans-serif;
       font-size: 14px;
@@ -188,8 +196,8 @@
     .tooltip:hover .tooltiptext {
         visibility: visible;
     }
-    /*.to-hide{
+    .to-hide{
       display: none;
-    }*/
+    }
   </style>
 </filtering>

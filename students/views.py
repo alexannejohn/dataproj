@@ -34,17 +34,17 @@ def get_filter_options(request):
     ###
     enroll_options = []
 
-    sessions = Session.objects.all().annotate(val=F('session')).values("val")
+    sessions = Session.objects.all().order_by("year", "code").annotate(val=F('session')).values("val")
     #sessions = Enroll.objects.all().annotate(val=F('session')).values("val").distinct()
     enroll_sessions = {"field": "enroll_session", "title": "Session Enrolled", "options": sessions}
 
-    program_types = Program.objects.all().annotate(val=F('program_type')).values("val").distinct()
+    program_types = Program.objects.all().order_by("program_type").annotate(val=F('program_type')).values("val").distinct()
     enroll_program_types = {"field": "enroll_program_type", "title": "Program Type", "options": program_types}
 
-    program_levels = Program.objects.all().annotate(val=F('level')).values("val").distinct()
+    program_levels = Program.objects.all().order_by("level").annotate(val=F('level')).values("val").distinct()
     enroll_program_levels = {"field": "enroll_program_level", "title": "Program Level", "options": program_levels}
 
-    programs = Program.objects.all().annotate(val=F('program'), hover=F('name')).values("val", "hover")
+    programs = Program.objects.all().order_by("program").annotate(val=F('program'), hover=F('name')).values("val", "hover")
     #programs = Enroll.objects.all().annotate(val=F('program')).values("val").distinct()
     enroll_programs = {"field": "enroll_program", "title": "Program Enrolled", "options": programs}
 

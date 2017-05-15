@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Student, Enroll, Session, Program, Specialization, SpecEnrolled
+from .models import Student, Enroll, Session, Program, Specialization, SpecEnrolled, RegistrationStatus, SessionalStanding
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from django.core import urlresolvers
@@ -143,5 +143,35 @@ class SpecializationAdmin(ExtendedAdmin):
 
 
 admin.site.register(Specialization, SpecializationAdmin)
+
+
+class RegistrationStatusResource(ExtendedResource):
+
+    class Meta:
+        model = RegistrationStatus
+        import_id_fields = ['status_code',]
+
+
+class RegistrationStatusAdmin(ExtendedAdmin):
+    resource_class = RegistrationStatusResource
+    list_display = ('status_code', 'description')
+
+
+admin.site.register(RegistrationStatus, RegistrationStatusAdmin)
+
+
+class SessionalStandingResource(ExtendedResource):
+
+    class Meta:
+        model = SessionalStanding
+        import_id_fields = ['standing_code',]
+
+
+class SessionalStandingAdmin(ExtendedAdmin):
+    resource_class = SessionalStandingResource
+    list_display = ('standing_code', 'description')
+
+
+admin.site.register(SessionalStanding, SessionalStandingAdmin)
 
 
