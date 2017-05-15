@@ -42,20 +42,38 @@ class Program(AbstractModel):
 
 class Subject(AbstractModel):
     subject_code = models.CharField(primary_key=True, max_length=5)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, blank=True, null=True)
+
+    def __str__(self):
+        return '%s' % (self.subject_code,)
 
 
 class Specialization(AbstractModel):
-    specialization_code = models.IntegerField(primary_key=True)
+    code = models.IntegerField(primary_key=True)
     program = models.ForeignKey(Program)
     primary_subject = models.ForeignKey(Subject, blank=True, null=True, related_name="specializations_pri")
-    secondary_type = models.ForeignKey(Subject, blank=True, null=True, related_name="specializations_sec")
-    secondary_subject = models.CharField(max_length=5)
+    secondary_type = models.CharField(max_length=5, blank=True, null=True)
+    secondary_subject = models.ForeignKey(Subject, blank=True, null=True, related_name="specializations_sec")
     description = models.CharField(max_length=150, blank=True, null=True)
 
     def __str__(self):
         return '%s' % (self.name,)
 
+
+class RegistrationStatus(AbstractModel):
+    status_code = models.CharField(primary_key=True, max_length=5)
+    description = models.CharField(max_length=150, blank=True, null=True)
+
+    def __str__(self):
+        return '%s' % (self.status_code,)
+
+
+class SessionalStanding(AbstractModel):
+    standing_code = models.CharField(primary_key=True, max_length=5)
+    description = models.CharField(max_length=150, blank=True, null=True)
+
+    def __str__(self):
+        return '%s' % (self.standing_code,)
 
 
 class Enroll(AbstractModel):
@@ -63,9 +81,9 @@ class Enroll(AbstractModel):
     session = models.ForeignKey(Session)
     program = models.ForeignKey(Program, blank=True, null=True)
     year_level = models.IntegerField(blank=True, null=True)
-    regi_status = models.CharField(max_length=5, blank=True, null=True)
+    regi_status = models.ForeignKey(RegistrationStatus, blank=True, null=True)
     sessional_average = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True)
-    sessional_standing = models.CharField(max_length=5, blank=True, null=True)
+    sessional_standing = models.ForeignKey(SessionalStanding, blank=True, null=True)
     program_entry_year = models.IntegerField(validators=[MinValueValidator(1111), MaxValueValidator(3000)], blank=True, null=True)
     specializations = models.ManyToManyField(Specialization, through='SpecEnrolled', blank=True, null=True)
 
@@ -79,9 +97,10 @@ class Enroll(AbstractModel):
 class SpecEnrolled(models.Model):
     specialization = models.ForeignKey(Specialization)
     enroll = models.ForeignKey(Enroll)
+    order = models.IntegerField(default=1)
 
     class Meta:
-        unique_together = (('enroll', 'pri_sec'))
+        unique_together = (('enroll', 'order'))
 
     def __str__(self):
         return '%s %s' % (self.specialization, self.enroll,)
