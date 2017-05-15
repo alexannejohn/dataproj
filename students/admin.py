@@ -134,12 +134,12 @@ class SpecializationResource(ExtendedResource):
 
     class Meta:
         model = Specialization
-        import_id_fields = ['code',]
+        import_id_fields = ['specialization_code',]
 
 
 class SpecializationAdmin(ExtendedAdmin):
     resource_class = SpecializationResource
-    list_display = ('subject', 'name', 'program')
+    list_display = ('specialization_code', 'description', 'program')
 
 
 admin.site.register(Specialization, SpecializationAdmin)

@@ -40,12 +40,18 @@ class Program(AbstractModel):
         return '%s' % (self.program,)
 
 
+class Subject(AbstractModel):
+    subject_code = models.CharField(primary_key=True, max_length=5)
+    name = models.CharField(max_length=100)
+
+
 class Specialization(AbstractModel):
-    code = models.IntegerField(primary_key=True)
-    subject = models.CharField(max_length=5)
-    name = models.CharField(max_length=100, blank=True, null=True)
+    specialization_code = models.IntegerField(primary_key=True)
     program = models.ForeignKey(Program)
-    spec_type = models.CharField(max_length=20, blank=True, null=True) #honours, major
+    primary_subject = models.ForeignKey(Subject, blank=True, null=True, related_name="specializations_pri")
+    secondary_type = models.ForeignKey(Subject, blank=True, null=True, related_name="specializations_sec")
+    secondary_subject = models.CharField(max_length=5)
+    description = models.CharField(max_length=150, blank=True, null=True)
 
     def __str__(self):
         return '%s' % (self.name,)
@@ -71,14 +77,8 @@ class Enroll(AbstractModel):
 
 
 class SpecEnrolled(models.Model):
-    PRI_SEC_CHOICES = (
-        ('PRI', 'Primary'),
-        ('SEC', 'Secondary'),
-    )
-
     specialization = models.ForeignKey(Specialization)
     enroll = models.ForeignKey(Enroll)
-    pri_sec = models.CharField(max_length=20, choices=PRI_SEC_CHOICES) #primary or secondary
 
     class Meta:
         unique_together = (('enroll', 'pri_sec'))
