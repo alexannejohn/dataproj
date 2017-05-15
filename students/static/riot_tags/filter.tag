@@ -6,7 +6,7 @@
       <span class="expand-button" onclick={ expand_hide } >+</span>
     </div>  
     <div class="filter-frame">
-      <div each={ row, i in filter.list }>
+      <div each={ row, i in filter.list } class="{ row.field }">
         <h2>{ row.title }</h2>
         <span each={ check, i in row.options} class={i > 14 ? 'input-check to-hide' : 'input-check'}>
           <input  data-message="{ row.field }" type="checkbox" name="{check.val}" value="{check.val}" onclick={ parent.update_to_filter }>
@@ -25,13 +25,23 @@
   <br>
 
   <script>
+    
+
     var self = this;
 
     self.to_filter = {};
     self.filters = {};
     self.filters.student_options = {"header": "Filter by Student Details"};
     self.filters.enroll_options = {"header": "Filter by Enrollment"};
+
     
+    self.on('updated', function() {
+      for (var key in self.to_filter){
+        console.log("aa")
+      }
+    })
+
+    self.update()
 
 
     url = "/filters"
@@ -42,6 +52,7 @@
     });
 
     update_to_filter(e){
+      e.preventUpdate = true
       var checked = e.target.checked;
       var val = e.item.check.val;
       var field = e.target.dataset.message;
@@ -78,11 +89,14 @@
           self.filters.enroll_options.list[3].options = data;
           self.update()
           delete self.to_filter['enroll_program']
+          $('.enroll_program').find('.expand-text').text("<< see less");
+          $('.enroll_program').children('.input-check').css("display", "inline-block")
         });
       }
     }
 
     expand_hide(e){
+      e.preventUpdate = true
       if ($(e.target).text() == "+"){
         $(e.target).text("-");
       }else{
@@ -92,6 +106,7 @@
     }
 
     expand_hide_options(e){
+      e.preventUpdate = true
       if ($(e.target).text().includes("more")){
         $(e.target).text("<< see less");
         $(e.target).siblings(".to-hide").css("display", "inline-block")
