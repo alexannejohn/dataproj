@@ -6,6 +6,8 @@ from .models import Session, Program, Enroll, Student, RegistrationStatus, Sessi
 from .models import Subject, Specialization
 from django.db.models import F
 from django.db.models import Q
+from .serializers import StudentSerializer
+from django.http import HttpResponse, JsonResponse
 
 # Create your views here.
 
@@ -154,7 +156,10 @@ def filter_students(request):
     ###
     #  return list of students
     ###
-    response = {"count": students.count(), "students": students.values('given_name', 'student_number')}
+    # response = {"count": students.count(), "students": students.values('given_name', 'student_number')}
+
+    serializer = StudentSerializer(students, many=True)
+    return JsonResponse({"count": students.count(), "students": serializer.data }, safe=False)
 
 
-    return Response(response)
+    # return Response(response)
