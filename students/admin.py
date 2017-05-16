@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Student, Enroll, Session, Program, Specialization, SpecEnrolled, RegistrationStatus, SessionalStanding
+from .models import Subject
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from django.core import urlresolvers
@@ -54,14 +55,21 @@ admin.site.register(Student, StudentAdmin)
 class EnrollResource(ExtendedResource):
 
     code_1 = None
+    code_2 = None
 
     def before_import_row(self, row, **kwargs):
         self.code_1 = row['code_1']
+        self.code_2 = row['code_2']
 
     def after_save_instance(self, instance, using_transactions, dry_run, *args, **kwargs):
-        if len(self.code_1) > 0:
+        SpecEnrolled.objects.filter(enroll=instance).delete()
+        if self.code_1 != None and len(self.code_1) > 0:
             specialization = Specialization.objects.get(code=self.code_1)
-            enrollspec = SpecEnrolled.objects.create(enroll=instance, specialization=specialization, pri_sec="PRI")
+            enrollspec = SpecEnrolled.objects.create(enroll=instance, specialization=specialization, order=1)
+            enrollspec.save()
+        if self.code_2 != None and len(self.code_2) > 0:
+            specialization = Specialization.objects.get(code=self.code_2)
+            enrollspec = SpecEnrolled.objects.create(enroll=instance, specialization=specialization, order=2)
             enrollspec.save()
 
         return super(EnrollResource, self).after_save_instance(instance, using_transactions, dry_run, *args, **kwargs)
@@ -96,6 +104,7 @@ class EnrollAdmin(ExtendedAdmin):
     resource_class = EnrollResource
     list_filter = (('session', CheckBoxListFilter), ('program', CheckBoxListFilter))
     inlines = (SpecEnrolledInline,)
+    list_display = ('student_number', 'session', 'program', 'specialization_1', 'specialization_2')
 
 
 admin.site.register(Enroll, EnrollAdmin)
@@ -173,5 +182,20 @@ class SessionalStandingAdmin(ExtendedAdmin):
 
 
 admin.site.register(SessionalStanding, SessionalStandingAdmin)
+
+
+class SubjectResource(ExtendedResource):
+
+    class Meta:
+        model = Subject
+        import_id_fields = ['subject_code',]
+
+
+class SubjectAdmin(ExtendedAdmin):
+    resource_class = SubjectResource
+    list_display = ('subject_code', 'name')
+
+
+admin.site.register(Subject, SubjectAdmin)
 
 

@@ -34,4 +34,5 @@ urlpatterns = [
     url(r'^filters/', views.get_filter_options, name='filters'),
     url(r'^filterstudents/', views.filter_students, name='filterstudents'),
     url(r'^enrollprogramtype/', views.filter_enroll_program_type, name='enrollprogramtype'),
+    url(r'^filterspecialization/', views.filter_specialization, name='filterspecialization'),
 ]

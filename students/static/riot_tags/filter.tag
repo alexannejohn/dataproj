@@ -10,7 +10,7 @@
         <h2>{ row.title }</h2>
         <span each={ check, i in row.options} class={i > 14 ? 'input-check to-hide' : 'input-check'}>
           <input  data-message="{ row.field }" type="checkbox" name="{check.val}" value="{check.val}" onclick={ parent.update_to_filter }>
-            <span class="tooltip">{check.val}
+            <span class='tooltip'>{check.val}
               <span if={ check.hover } class="tooltiptext">{ check.hover }</span>
             </span>
         </span>
@@ -35,13 +35,13 @@
     self.filters.enroll_options = {"header": "Filter by Enrollment"};
 
     
-    self.on('updated', function() {
-      for (var key in self.to_filter){
-        console.log("aa")
-      }
-    })
+    // self.on('updated', function() {
+    //   for (var key in self.to_filter){
+    //     console.log("aa")
+    //   }
+    // })
 
-    self.update()
+    // self.update()
 
 
     url = "/filters"
@@ -50,6 +50,13 @@
         self.filters.student_options.list = data.student_options;
         self.update()
     });
+
+    var arrayObjectIndexOf = function(myArray, searchTerm, property) {
+        for(var i = 0, len = myArray.length; i < len; i++) {
+            if (myArray[i][property] === searchTerm) return i;
+        }
+        return -1;
+    }
 
     update_to_filter(e){
       e.preventUpdate = true
@@ -86,11 +93,34 @@
           } 
           url += '&'
         $.get(url, function (data) {
-          self.filters.enroll_options.list[3].options = data;
+          var index = arrayObjectIndexOf(self.filters.enroll_options.list, "enroll_program", "field")
+          self.filters.enroll_options.list[index].options = data;
           self.update()
           delete self.to_filter['enroll_program']
           $('.enroll_program').find('.expand-text').text("<< see less");
           $('.enroll_program').children('.input-check').css("display", "inline-block")
+        });
+      }
+
+      if (field == 'enroll_program' || field == 'enroll_subject'){
+        url = '/filterspecialization?'
+          url += 'program='
+          if(self.to_filter['enroll_program']){
+            url += (self.to_filter['enroll_program'].join() || '')
+          }
+          url += '&' 
+          url += 'subject='
+          if(self.to_filter['enroll_subject']){
+            url += (self.to_filter['enroll_subject'].join() || '')
+          } 
+          url += '&'
+        $.get(url, function (data) {
+          var index = arrayObjectIndexOf(self.filters.enroll_options.list, "enroll_specialization", "field")
+          self.filters.enroll_options.list[index].options = data;
+          self.update()
+          delete self.to_filter['enroll_specialization']
+          $('.enroll_specialization').find('.expand-text').text("<< see less");
+          $('.enroll_specialization').children('.input-check').css("display", "inline-block")
         });
       }
     }
@@ -181,11 +211,16 @@
       font-family: sans-serif;
       display: inline-block;
       width: 100px;
+      vertical-align: top;
+    }
+    .enroll_specialization .input-check{
+      font-size: 13px;
+      width: 320px;
     }
 
     .tooltip {
     position: relative;
-    display: inline-block;
+    /*display: inline-block;*/
     }
 
     /* Tooltip text */

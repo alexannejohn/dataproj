@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.models import User
+from django.apps import apps
 
 
 # Create your models here.
@@ -92,6 +93,28 @@ class Enroll(AbstractModel):
 
     def __str__(self):
         return '%s %s' % (self.session, self.program)
+
+    @property
+    def specialization_1(self):
+        e_s = apps.get_model(app_label='students', model_name='SpecEnrolled')\
+            .objects.filter(enroll=self, order=1)
+        if len(e_s) > 0:
+            return e_s[0].specialization
+        else:
+            return None
+
+    @property
+    def specialization_2(self):
+        e_s = apps.get_model(app_label='students', model_name='SpecEnrolled')\
+            .objects.filter(enroll=self, order=2)
+        if len(e_s) > 0:
+            return e_s[0].specialization
+        else:
+            return None
+
+    @property
+    def regi_status_name(self):
+        return self.regi_status.description
 
 
 class SpecEnrolled(models.Model):
