@@ -66,7 +66,7 @@ def get_filter_options(request):
     subjects = Subject.objects.all().order_by('subject_code').annotate(val=F('subject_code'), hover=F('name')).values("val", "hover")
     enroll_subjects = {"field": "enroll_subject", "title": "Specialization Subjects", "options": subjects}
 
-    specializations = Specialization.objects.all().order_by('description').annotate(val=F('description')).values('val')
+    specializations = Specialization.objects.all().order_by('description').annotate(text=F('description'), val=F('code')).values('val', 'text')
     enroll_specializations = {"field": "enroll_specialization", "title": "Specializations", "options": specializations}
 
 
@@ -110,7 +110,7 @@ def filter_specialization(request):
     if f_subj[0] != '':
         specializations = specializations.filter(Q(primary_subject__in=f_subj) | Q(secondary_subject__in=f_subj))
 
-    specializations = specializations.annotate(val=F('description')).values("val")
+    specializations = specializations.annotate(text=F('description'), val=F('code')).values('val', 'text')
     return Response(specializations)
 
 
@@ -152,6 +152,13 @@ def filter_students(request):
     if 'enroll_program' in filters:
         students = students.filter(enroll__program__in=filters['enroll_program']).distinct()
 
+    if 'enroll_subject' in filters:
+        subj_specializations = Specialization.objects.filter(Q(primary_subject__in=filters['enroll_subject']) | Q(secondary_subject__in=filters['enroll_subject']))
+        students = students.filter(enroll__specializations__in=subj_specializations).distinct()
+
+    if 'enroll_specialization' in filters:
+        specializations = Specialization.objects.filter(code__in=filters['enroll_specialization'])
+        students = students.filter(enroll__specializations__in=specializations).distinct()
 
     ###
     #  return list of students

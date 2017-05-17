@@ -13,7 +13,7 @@
         <td>+</td>
         <td>{ given_name }</td>
         <td>{ student_number }</td>
-        <td><span each={enroll in enrollments}>{enroll.session}-{enroll.program}<br></span></td>
+        <td><span each={enroll in enrollments}>{enroll.session} - {enroll.program}<br></span></td>
       </tr>
     </table>
   </div>
@@ -33,7 +33,7 @@
       -moz-box-shadow:2px 2px 5px 5px #C9C9C9;
       margin: 10px;
       padding: 7px 8px 7px 3px;
-      margin-bottom: 50px;
+      margin-bottom: 450px;
     }
     .student-count{
       color: #09839E;

@@ -10,7 +10,8 @@
         <h2>{ row.title }</h2>
         <span each={ check, i in row.options} class={i > 14 ? 'input-check to-hide' : 'input-check'}>
           <input  data-message="{ row.field }" type="checkbox" name="{check.val}" value="{check.val}" onclick={ parent.update_to_filter }>
-            <span class='tooltip'>{check.val}
+            <span class='tooltip'>
+              {check.text ? check.text : check.val}
               <span if={ check.hover } class="tooltiptext">{ check.hover }</span>
             </span>
         </span>
