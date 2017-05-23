@@ -2,6 +2,9 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.models import User
 from django.apps import apps
+from codetables.models import RegistrationStatus, SessionalStanding
+from codetables.models import AwardType, AwardStatus, AppStatus, AppReason, AppDecision, AppReAdmission, AppActionCode, AppMultipleAction
+from studyareas.models import Subject, Program, Specialization
 
 
 # Create your models here.
@@ -29,52 +32,6 @@ class Session(AbstractModel):
 
     def __str__(self):
         return '%s' % (self.session)
-
-
-class Program(AbstractModel):
-    program = models.CharField(primary_key=True, max_length=7)
-    name = models.CharField(max_length=100, blank=True, null=True)
-    program_type = models.CharField(max_length=20, blank=True, null=True)
-    level = models.CharField(max_length=20, blank=True, null=True)
-
-    def __str__(self):
-        return '%s' % (self.program,)
-
-
-class Subject(AbstractModel):
-    subject_code = models.CharField(primary_key=True, max_length=5)
-    name = models.CharField(max_length=100, blank=True, null=True)
-
-    def __str__(self):
-        return '%s' % (self.subject_code,)
-
-
-class Specialization(AbstractModel):
-    code = models.IntegerField(primary_key=True)
-    program = models.ForeignKey(Program)
-    primary_subject = models.ForeignKey(Subject, blank=True, null=True, related_name="specializations_pri")
-    secondary_type = models.CharField(max_length=5, blank=True, null=True)
-    secondary_subject = models.ForeignKey(Subject, blank=True, null=True, related_name="specializations_sec")
-    description = models.CharField(max_length=150, blank=True, null=True)
-
-    def __str__(self):
-        return '%s' % (self.description,)
-
-
-class RegistrationStatus(AbstractModel):
-    status_code = models.CharField(primary_key=True, max_length=5)
-    description = models.CharField(max_length=150, blank=True, null=True)
-
-    def __str__(self):
-        return '%s' % (self.status_code,)
-
-
-class SessionalStanding(AbstractModel):
-    standing_code = models.CharField(primary_key=True, max_length=5)
-    description = models.CharField(max_length=150, blank=True, null=True)
-
-    def __str__(self):
-        return '%s' % (self.standing_code,)
 
 
 class Enroll(AbstractModel):
@@ -129,16 +86,72 @@ class SpecEnrolled(models.Model):
         return '%s %s' % (self.specialization, self.enroll,)
 
 
-# class Graduation(AbstractModel):
-#     student_number = models.ForeignKey('Student')
-#     #first session applied
-#     #first session admitted
-#     #first session registered
-#     grad_application_status = models.CharField(max_length=10)
-#     status_reason = models.CharField(max_length=50, blank=True, null=True)
-#     transfer_credits = models.CharField(max_length=40, blank=True, null=True)
-#     program, specialization
+class Graduation(AbstractModel):
+    student_number = models.ForeignKey('Student')
+    grad_application_status = models.CharField(max_length=10, blank=True, null=True)
+    status_reason = models.CharField(max_length=50, blank=True, null=True)
+    transfer_credits = models.CharField(max_length=40, blank=True, null=True)
+    ceremony_date = models.DateField(blank=True, null=True)
+    conferral_period = models.DateField(blank=True, null=True)
+    attending = models.BooleanField(default=False)
+    doctoral_citation = models.CharField(max_length=20, blank=True, null=True)
+    dual_degree = models.BooleanField(default=False)
+    program = models.ForeignKey(Program, blank=True, null=True)
+    program_version = models.CharField(max_length=20, blank=True, null=True)
+    specializations = models.ManyToManyField(Specialization, through='SpecGrad', blank=True, null=True)
 
+    @property
+    def specialization_1(self):
+        e_s = apps.get_model(app_label='students', model_name='SpecGrad')\
+            .objects.filter(graduation=self, order=1)
+        if len(e_s) > 0:
+            return e_s[0].specialization
+        else:
+            return None
+
+    @property
+    def specialization_2(self):
+        e_s = apps.get_model(app_label='students', model_name='SpecGrad')\
+            .objects.filter(graduation=self, order=2)
+        if len(e_s) > 0:
+            return e_s[0].specialization
+        else:
+            return None
+
+
+class SpecGrad(models.Model):
+    specialization = models.ForeignKey(Specialization)
+    graduation = models.ForeignKey(Graduation)
+    order = models.IntegerField(default=1)
+
+    class Meta:
+        unique_together = (('graduation', 'order'))
+
+    def __str__(self):
+        return '%s %s' % (self.specialization, self.graduation,)
+
+
+class Application(AbstractModel):
+    student_number = models.ForeignKey('Student')
+    session = models.ForeignKey(Session)
+    program = models.ForeignKey(Program, blank=True, null=True)
+    year_level = models.IntegerField(blank=True, null=True)
+    re_admission = models.ForeignKey(AppReAdmission, blank=True, null=True)
+    status = models.ForeignKey(AppStatus, blank=True, null=True)
+    reason = models.ForeignKey(AppReason, blank=True, null=True)
+    applicant_decision = models.ForeignKey(AppDecision, blank=True, null=True)
+    action_code = models.ForeignKey(AppActionCode, blank=True, null=True)
+    multiple_action = models.ForeignKey(AppMultipleAction, blank=True, null=True)
+
+
+class Award(AbstractModel):
+    student_number = models.ForeignKey('Student')
+    session = models.ForeignKey(Session)
+    award_title = models.CharField(max_length=150)
+    award_number = models.IntegerField(blank=True, null=True)
+    award_amount = models.IntegerField(blank=True, null=True)
+    award_type = models.ForeignKey(AwardType, blank=True, null=True)
+    status = models.ForeignKey(AwardStatus, blank=True, null=True)
 
 
 
@@ -175,6 +188,9 @@ class Student(AbstractModel):
     birthdate = models.DateField(null=True, blank=True)
     sub_type = models.CharField(max_length=4, blank=True, null=True, choices=SUB_TYPE_CHOICES)
     province = models.CharField(max_length=2, blank=True, null=True, choices=PROVINCE_CHOICES)
+    first_session_applied = models.ForeignKey(Session, blank=True, null=True, related_name='s_applied')
+    first_session_admitted = models.ForeignKey(Session, blank=True, null=True, related_name='s_admitted')
+    first_session_registered = models.ForeignKey(Session, blank=True, null=True, related_name='s_reg')
 
 
     def __str__(self):

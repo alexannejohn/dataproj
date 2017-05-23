@@ -2,8 +2,9 @@ from rest_framework.decorators import api_view
 from django.shortcuts import render
 from rest_framework.response import Response
 import json
-from .models import Session, Program, Enroll, Student, RegistrationStatus, SessionalStanding
-from .models import Subject, Specialization
+from .models import Session, Enroll, Student
+from studyareas.models import Subject, Specialization, Program
+from codetables.models import RegistrationStatus, SessionalStanding
 from django.db.models import F
 from django.db.models import Q
 from .serializers import StudentSerializer
@@ -66,7 +67,7 @@ def get_filter_options(request):
     subjects = Subject.objects.all().order_by('subject_code').annotate(val=F('subject_code'), hover=F('name')).values("val", "hover")
     enroll_subjects = {"field": "enroll_subject", "title": "Specialization Subjects", "options": subjects}
 
-    specializations = Specialization.objects.all().order_by('description').annotate(text=F('description'), val=F('code')).values('val', 'text')
+    specializations = Specialization.objects.all().order_by('description').annotate(text=F('description'), val=F('code'), hover=F('code')).values('val', 'text', 'hover')
     enroll_specializations = {"field": "enroll_specialization", "title": "Specializations", "options": specializations}
 
 
@@ -110,7 +111,7 @@ def filter_specialization(request):
     if f_subj[0] != '':
         specializations = specializations.filter(Q(primary_subject__in=f_subj) | Q(secondary_subject__in=f_subj))
 
-    specializations = specializations.annotate(text=F('description'), val=F('code')).values('val', 'text')
+    specializations = specializations.annotate(text=F('description'), val=F('code'), hover=F('code')).values('val', 'text', 'hover')
     return Response(specializations)
 
 

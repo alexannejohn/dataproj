@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'students',
+    'codetables',
+    'studyareas',
     'rest_framework',
     'import_export',
     'extended_filters',
