@@ -29,6 +29,9 @@
     self.filters = {};
     self.filters.student_options = {"header": "Filter by Student Details"};
     self.filters.enroll_options = {"header": "Filter by Enrollment"};
+    self.filters.application_options = {"header": "Filter by Applications"};
+    self.filters.graduation_options = {"header": "Filter by Graduation"};
+    self.filters.award_options = {"header": "Filter by Awards"}
 
     
     // self.on('updated', function() {
@@ -44,6 +47,9 @@
     $.get(url, function (data) {
         self.filters.enroll_options.list = data.enroll_options;
         self.filters.student_options.list = data.student_options;
+        self.filters.application_options.list = data.application_options;
+        self.filters.graduation_options.list = data.graduation_options;
+        self.filters.award_options.list = data.award_options;
         self.update()
     });
 

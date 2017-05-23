@@ -5,6 +5,7 @@ from django.apps import apps
 from codetables.models import RegistrationStatus, SessionalStanding
 from codetables.models import AwardType, AwardStatus, AppStatus, AppReason, AppDecision, AppReAdmission, AppActionCode, AppMultipleAction
 from studyareas.models import Subject, Program, Specialization
+from codetables.models import GradAppStatus, GradAppReason
 
 
 # Create your models here.
@@ -88,8 +89,9 @@ class SpecEnrolled(models.Model):
 
 class Graduation(AbstractModel):
     student_number = models.ForeignKey('Student')
-    grad_application_status = models.CharField(max_length=10, blank=True, null=True)
-    status_reason = models.CharField(max_length=50, blank=True, null=True)
+    session = models.ForeignKey(Session)
+    grad_application_status = models.ForeignKey(GradAppStatus, blank=True, null=True)
+    status_reason = models.ForeignKey(GradAppReason, blank=True, null=True)
     transfer_credits = models.CharField(max_length=40, blank=True, null=True)
     ceremony_date = models.DateField(blank=True, null=True)
     conferral_period = models.DateField(blank=True, null=True)
@@ -118,6 +120,12 @@ class Graduation(AbstractModel):
         else:
             return None
 
+    class Meta:
+        unique_together = (('student_number', 'session'))
+
+    def __str__(self):
+        return '%s %s' % (self.program, self.session,)
+
 
 class SpecGrad(models.Model):
     specialization = models.ForeignKey(Specialization)
@@ -143,6 +151,12 @@ class Application(AbstractModel):
     action_code = models.ForeignKey(AppActionCode, blank=True, null=True)
     multiple_action = models.ForeignKey(AppMultipleAction, blank=True, null=True)
 
+    class Meta:
+        unique_together = (('student_number', 'session'))
+
+    def __str__(self):
+        return '%s %s' % (self.program, self.session,)
+
 
 class Award(AbstractModel):
     student_number = models.ForeignKey('Student')
@@ -152,6 +166,12 @@ class Award(AbstractModel):
     award_amount = models.IntegerField(blank=True, null=True)
     award_type = models.ForeignKey(AwardType, blank=True, null=True)
     status = models.ForeignKey(AwardStatus, blank=True, null=True)
+
+    class Meta:
+        unique_together = (('student_number', 'session'))
+
+    def __str__(self):
+        return '%s %s' % (self.award_title, self.session,)
 
 
 

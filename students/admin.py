@@ -1,6 +1,7 @@
 from django.contrib import admin
-from .models import Student, Enroll, Session, Program, Specialization, SpecEnrolled, RegistrationStatus, SessionalStanding
-from .models import Subject
+from .models import Student, Enroll, Session, SpecEnrolled, Graduation, SpecGrad, Application, Award
+from studyareas.models import Subject, Program, Specialization
+from codetables.models import RegistrationStatus, SessionalStanding
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from django.core import urlresolvers
@@ -108,6 +109,85 @@ class EnrollAdmin(ExtendedAdmin):
 
 
 admin.site.register(Enroll, EnrollAdmin)
+
+
+class GraduationResource(ExtendedResource):
+
+    code_1 = None
+    code_2 = None
+
+    def before_import_row(self, row, **kwargs):
+        self.code_1 = row['code_1']
+        self.code_2 = row['code_2']
+
+    def after_save_instance(self, instance, using_transactions, dry_run, *args, **kwargs):
+        SpecGrad.objects.filter(graduation=instance).delete()
+        if self.code_1 != None and len(self.code_1) > 0:
+            specialization = Specialization.objects.get(code=self.code_1)
+            enrollgrad = SpecGrad.objects.create(graduation=instance, specialization=specialization, order=1)
+            enrollgrad.save()
+        if self.code_2 != None and len(self.code_2) > 0:
+            specialization = Specialization.objects.get(code=self.code_2)
+            enrollgrad = SpecGrad.objects.create(graduation=instance, specialization=specialization, order=2)
+            enrollgrad.save()
+
+        return super(GraduationResource, self).after_save_instance(instance, using_transactions, dry_run, *args, **kwargs)
+
+    class Meta:
+        model = Graduation
+        import_id_fields = ['student_number', 'session']
+
+class SpecGradForm(ModelForm):
+
+    def __init__(self, *args, parent_object, **kwargs): 
+        self.parent_object = parent_object     
+        super(SpecGradForm, self).__init__(*args, **kwargs)
+        self.fields['specialization'].queryset = Specialization.objects.filter(program=self.parent_object.program)
+
+
+class SpecGradInline(admin.TabularInline):
+    model = SpecGrad
+    formset = MyFormSet
+    form = SpecGradForm
+    extra = 1 # how many rows to show
+
+
+class GraduationAdmin(ExtendedAdmin):
+    resource_class = GraduationResource
+    list_filter = (('session', CheckBoxListFilter), ('program', CheckBoxListFilter))
+    inlines = (SpecGradInline,)
+    list_display = ('student_number', 'session', 'program', 'grad_application_status')
+
+
+admin.site.register(Graduation, GraduationAdmin)
+
+
+class ApplicationResource(ExtendedResource):
+
+    class Meta:
+        model = Application
+        import_id_fields = ['student_number', 'session']
+
+
+class ApplicationAdmin(ExtendedAdmin):
+    resource_class = ApplicationResource
+
+
+admin.site.register(Application, ApplicationAdmin)
+
+
+class AwardResource(ExtendedResource):
+
+    class Meta:
+        model = Award
+        import_id_fields = ['student_number', 'session']
+
+
+class AwardAdmin(ExtendedAdmin):
+    resource_class = AwardResource
+
+
+admin.site.register(Award, AwardAdmin)
 
 
 class SessionResource(ExtendedResource):

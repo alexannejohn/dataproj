@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import RegistrationStatus, SessionalStanding
 from .models import AwardType, AwardStatus, AppStatus, AppReason, AppDecision, AppReAdmission, AppActionCode, AppMultipleAction
+from .models import GradAppStatus, GradAppReason
 from students.admin import ExtendedAdmin, ExtendedResource
 
 
@@ -123,6 +124,30 @@ class AppMultipleActionAdmin(ExtendedAdmin):
     list_display = ('code', 'description')
 
 admin.site.register(AppMultipleAction, AppMultipleActionAdmin)
+
+
+class GradAppStatusResource(ExtendedResource):
+    class Meta:
+        model = GradAppStatus
+        import_id_fields = ['code',]
+
+class GradAppStatusAdmin(ExtendedAdmin):
+    resource_class = GradAppStatusResource
+    list_display = ('code', 'description')
+
+admin.site.register(GradAppStatus, GradAppStatusAdmin)
+
+
+class GradAppReasonResource(ExtendedResource):
+    class Meta:
+        model = GradAppReason
+        import_id_fields = ['code',]
+
+class GradAppReasonAdmin(ExtendedAdmin):
+    resource_class = GradAppReasonResource
+    list_display = ('code', 'description')
+
+admin.site.register(GradAppReason, GradAppReasonAdmin)
 
 
 

@@ -62,3 +62,11 @@ class AwardType(Code):
 
 class AwardStatus(Code):
     pass
+
+
+# Graduation
+class GradAppStatus(Code):
+    pass
+
+class GradAppReason(Code):
+    pass
