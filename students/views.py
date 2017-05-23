@@ -82,7 +82,20 @@ def get_filter_options(request):
     enroll_options.append(enroll_specializations)
 
 
-    return Response({"enroll_options": enroll_options, "student_options": student_options})
+    application_options = []
+    graduation_options = []
+    award_options = []
+
+
+
+
+    return Response(
+        {"enroll_options": enroll_options, 
+        "student_options": student_options, 
+        "application_options": application_options,
+        "graduation_options": graduation_options,
+        "award_options": award_options}
+        )
 
 @api_view(['GET'])
 def filter_enroll_program_type(request):
