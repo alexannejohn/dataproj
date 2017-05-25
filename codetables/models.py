@@ -16,6 +16,7 @@ class AbstractModel(models.Model):
 class RegistrationStatus(AbstractModel):
     status_code = models.CharField(primary_key=True, max_length=5)
     description = models.CharField(max_length=150, blank=True, null=True)
+    hidden = models.BooleanField(default=False)
 
     def __str__(self):
         return '%s' % (self.status_code,)
@@ -24,6 +25,7 @@ class RegistrationStatus(AbstractModel):
 class SessionalStanding(AbstractModel):
     standing_code = models.CharField(primary_key=True, max_length=5)
     description = models.CharField(max_length=150, blank=True, null=True)
+    hidden = models.BooleanField(default=False)
 
     def __str__(self):
         return '%s' % (self.standing_code,)
@@ -32,6 +34,7 @@ class SessionalStanding(AbstractModel):
 class Code(AbstractModel):
     code = models.CharField(primary_key=True, max_length=5)
     description = models.CharField(max_length=150, null=True, blank=True)
+    hidden = models.BooleanField(default=False)
 
     class Meta:
        abstract = True

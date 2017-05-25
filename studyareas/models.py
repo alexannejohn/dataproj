@@ -18,6 +18,7 @@ class Program(AbstractModel):
     name = models.CharField(max_length=100, blank=True, null=True)
     program_type = models.CharField(max_length=20, blank=True, null=True)
     level = models.CharField(max_length=20, blank=True, null=True)
+    hidden = models.BooleanField(default=False)
 
     def __str__(self):
         return '%s' % (self.program,)
@@ -26,6 +27,7 @@ class Program(AbstractModel):
 class Subject(AbstractModel):
     subject_code = models.CharField(primary_key=True, max_length=5)
     name = models.CharField(max_length=100, blank=True, null=True)
+    hidden = models.BooleanField(default=False)
 
     def __str__(self):
         return '%s' % (self.subject_code,)
@@ -39,6 +41,7 @@ class Specialization(AbstractModel):
     secondary_type = models.CharField(max_length=5, blank=True, null=True)
     secondary_subject = models.ForeignKey(Subject, blank=True, null=True, related_name="specializations_sec")
     description = models.CharField(max_length=150, blank=True, null=True)
+    hidden = models.BooleanField(default=False)
 
     def __str__(self):
         return '%s' % (self.description,)

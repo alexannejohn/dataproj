@@ -47,11 +47,11 @@ def get_filter_options(request):
     enroll_year_levels = {"field": "enroll_year_level", "title": "Year Level", "options": year_levels}
 
     ee = Enroll.objects.all().values('regi_status').distinct()
-    regi_statii = RegistrationStatus.objects.filter(status_code__in=ee).annotate(val=F("status_code"), hover=F('description')).values("val", "hover")
+    regi_statii = RegistrationStatus.objects.filter(status_code__in=ee).filter(hidden=False).annotate(val=F("status_code"), hover=F('description')).values("val", "hover")
     enroll_regi_statii = {"field": "enroll_regi_status", "title": "Registration Status", "options": regi_statii}
 
     es = Enroll.objects.all().values('sessional_standing').distinct()
-    sessional_standings = SessionalStanding.objects.filter(standing_code__in=es).annotate(val=F("standing_code"), hover=F('description')).values("val", "hover")
+    sessional_standings = SessionalStanding.objects.filter(standing_code__in=es).filter(hidden=False).annotate(val=F("standing_code"), hover=F('description')).values("val", "hover")
     enroll_sessional_standings = {"field": "enroll_sessional_standing", "title": "Sessional Standing", "options": sessional_standings}
 
     program_types = Program.objects.all().order_by("program_type").annotate(val=F('program_type')).values("val").distinct()
@@ -60,14 +60,14 @@ def get_filter_options(request):
     program_levels = Program.objects.all().order_by("level").annotate(val=F('level')).values("val").distinct()
     enroll_program_levels = {"field": "enroll_program_level", "title": "Program Level", "options": program_levels}
 
-    programs = Program.objects.all().order_by("program").annotate(val=F('program'), hover=F('name')).values("val", "hover")
+    programs = Program.objects.all().order_by("program").filter(hidden=False).annotate(val=F('program'), hover=F('name')).values("val", "hover")
     #programs = Enroll.objects.all().annotate(val=F('program')).values("val").distinct()
     enroll_programs = {"field": "enroll_program", "title": "Program Enrolled", "options": programs}
 
-    subjects = Subject.objects.all().order_by('subject_code').annotate(val=F('subject_code'), hover=F('name')).values("val", "hover")
+    subjects = Subject.objects.all().order_by('subject_code').filter(hidden=False).annotate(val=F('subject_code'), hover=F('name')).values("val", "hover")
     enroll_subjects = {"field": "enroll_subject", "title": "Specialization Subjects", "options": subjects}
 
-    specializations = Specialization.objects.all().order_by('description').annotate(text=F('description'), val=F('code'), hover=F('code')).values('val', 'text', 'hover')
+    specializations = Specialization.objects.all().order_by('description').filter(hidden=False).annotate(text=F('description'), val=F('code'), hover=F('code')).values('val', 'text', 'hover')
     enroll_specializations = {"field": "enroll_specialization", "title": "Specializations", "options": specializations}
 
 
