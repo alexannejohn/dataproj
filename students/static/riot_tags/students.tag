@@ -3,26 +3,46 @@
   
   <div class="result-panel" if={ count > 0 }>
     <table class="student-table">
-      <tr>
-        <th></th>
-        <th>Name</th>
-        <th>Student #</th>
-        <th>Program</th>
-      </tr>
-      <tr each={students}>
-        <td>+</td>
-        <td>{ given_name }</td>
-        <td>{ student_number }</td>
-        <td><span each={enroll in enrollments}>{enroll.session} - {enroll.program}<br></span></td>
-      </tr>
+      <thead>
+        <tr>
+          <th></th>
+          <th>Name</th>
+          <th>Student #</th>
+          <th>Program</th>
+        </tr>
+      <thead>
+      <tbody each={students}>
+        <tr >
+          <td onclick={ expand_hide } >+</td>
+          <td>{ given_name }</td>
+          <td>{ student_number }</td>
+          <td><span each={enroll in enrollments}>{enroll.session} - {enroll.program}<br></span></td>
+        </tr>
+        <tr class="student-details">
+
+        </tr>
+      <tbody>
     </table>
   </div>
 
   <script>
+    expand_hide(e){
+      e.preventUpdate = true
+      if ($(e.target).text() == "+"){
+        $(e.target).text("-");
+      }else{
+        $(e.target).text("+");
+      }
+      $(e.target).parent().siblings(".student-details").toggle()
+    }
 
   </script>
 
   <style>
+    .student-details{
+      display: none;
+      height:40px;
+    }
     .result-panel{
       width: 80%
       margin: 0 auto;
