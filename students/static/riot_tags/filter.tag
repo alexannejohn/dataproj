@@ -20,6 +20,20 @@
     </div>  
   </div>
 
+  <div class="filter-panel">
+    <div class="title-frame">
+      <h1>Search by Student Number</h1>
+      <span class="expand-button" onclick={ expand_hide } >+</span>
+    </div>  
+    <div class="filter-frame">
+        <span> Student number (exact): 
+          <input  data-message="student_number" type="text" name="student_number" onchange={ update_search }>
+        </span>
+    </div>
+  </div>
+
+
+
   <script>
     
 
@@ -58,6 +72,17 @@
             if (myArray[i][property] === searchTerm) return i;
         }
         return -1;
+    }
+
+    update_search(e){
+      e.preventUpdate = true
+      var field = e.target.dataset.message;
+      var val = $(e.target).val()
+      if (val != ""){
+        self.to_filter[field] = val
+      }else{
+        delete self.to_filter[field];
+      }
     }
 
     update_to_filter(e){

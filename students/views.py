@@ -174,6 +174,13 @@ def filter_students(request):
         specializations = Specialization.objects.filter(code__in=filters['enroll_specialization'])
         students = students.filter(enroll__specializations__in=specializations).distinct()
 
+
+    ###
+    #  search by student number
+    ###
+    if 'student_number' in filters:
+        students = students.filter(student_number=filters['student_number'])
+
     ###
     #  return list of students
     ###
