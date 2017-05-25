@@ -23,6 +23,7 @@
         </tr>
       <tbody>
     </table>
+    <a href="/downloadcsv?{ numbers }">download csv</a>
   </div>
 
   <script>
@@ -63,6 +64,7 @@
       margin: 0;
       display: inline-block;
       margin-left: 20px;
+      margin-top: 50px;
     }
     .student-table th{
       text-align: left;

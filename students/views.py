@@ -9,7 +9,8 @@ from django.db.models import F
 from django.db.models import Q
 from .serializers import StudentSerializer
 from django.http import HttpResponse, JsonResponse
-
+import csv
+from urllib.parse import urlparse, parse_qs
 # Create your views here.
 
 
@@ -187,7 +188,37 @@ def filter_students(request):
     # response = {"count": students.count(), "students": students.values('given_name', 'student_number')}
 
     serializer = StudentSerializer(students, many=True)
-    return JsonResponse({"count": students.count(), "students": serializer.data }, safe=False)
+    numbers = ''.join(["student_number=" + str(x['student_number']) + "&" for x in serializer.data])
+    return JsonResponse({"count": students.count(), "students": serializer.data, "numbers": numbers }, safe=False)
 
 
     # return Response(response)
+
+
+def csv_view(request):
+    params = parse_qs(request.META['QUERY_STRING'])
+    print(params['student_number'])
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['student_number', 'name', 'session', 'program_enrolled'])
+    for student_number in params['student_number']:
+        student = Student.objects.get(student_number=student_number)
+        sessions = Enroll.objects.filter(student_number=student_number).values('session').distinct()
+        for index, session in enumerate(sessions):
+            programs = Enroll.objects.filter(student_number=student_number, session=session['session']).values('program')
+            if len(programs) > 0:
+                program = programs[0]
+            else:
+                program = ""
+            if index == 0:
+                row = [student_number, student.given_name, session['session'], program['program']]
+            else:
+                row = ["", "", session['session'], program['program']]
+            writer.writerow(row) 
+
+
+    return response
+    # return JsonResponse({"test": "test"})

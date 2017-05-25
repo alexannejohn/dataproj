@@ -23,10 +23,7 @@
             <filtering></filtering>
             <script type="riot/tag" src={% static "riot_tags/filter.tag" %}></script>
 
-            <button onclick="filter_students()">Filter</button>
-            <br>
-            <br>
-            <br>
+            <button class="ver-top" onclick="filter_students()">Filter</button>
             <students></students>
             <script type="riot/tag" src={% static "riot_tags/students.tag" %}></script>
         {% else %}
@@ -64,6 +61,7 @@
             console.log(data)
             student_list.students = data.students
             student_list.count = data.count
+            student_list.numbers = data.numbers
             student_list.update();
         }).fail(function (jqXHR) {
             console.log(jqXHR);
@@ -76,6 +74,9 @@
 <style>
     body{
         background-color: #E0E0E0;
+    }
+    .ver-top{
+        vertical-align: top;
     }
     .header-cont {
         width:100%;
