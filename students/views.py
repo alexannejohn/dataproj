@@ -2,7 +2,7 @@ from rest_framework.decorators import api_view
 from django.shortcuts import render
 from rest_framework.response import Response
 import json
-from .models import Session, Enroll, Student
+from .models import Session, Enroll, Student, Application, Graduation, Award
 from studyareas.models import Subject, Specialization, Program
 from codetables.models import RegistrationStatus, SessionalStanding
 from django.db.models import F
@@ -203,21 +203,44 @@ def csv_view(request):
     response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
 
     writer = csv.writer(response)
-    writer.writerow(['student_number', 'name', 'session', 'program_enrolled'])
+    writer.writerow(['student_number', 'name', 'session', 'program_enrolled', 'application_program', 'awards', 'award_total'])
     for student_number in params['student_number']:
         student = Student.objects.get(student_number=student_number)
-        sessions = Enroll.objects.filter(student_number=student_number).values('session').distinct()
-        # list(set().union(a,b,c))
+        sessions_e = Enroll.objects.filter(student_number=student_number).values('session').distinct()
+        sessions_e = [x['session'] for x in sessions_e]
+        sessions_a = Application.objects.filter(student_number=student_number).values('session').distinct()
+        sessions_a = [x['session'] for x in sessions_a]
+        sessions_aw = Award.objects.filter(student_number=student_number).values('session').distinct()
+        sessions_aw = [x['session'] for x in sessions_aw]
+        sessions = list(set().union(sessions_a, sessions_e, sessions_aw))
+        if len(sessions) > 0:
+            sessions.sort()
         for index, session in enumerate(sessions):
-            programs = Enroll.objects.filter(student_number=student_number, session=session['session']).values('program')
+            programs = Enroll.objects.filter(student_number=student_number, session=session).values('program')
             if len(programs) > 0:
                 program = programs[0]
             else:
-                program = ""
-            if index == 0:
-                row = [student_number, student.given_name, session['session'], program['program']]
+                program = {'program': ""}
+
+            applications = Application.objects.filter(student_number=student_number, session=session).values('program')
+            if len(applications) > 0:
+                app = applications[0]
             else:
-                row = ["", "", session['session'], program['program']]
+                app = {"program": ""}
+
+            awards = Award.objects.filter(student_number=student_number, session=session).values('award_title', 'award_amount')
+            if len(awards) > 0:
+                titles = (',').join([x['award_title'] for x in awards])
+                total = sum(x['award_amount'] for x in awards)
+                aw = {"titles": titles, "total": total}
+            else:
+                aw = {"titles": "", "total": 0}
+
+
+            if index == 0:
+                row = [student_number, student.given_name, session, program['program'], app['program'], aw['titles'], aw['total']]
+            else:
+                row = ["", "", session, program['program'], app['program'], aw['titles'], aw['total']]
             writer.writerow(row) 
 
 
