@@ -18,7 +18,7 @@ class ProgramResource(ExtendedResource):
 
 class ProgramAdmin(ExtendedAdmin):
     resource_class = ProgramResource
-    list_display = ('program', 'name',)
+    list_display = ('program', 'name', 'program_type', 'level')
 
 
 admin.site.register(Program, ProgramAdmin)

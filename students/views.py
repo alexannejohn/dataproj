@@ -207,6 +207,7 @@ def csv_view(request):
     for student_number in params['student_number']:
         student = Student.objects.get(student_number=student_number)
         sessions = Enroll.objects.filter(student_number=student_number).values('session').distinct()
+        # list(set().union(a,b,c))
         for index, session in enumerate(sessions):
             programs = Enroll.objects.filter(student_number=student_number, session=session['session']).values('program')
             if len(programs) > 0:

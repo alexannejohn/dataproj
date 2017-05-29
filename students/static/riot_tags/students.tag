@@ -8,7 +8,10 @@
           <th></th>
           <th>Name</th>
           <th>Student #</th>
-          <th>Program</th>
+          <th>Program/Specialization</th>
+          <th>Applications</th>
+          <th>Graduation</th>
+          <th>Awards</th>
         </tr>
       <thead>
       <tbody each={students}>
@@ -16,7 +19,36 @@
           <td onclick={ expand_hide } >+</td>
           <td>{ given_name }</td>
           <td>{ student_number }</td>
-          <td><span each={enroll in enrollments}>{enroll.session} - {enroll.program}<br></span></td>
+          <td>
+            <span each={enroll in enrollments}>
+              {enroll.session} - 
+              <span if={!enroll.specialization_1}> {enroll.program}</span>
+              <span>{enroll.specialization_1}</span>
+              <span if={enroll.specialization_2}>, {enroll.specialization_2}</span>
+              <br>
+            </span>
+          </td>
+          <td>
+            <span each={app in applications}>
+              {app.session} - 
+              {app.program}
+              <br>
+            </span>
+          </td>
+          <td>
+            <span each={grad in graduations}>
+              {grad.ceremony_date} - 
+              {grad.program}
+              <br>
+            </span>
+          </td>
+          <td>
+            <span each={aw in awards}>
+              {aw.session} - 
+              {aw.award_title}
+              <br>
+            </span>
+          </td>
         </tr>
         <tr class="student-details">
 
@@ -43,6 +75,7 @@
     .student-details{
       display: none;
       height:40px;
+      border-bottom: solid #D9D9D9 1px;
     }
     .result-panel{
       width: 80%
@@ -69,22 +102,23 @@
     .student-table th{
       text-align: left;
       color: #09839E;
-      font-size: 13px;
+      font-size: 12px;
       font-family: sans-serif;
       min-width: 10px;
     }
     .student-table td{
       text-align: left;
       padding-left: 5px;
-      padding-right: 25px;
+      padding-right: 10px;
       margin-bottom: 10px;
       color: #5B5C5C;
-      font-size: 13px;
+      font-size: 14px;
       font-family: sans-serif;
       /*border-bottom: solid #D9D9D9 1px;*/
     }
     .student-table tr{
       border-bottom: solid #D9D9D9 1px;
+      border-top: solid #D9D9D9 2px;
     }
     table{
       border-collapse: collapse;

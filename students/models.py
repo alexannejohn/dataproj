@@ -57,7 +57,7 @@ class Enroll(AbstractModel):
         e_s = apps.get_model(app_label='students', model_name='SpecEnrolled')\
             .objects.filter(enroll=self, order=1)
         if len(e_s) > 0:
-            return e_s[0].specialization
+            return str(e_s[0].specialization)
         else:
             return None
 
@@ -66,7 +66,7 @@ class Enroll(AbstractModel):
         e_s = apps.get_model(app_label='students', model_name='SpecEnrolled')\
             .objects.filter(enroll=self, order=2)
         if len(e_s) > 0:
-            return e_s[0].specialization
+            return str(e_s[0].specialization)
         else:
             return None
 
@@ -218,8 +218,23 @@ class Student(AbstractModel):
 
     @property
     def enrollments(self):
-        enrol = Enroll.objects.filter(student_number=self.student_number).order_by('session__year')
-        return enrol
+        enroll = Enroll.objects.filter(student_number=self.student_number).order_by('session__year')
+        return enroll
+
+    @property
+    def applications(self):
+        app = Application.objects.filter(student_number=self.student_number).order_by('session__year')
+        return app
+
+    @property
+    def graduations(self):
+        grad = Graduation.objects.filter(student_number=self.student_number).order_by('ceremony_date')
+        return grad
+
+    @property
+    def awards(self):
+        award = Award.objects.filter(student_number=self.student_number).order_by('session__year')
+        return award
 
 
 
