@@ -37,6 +37,7 @@ class StudentResource(ExtendedResource):
 class StudentAdmin(ExtendedAdmin):
     resource_class = StudentResource
     list_display = ('student_number', 'given_name', 'enrolled')
+    search_fields = ['student_number__student_number',]
 
     def make_link(self, enroll):
         if enroll:
@@ -106,6 +107,7 @@ class EnrollAdmin(ExtendedAdmin):
     list_filter = (('session', CheckBoxListFilter), ('program', CheckBoxListFilter))
     inlines = (SpecEnrolledInline,)
     list_display = ('student_number', 'session', 'program', 'specialization_1', 'specialization_2')
+    search_fields = ['student_number__student_number',]
 
 
 admin.site.register(Enroll, EnrollAdmin)
@@ -157,6 +159,7 @@ class GraduationAdmin(ExtendedAdmin):
     list_filter = (('session', CheckBoxListFilter), ('program', CheckBoxListFilter))
     inlines = (SpecGradInline,)
     list_display = ('student_number', 'session', 'program', 'grad_application_status')
+    search_fields = ['student_number__student_number',]
 
 
 admin.site.register(Graduation, GraduationAdmin)
@@ -171,6 +174,7 @@ class ApplicationResource(ExtendedResource):
 
 class ApplicationAdmin(ExtendedAdmin):
     resource_class = ApplicationResource
+    search_fields = ['student_number__student_number',]
 
 
 admin.site.register(Application, ApplicationAdmin)
@@ -185,6 +189,7 @@ class AwardResource(ExtendedResource):
 
 class AwardAdmin(ExtendedAdmin):
     resource_class = AwardResource
+    search_fields = ['student_number__student_number',]
 
 
 admin.site.register(Award, AwardAdmin)

@@ -8,8 +8,7 @@ from studyareas.models import Subject, Program, Specialization
 from codetables.models import GradAppStatus, GradAppReason
 
 
-# Create your models here.
-
+# automatic timestamps for all models
 class AbstractModel(models.Model):
     created_by = models.ForeignKey(User, blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
@@ -19,6 +18,7 @@ class AbstractModel(models.Model):
        abstract = True
 
 
+# year and winter/summer
 class Session(AbstractModel):
     session = models.CharField(primary_key=True, max_length=5)
     year = models.IntegerField(validators=[MinValueValidator(1111), MaxValueValidator(3000)])
@@ -34,7 +34,7 @@ class Session(AbstractModel):
     def __str__(self):
         return '%s' % (self.session)
 
-
+# describes enrollment details for a student in a particular session
 class Enroll(AbstractModel):
     student_number = models.ForeignKey('Student')
     session = models.ForeignKey(Session)
@@ -75,6 +75,7 @@ class Enroll(AbstractModel):
         return self.regi_status.description
 
 
+# Many-to-many table between Specialization and Enroll - can be enrolled in multiple specializations at once
 class SpecEnrolled(models.Model):
     specialization = models.ForeignKey(Specialization)
     enroll = models.ForeignKey(Enroll)
@@ -86,7 +87,7 @@ class SpecEnrolled(models.Model):
     def __str__(self):
         return '%s %s' % (self.specialization, self.enroll,)
 
-
+# graduation details for a student
 class Graduation(AbstractModel):
     student_number = models.ForeignKey('Student')
     session = models.ForeignKey(Session)
@@ -127,6 +128,7 @@ class Graduation(AbstractModel):
         return '%s %s' % (self.program, self.session,)
 
 
+# many-to-many field between Specialization and Graduation
 class SpecGrad(models.Model):
     specialization = models.ForeignKey(Specialization)
     graduation = models.ForeignKey(Graduation)
@@ -139,6 +141,7 @@ class SpecGrad(models.Model):
         return '%s %s' % (self.specialization, self.graduation,)
 
 
+# Application details for a student 
 class Application(AbstractModel):
     student_number = models.ForeignKey('Student')
     session = models.ForeignKey(Session)
@@ -157,7 +160,7 @@ class Application(AbstractModel):
     def __str__(self):
         return '%s %s' % (self.program, self.session,)
 
-
+# a student's awards
 class Award(AbstractModel):
     student_number = models.ForeignKey('Student')
     session = models.ForeignKey(Session)
@@ -174,7 +177,7 @@ class Award(AbstractModel):
         return '%s %s' % (self.award_title, self.session,)
 
 
-
+# biographical, contact, and other details
 class Student(AbstractModel):
     SUB_TYPE_CHOICES = (
         ('NATI', 'First Nations'),

@@ -19,7 +19,9 @@ def index(request):
     return render(request, 'students/index.html', context)  
 
 
-
+#
+# This api view loads all the possible options for filtering students, ie each set of checkbox values
+#
 @api_view(['GET'])
 def get_filter_options(request):
 
@@ -98,6 +100,10 @@ def get_filter_options(request):
         "award_options": award_options}
         )
 
+
+#
+# Filters programs bases on program types and levels selected
+#
 @api_view(['GET'])
 def filter_enroll_program_type(request):
     programs = Program.objects.all()
@@ -114,6 +120,9 @@ def filter_enroll_program_type(request):
     return Response(programs)
 
 
+#
+# Filters specializations based on programs and subjects selected
+#
 @api_view(['GET'])
 def filter_specialization(request):
     specializations = Specialization.objects.all()
@@ -129,7 +138,9 @@ def filter_specialization(request):
     return Response(specializations)
 
 
-
+#
+# Takes json with all filter parameters as payload, returns list of students
+#
 @api_view(['POST'])
 def filter_students(request):
     filters = json.loads(request.data['filters'])
@@ -195,6 +206,9 @@ def filter_students(request):
     # return Response(response)
 
 
+#
+# Query url contains each student_number to be included in CSV. builds and returns CSV file
+#
 def csv_view(request):
     params = parse_qs(request.META['QUERY_STRING'])
     print(params['student_number'])
