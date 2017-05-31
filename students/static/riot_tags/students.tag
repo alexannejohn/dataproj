@@ -20,27 +20,27 @@
           <td>{ given_name }</td>
           <td>{ student_number }</td>
           <td>
-            <span each={enroll in enrollments}>
-              {enroll.session} - 
-              <span if={!enroll.specialization_1}> {enroll.program}</span>
-              <span>{enroll.specialization_1}</span>
-              <span if={enroll.specialization_2}>, {enroll.specialization_2}</span>
+
+              {recent_enrollment.session} - 
+              <span if={!recent_enrollment.specialization_1}> {recent_enrollment.program}</span>
+              <span>{recent_enrollment.specialization_1}</span>
+              <span if={recent_enrollment.specialization_2}>, {recent_enrollment.specialization_2}</span>
               <br>
-            </span>
+
           </td>
-          <td>
-            <span each={app in applications}>
+          <td>{applied}
+            <!-- <span each={app in applications}>
               {app.session} - 
               {app.program}
               <br>
-            </span>
+            </span> -->
           </td>
-          <td>
-            <span each={grad in graduations}>
+          <td>{grad}
+            <!-- <span each={grad in graduations}>
               {grad.ceremony_date} - 
               {grad.program}
               <br>
-            </span>
+            </span> -->
           </td>
           <td>
             <span each={aw in awards}>

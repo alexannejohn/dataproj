@@ -27,11 +27,12 @@ class AwardSerializer(serializers.ModelSerializer):
 
 # all student data
 class StudentSerializer(serializers.ModelSerializer):
-    enrollments = EnrollSerializer(read_only=True, many=True)
-    applications = ApplicationSerializer(read_only=True, many=True)
-    graduations = GraduationSerializer(read_only=True, many=True)
+    # enrollments = EnrollSerializer(read_only=True, many=True)
+    recent_enrollment = EnrollSerializer(read_only=True)
+    # applications = ApplicationSerializer(read_only=True, many=True)
+    # graduations = GraduationSerializer(read_only=True, many=True)
     awards = AwardSerializer(read_only=True, many=True)
 
     class Meta:
         model = Student
-        fields = ('student_number', 'given_name', 'enrollments', 'applications', 'graduations', 'awards', 'province')
+        fields = ('student_number', 'given_name', 'recent_enrollment', 'applied', 'grad', 'awards', 'province')

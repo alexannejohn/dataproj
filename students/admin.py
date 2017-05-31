@@ -56,6 +56,8 @@ admin.site.register(Student, StudentAdmin)
 
 class EnrollResource(ExtendedResource):
 
+    # saving specializations in many-to-many table
+
     code_1 = None
     code_2 = None
 
@@ -114,6 +116,8 @@ admin.site.register(Enroll, EnrollAdmin)
 
 
 class GraduationResource(ExtendedResource):
+
+    # saving specializations in many-to-many table
 
     code_1 = None
     code_2 = None

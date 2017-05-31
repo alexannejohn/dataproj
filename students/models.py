@@ -239,6 +239,27 @@ class Student(AbstractModel):
         award = Award.objects.filter(student_number=self.student_number).order_by('session__year')
         return award
 
+    @property
+    def recent_enrollment(self):
+        enroll = Enroll.objects.filter(student_number=self.student_number).order_by('-session__year')
+        print (enroll)
+        if len(enroll) > 0:
+            return enroll[0]
+        else:
+            return None
+
+    @property
+    def applied(self):
+        app = Application.objects.filter(student_number=self.student_number).order_by('session__year').values('session')
+        return ','.join([x['session'] for x in app])
+
+    @property
+    def grad(self):
+        grad = Graduation.objects.filter(student_number=self.student_number).order_by('-ceremony_date')
+        if len(grad) > 0:
+            return grad[0].ceremony_date
+        else:
+            return None
 
 
 
