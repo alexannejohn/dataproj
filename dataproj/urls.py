@@ -36,4 +36,5 @@ urlpatterns = [
     url(r'^enrollprogramtype/', views.filter_enroll_program_type, name='enrollprogramtype'),
     url(r'^filterspecialization/', views.filter_specialization, name='filterspecialization'),
     url(r'^downloadcsv/', views.csv_view, name='csv_view'),
+    url(r'^studentdetail/', views.student_detail, name='student_detail'),
 ]

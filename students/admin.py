@@ -47,7 +47,7 @@ class StudentAdmin(ExtendedAdmin):
             return ''
 
     def enrolled(self, obj):
-        return "\n".join([self.make_link(p) for p in obj.enrollments.all()])
+        return "\n".join([self.make_link(p) for p in obj.enrolls.all()])
     enrolled.allow_tags = True
         
     

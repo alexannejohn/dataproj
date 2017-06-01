@@ -9,49 +9,20 @@
           <th>Name</th>
           <th>Student #</th>
           <th>Program/Specialization</th>
-          <th>Applications</th>
-          <th>Graduation</th>
-          <th>Awards</th>
         </tr>
       <thead>
       <tbody each={students}>
         <tr >
-          <td onclick={ expand_hide } >+</td>
+          <td onclick={ student_detail } >+</td>
           <td>{ given_name }</td>
           <td>{ student_number }</td>
-          <td>
-
-              {recent_enrollment.session} - 
-              <span if={!recent_enrollment.specialization_1}> {recent_enrollment.program}</span>
-              <span>{recent_enrollment.specialization_1}</span>
-              <span if={recent_enrollment.specialization_2}>, {recent_enrollment.specialization_2}</span>
-              <br>
-
-          </td>
-          <td>{applied}
-            <!-- <span each={app in applications}>
-              {app.session} - 
-              {app.program}
-              <br>
-            </span> -->
-          </td>
-          <td>{grad}
-            <!-- <span each={grad in graduations}>
-              {grad.ceremony_date} - 
-              {grad.program}
-              <br>
-            </span> -->
-          </td>
-          <td>
-            <span each={aw in awards}>
-              {aw.session} - 
-              {aw.award_title}
-              <br>
-            </span>
-          </td>
+          <td>{ most_recent_enrollment}
         </tr>
-        <tr class="student-details">
-
+        <tr class="student-details"  >
+          
+            <td colspan="4" if={details} >{ details.given_name }</td>
+      
+          
         </tr>
       <tbody>
     </table>
@@ -59,11 +30,33 @@
   </div>
 
   <script>
-    expand_hide(e){
+
+    var self = this;
+
+    var arrayObjectIndexOf = function(myArray, searchTerm, property) {
+        for(var i = 0, len = myArray.length; i < len; i++) {
+            if (myArray[i][property] === searchTerm) return i;
+        }
+        return -1;
+    }
+
+    student_detail(e){
+      index = arrayObjectIndexOf(self.students, e.item.student_number, 'student_number')
       e.preventUpdate = true
       if ($(e.target).text() == "+"){
+
+        console.log(e);
+
+        url = '/studentdetail?student_number=' + e.item.student_number;
+        $.get(url, function (data) {
+          self.students[index].details = data.student_details;
+          self.update()
+          console.log(data)
+        });
+
         $(e.target).text("-");
       }else{
+        delete self.students[index].details;
         $(e.target).text("+");
       }
       $(e.target).parent().siblings(".student-details").toggle()

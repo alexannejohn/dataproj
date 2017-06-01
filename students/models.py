@@ -6,6 +6,7 @@ from codetables.models import RegistrationStatus, SessionalStanding
 from codetables.models import AwardType, AwardStatus, AppStatus, AppReason, AppDecision, AppReAdmission, AppActionCode, AppMultipleAction
 from studyareas.models import Subject, Program, Specialization
 from codetables.models import GradAppStatus, GradAppReason
+from django.db.models import signals
 
 
 # automatic timestamps for all models
@@ -36,8 +37,8 @@ class Session(AbstractModel):
 
 # describes enrollment details for a student in a particular session
 class Enroll(AbstractModel):
-    student_number = models.ForeignKey('Student')
-    session = models.ForeignKey(Session)
+    student_number = models.ForeignKey('Student', related_name="enrolls", db_index=True)
+    session = models.ForeignKey(Session, db_index=True)
     program = models.ForeignKey(Program, blank=True, null=True)
     year_level = models.IntegerField(blank=True, null=True)
     regi_status = models.ForeignKey(RegistrationStatus, blank=True, null=True)
@@ -50,7 +51,7 @@ class Enroll(AbstractModel):
         unique_together = (('student_number', 'session'))
 
     def __str__(self):
-        return '%s %s' % (self.session, self.program)
+        return '%s %s' % (self.session, self.specialization_1)
 
     @property
     def specialization_1(self):
@@ -75,6 +76,16 @@ class Enroll(AbstractModel):
         return self.regi_status.description
 
 
+def update_recent_enrollment(sender, instance, **kwargs):
+    student = instance.student_number
+    enroll = student.enrolls.order_by('-session')[0]
+    student.most_recent_enrollment = enroll
+    student.save(force_update=True)
+
+signals.post_save.connect(update_recent_enrollment, sender=Enroll)
+
+
+
 # Many-to-many table between Specialization and Enroll - can be enrolled in multiple specializations at once
 class SpecEnrolled(models.Model):
     specialization = models.ForeignKey(Specialization)
@@ -89,12 +100,12 @@ class SpecEnrolled(models.Model):
 
 # graduation details for a student
 class Graduation(AbstractModel):
-    student_number = models.ForeignKey('Student')
+    student_number = models.ForeignKey('Student', related_name="graduations", db_index=True)
     session = models.ForeignKey(Session)
     grad_application_status = models.ForeignKey(GradAppStatus, blank=True, null=True)
     status_reason = models.ForeignKey(GradAppReason, blank=True, null=True)
     transfer_credits = models.CharField(max_length=40, blank=True, null=True)
-    ceremony_date = models.DateField(blank=True, null=True)
+    ceremony_date = models.DateField(blank=True, null=True, db_index=True)
     conferral_period = models.DateField(blank=True, null=True)
     attending = models.BooleanField(default=False)
     doctoral_citation = models.CharField(max_length=20, blank=True, null=True)
@@ -107,18 +118,18 @@ class Graduation(AbstractModel):
     def specialization_1(self):
         e_s = apps.get_model(app_label='students', model_name='SpecGrad')\
             .objects.filter(graduation=self, order=1)
-        if len(e_s) > 0:
+        try:
             return e_s[0].specialization
-        else:
+        except IndexError:
             return None
 
     @property
     def specialization_2(self):
         e_s = apps.get_model(app_label='students', model_name='SpecGrad')\
             .objects.filter(graduation=self, order=2)
-        if len(e_s) > 0:
+        try:
             return e_s[0].specialization
-        else:
+        except IndexError:
             return None
 
     class Meta:
@@ -143,8 +154,8 @@ class SpecGrad(models.Model):
 
 # Application details for a student 
 class Application(AbstractModel):
-    student_number = models.ForeignKey('Student')
-    session = models.ForeignKey(Session)
+    student_number = models.ForeignKey('Student', related_name="applications", db_index=True)
+    session = models.ForeignKey(Session, db_index=True)
     program = models.ForeignKey(Program, blank=True, null=True)
     year_level = models.IntegerField(blank=True, null=True)
     re_admission = models.ForeignKey(AppReAdmission, blank=True, null=True)
@@ -162,7 +173,7 @@ class Application(AbstractModel):
 
 # a student's awards
 class Award(AbstractModel):
-    student_number = models.ForeignKey('Student')
+    student_number = models.ForeignKey('Student', related_name="awards", db_index=True)
     session = models.ForeignKey(Session)
     award_title = models.CharField(max_length=150)
     award_number = models.IntegerField(blank=True, null=True)
@@ -202,7 +213,7 @@ class Student(AbstractModel):
     )
 
 
-    student_number = models.IntegerField(primary_key=True, validators=[MinValueValidator(11111111), MaxValueValidator(99999999)])
+    student_number = models.IntegerField(primary_key=True, validators=[MinValueValidator(11111111), MaxValueValidator(99999999)], db_index=True)
     given_name = models.CharField(max_length=100)
     surname = models.CharField(max_length=100, null=True, blank=True)
     email_address = models.CharField(max_length=100, null=True, blank=True)
@@ -211,54 +222,26 @@ class Student(AbstractModel):
     birthdate = models.DateField(null=True, blank=True)
     sub_type = models.CharField(max_length=4, blank=True, null=True, choices=SUB_TYPE_CHOICES)
     province = models.CharField(max_length=2, blank=True, null=True, choices=PROVINCE_CHOICES)
+    #signals??
     first_session_applied = models.ForeignKey(Session, blank=True, null=True, related_name='s_applied')
     first_session_admitted = models.ForeignKey(Session, blank=True, null=True, related_name='s_admitted')
     first_session_registered = models.ForeignKey(Session, blank=True, null=True, related_name='s_reg')
+
+    most_recent_enrollment = models.ForeignKey(Enroll, blank=True, null=True)
+    graduation_date = models.DateField(blank=True, null=True)
+    total_award_amount = models.IntegerField(blank=True, null=True)
+    applied = models.CharField(max_length=150, blank=True, null=True)
 
 
     def __str__(self):
         return '%s' % (self.given_name)
 
     @property
-    def enrollments(self):
-        enroll = Enroll.objects.filter(student_number=self.student_number).order_by('session__year')
-        return enroll
-
-    @property
-    def applications(self):
-        app = Application.objects.filter(student_number=self.student_number).order_by('session__year')
-        return app
-
-    @property
-    def graduations(self):
-        grad = Graduation.objects.filter(student_number=self.student_number).order_by('ceremony_date')
-        return grad
-
-    @property
-    def awards(self):
-        award = Award.objects.filter(student_number=self.student_number).order_by('session__year')
-        return award
-
-    @property
     def recent_enrollment(self):
-        enroll = Enroll.objects.filter(student_number=self.student_number).order_by('-session__year')
-        print (enroll)
-        if len(enroll) > 0:
-            return enroll[0]
-        else:
-            return None
-
-    @property
-    def applied(self):
-        app = Application.objects.filter(student_number=self.student_number).order_by('session__year').values('session')
-        return ','.join([x['session'] for x in app])
-
-    @property
-    def grad(self):
-        grad = Graduation.objects.filter(student_number=self.student_number).order_by('-ceremony_date')
-        if len(grad) > 0:
-            return grad[0].ceremony_date
-        else:
+        enroll = self.enrolls.order_by('-session')
+        try:
+            return str(enroll[0])
+        except IndexError:
             return None
 
 

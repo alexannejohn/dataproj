@@ -7,7 +7,7 @@ from studyareas.models import Subject, Specialization, Program
 from codetables.models import RegistrationStatus, SessionalStanding
 from django.db.models import F
 from django.db.models import Q
-from .serializers import StudentSerializer
+from .serializers import StudentSerializer, StudentDetailSerializer
 from django.http import HttpResponse, JsonResponse
 import csv
 from urllib.parse import urlparse, parse_qs
@@ -205,6 +205,14 @@ def filter_students(request):
 
     # return Response(response)
 
+
+@api_view(['GET'])
+def student_detail(request):
+    params = parse_qs(request.META['QUERY_STRING'])
+    student_number = params['student_number'][0]
+    student = Student.objects.get(student_number=student_number)
+    serializer = StudentDetailSerializer(student)
+    return JsonResponse({"student_details": serializer.data})
 
 #
 # Query url contains each student_number to be included in CSV. builds and returns CSV file
