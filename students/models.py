@@ -35,6 +35,7 @@ class Session(AbstractModel):
     def __str__(self):
         return '%s' % (self.session)
 
+
 # describes enrollment details for a student in a particular session
 class Enroll(AbstractModel):
     student_number = models.ForeignKey('Student', related_name="enrolls", db_index=True)
@@ -51,24 +52,27 @@ class Enroll(AbstractModel):
         unique_together = (('student_number', 'session'))
 
     def __str__(self):
-        return '%s %s' % (self.session, self.specialization_1)
+        string = str(self.session) + " - "
+        if self.specialization_1 != None:
+            string += str(self.specialization_1)
+            if self.specialization_2 != None:
+                string += ", " + str(self.specialization_2)
+        else:
+            string += str(self.program)
+        return string
 
     @property
     def specialization_1(self):
-        e_s = apps.get_model(app_label='students', model_name='SpecEnrolled')\
-            .objects.filter(enroll=self, order=1)
-        if len(e_s) > 0:
-            return str(e_s[0].specialization)
-        else:
+        try:
+            return self.specenroll.filter(order=1)[0].specialization
+        except IndexError:
             return None
 
     @property
     def specialization_2(self):
-        e_s = apps.get_model(app_label='students', model_name='SpecEnrolled')\
-            .objects.filter(enroll=self, order=2)
-        if len(e_s) > 0:
-            return str(e_s[0].specialization)
-        else:
+        try:
+            return self.specenroll.filter(order=2)[0].specialization
+        except IndexError:
             return None
 
     @property
@@ -88,8 +92,8 @@ signals.post_save.connect(update_recent_enrollment, sender=Enroll)
 
 # Many-to-many table between Specialization and Enroll - can be enrolled in multiple specializations at once
 class SpecEnrolled(models.Model):
-    specialization = models.ForeignKey(Specialization)
-    enroll = models.ForeignKey(Enroll)
+    specialization = models.ForeignKey(Specialization, related_name="specenroll")
+    enroll = models.ForeignKey(Enroll, related_name="specenroll")
     order = models.IntegerField(default=1)
 
     class Meta:
@@ -116,19 +120,15 @@ class Graduation(AbstractModel):
 
     @property
     def specialization_1(self):
-        e_s = apps.get_model(app_label='students', model_name='SpecGrad')\
-            .objects.filter(graduation=self, order=1)
         try:
-            return e_s[0].specialization
+            return self.specgrad.filter(order=1)[0].specialization
         except IndexError:
             return None
 
     @property
     def specialization_2(self):
-        e_s = apps.get_model(app_label='students', model_name='SpecGrad')\
-            .objects.filter(graduation=self, order=2)
         try:
-            return e_s[0].specialization
+            return self.specgrad.filter(order=2)[0].specialization
         except IndexError:
             return None
 
@@ -141,8 +141,8 @@ class Graduation(AbstractModel):
 
 # many-to-many field between Specialization and Graduation
 class SpecGrad(models.Model):
-    specialization = models.ForeignKey(Specialization)
-    graduation = models.ForeignKey(Graduation)
+    specialization = models.ForeignKey(Specialization, related_name="specgrad")
+    graduation = models.ForeignKey(Graduation, related_name="specgrad")
     order = models.IntegerField(default=1)
 
     class Meta:
@@ -150,6 +150,15 @@ class SpecGrad(models.Model):
 
     def __str__(self):
         return '%s %s' % (self.specialization, self.graduation,)
+
+
+def update_graduation_date(sender, instance, **kwargs):
+    student = instance.student_number
+    grad = student.graduations.order_by('-ceremony_date')[0]
+    student.graduation_date = grad.ceremony_date
+    student.save(force_update=True)
+
+signals.post_save.connect(update_graduation_date, sender=Graduation)
 
 
 # Application details for a student 
@@ -171,6 +180,14 @@ class Application(AbstractModel):
     def __str__(self):
         return '%s %s' % (self.program, self.session,)
 
+def update_applied(sender, instance, **kwargs):
+    student = instance.student_number
+    app = student.applications.order_by('-session').values('session')
+    student.applied = ",".join([x['session'] for x in app])
+    student.save(force_update=True)
+
+signals.post_save.connect(update_applied, sender=Application)
+
 # a student's awards
 class Award(AbstractModel):
     student_number = models.ForeignKey('Student', related_name="awards", db_index=True)
@@ -186,6 +203,14 @@ class Award(AbstractModel):
 
     def __str__(self):
         return '%s %s' % (self.award_title, self.session,)
+
+def update_award_amount(sender, instance, **kwargs):
+    student = instance.student_number
+    aw = student.awards.values('award_amount')
+    student.total_award_amount = sum([x['award_amount'] for x in aw])
+    student.save(force_update=True)
+
+signals.post_save.connect(update_award_amount, sender=Award)
 
 
 # biographical, contact, and other details

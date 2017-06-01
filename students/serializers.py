@@ -27,7 +27,7 @@ class StudentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Student
-        fields = ('student_number', 'given_name', 'most_recent_enrollment')
+        fields = ('student_number', 'given_name', 'most_recent_enrollment', 'graduation_date', 'applied', 'total_award_amount')
 
 
 class StudentDetailSerializer(serializers.ModelSerializer):

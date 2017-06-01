@@ -8,7 +8,10 @@
           <th></th>
           <th>Name</th>
           <th>Student #</th>
-          <th>Program/Specialization</th>
+          <th>Most recent Program/Specialization</th>
+          <th>Graduation</th>
+          <th>Applied</th>
+          <th>Awards</th>
         </tr>
       <thead>
       <tbody each={students}>
@@ -16,7 +19,10 @@
           <td onclick={ student_detail } >+</td>
           <td>{ given_name }</td>
           <td>{ student_number }</td>
-          <td>{ most_recent_enrollment}
+          <td>{ most_recent_enrollment}</td>
+          <td>{ graduation_date }</td>
+          <td>{ applied }</td>
+          <td>{ total_award_amount }</td>
         </tr>
         <tr class="student-details"  >
           
