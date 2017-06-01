@@ -182,7 +182,7 @@ class Application(AbstractModel):
 
 def update_applied(sender, instance, **kwargs):
     student = instance.student_number
-    app = student.applications.order_by('-session').values('session')
+    app = student.applications.order_by('session').values('session')
     student.applied = ",".join([x['session'] for x in app])
     student.save(force_update=True)
 

@@ -47,15 +47,6 @@
     self.filters.graduation_options = {"header": "Filter by Graduation"};
     self.filters.award_options = {"header": "Filter by Awards"}
 
-    
-    // self.on('updated', function() {
-    //   for (var key in self.to_filter){
-    //     console.log("aa")
-    //   }
-    // })
-
-    // self.update()
-
 
     url = "/filters"
     $.get(url, function (data) {
