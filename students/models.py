@@ -206,8 +206,8 @@ class Award(AbstractModel):
 
 def update_award_amount(sender, instance, **kwargs):
     student = instance.student_number
-    aw = student.awards.values('award_amount')
-    student.total_award_amount = sum([x['award_amount'] for x in aw])
+    awards = student.awards.values('award_amount')
+    student.total_award_amount = sum([x['award_amount'] for x in awards])
     student.save(force_update=True)
 
 signals.post_save.connect(update_award_amount, sender=Award)
@@ -260,14 +260,6 @@ class Student(AbstractModel):
 
     def __str__(self):
         return '%s' % (self.given_name)
-
-    @property
-    def recent_enrollment(self):
-        enroll = self.enrolls.order_by('-session')
-        try:
-            return str(enroll[0])
-        except IndexError:
-            return None
 
 
 
