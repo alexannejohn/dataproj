@@ -48,10 +48,25 @@
                     <tr>
                       <th>session</th>
                       <th>program</th>
+                      <th>year lvl</th>
+                      <th>re-admission</th>
+                      <th>status</th>
+                      <th>reason</th>
+                      <th>decision</th>
+                      <th>action code</th>
+                      <th>mult. action</th>
+
                     </tr>
                     <tr each = {app in details.applications} >
                       <td>{ app.session }</td>
                       <td> { app.program }</td>
+                      <td> { app.year_level }</td>
+                      <td> { app.re_admission }</td>
+                      <td> { app.status }</td>
+                      <td> { app.reason }</td>
+                      <td> { app.applicant_decision }</td>
+                      <td> { app.action_code }</td>
+                      <td> { app.multiple_action }</td>
                     </tr>
                   </table>
 
