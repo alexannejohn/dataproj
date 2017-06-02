@@ -26,7 +26,90 @@
         </tr>
         <tr class="student-details"  >
           
-            <td colspan="4" if={details} >{ details.given_name }</td>
+            <td colspan="7" if={details} >
+              <div class="student-section">
+
+
+                <h2>Student Details</h2>
+                  <table>
+                    <tr>
+                      <th>given name</th>
+                      <th>student number</th>
+                    </tr>
+                    <tr>
+                      <td>{ details.given_name }</td>
+                      <td> {details.student_number}</td>
+                    </tr>
+                  </table>
+                
+
+                <h2>Applications</h2>
+                  <table if={details.applications.length > 0}>
+                    <tr>
+                      <th>session</th>
+                      <th>program</th>
+                    </tr>
+                    <tr each = {app in details.applications} >
+                      <td>{ app.session }</td>
+                      <td> { app.program }</td>
+                    </tr>
+                  </table>
+
+
+                <h2>Enrollment</h2>
+                  <table if={details.enrolls.length > 0}>
+                    <tr>
+                      <th>session</th>
+                      <th>program</th>
+                      <th>specialization 1</th>
+                      <th>specialization 2</th>
+                      <th>year</th>
+                      <th>Reg. Status</th>
+                      <th>Standing</th>
+                      <th>Average</th>
+                    </tr>
+                    <tr each = {enroll in details.enrolls} >
+                      <td>{ enroll.session }</td>
+                      <td> { enroll.program }</td>
+                      <td> { enroll.specialization_1 }</td>
+                      <td> { enroll.specialization_2 }</td>
+                      <td> { enroll.year_level }</td>
+                      <td> { enroll.regi_status }</td>
+                      <td> { enroll.sessional_standing }</td>
+                      <td> { enroll.sessional_average }</td>
+                    </tr>
+                  </table>
+
+
+                <h2>Graduation</h2>
+                  <table if={details.graduations.length > 0}>
+                    <tr>
+                      <th>program</th>
+                      <th>ceremony date</th>
+                    </tr>
+                    <tr each = {grad in details.graduations} >
+                      <td>{ grad.program }</td>
+                      <td> { grad.ceremony_date }</td>
+                    </tr>
+                  </table>
+
+
+                <h2>Awards</h2>
+                  <table if={details.awards.length > 0}>
+                    <tr>
+                      <th>session</th>
+                      <th>award title</th>
+                    </tr>
+                    <tr each = {award in details.awards} >
+                      <td>{ award.session }</td>
+                      <td> { award.award_title }</td>
+                    </tr>
+                  </table>
+
+
+              </div>
+            
+            </td>
       
           
         </tr>
@@ -121,6 +204,43 @@
     }
     table{
       border-collapse: collapse;
+    }
+    h2{
+      font-family: sans-serif;
+      font-size: 12px;
+      color: #B5B5B5;
+      margin: 8px 0 3px 0;
+      border-bottom: solid #D9D9D9 1px;
+    }
+    .student-section th{
+      text-align: center;
+      color: #636363;
+      text-transform: uppercase;
+      font-size: 8px;
+      font-family: sans-serif;
+      min-width: 10px;
+    }
+    .student-section td{
+      text-align: left;
+      padding-left: 5px;
+      padding-right: 10px;
+      margin-bottom: 10px;
+      color: #5B5C5C;
+      font-size: 14px;
+      font-family: sans-serif;
+      /*border-bottom: solid #D9D9D9 1px;*/
+    }
+    .student-section tr{
+      border-bottom: none;
+      border-top: none;
+    }
+    .student-section{
+      padding-left: 10px;
+      margin-bottom: 30px;
+      margin-top: 20px;
+    }
+    .student-section table{
+      margin-left: 20px;
     }
   </style>
 

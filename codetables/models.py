@@ -19,7 +19,7 @@ class RegistrationStatus(AbstractModel):
     hidden = models.BooleanField(default=False)
 
     def __str__(self):
-        return '%s' % (self.status_code,)
+        return '%s' % (self.description,)
 
 
 class SessionalStanding(AbstractModel):
@@ -28,7 +28,7 @@ class SessionalStanding(AbstractModel):
     hidden = models.BooleanField(default=False)
 
     def __str__(self):
-        return '%s' % (self.standing_code,)
+        return '%s' % (self.description,)
 
 
 class Code(AbstractModel):
@@ -38,6 +38,9 @@ class Code(AbstractModel):
 
     class Meta:
        abstract = True
+
+    def __str__(self):
+        return '%s' % (self.description,)
 
 # Application
 class AppReAdmission(Code):
