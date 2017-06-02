@@ -15,9 +15,17 @@ class EnrollSerializer(serializers.ModelSerializer):
             'sessional_average')
 
 class ApplicationSerializer(serializers.ModelSerializer):
+    re_admission = serializers.StringRelatedField()
+    status = serializers.StringRelatedField()
+    reason = serializers.StringRelatedField()
+    applicant_decision = serializers.StringRelatedField()
+    action_code = serializers.StringRelatedField()
+    multiple_action = serializers.StringRelatedField()
+
     class Meta:
         model = Application
-        fields = ('session', 'program')
+        fields = ('session', 'program', 'year_level', 're_admission', 'status', 'reason', 
+            'applicant_decision', 'action_code', 'multiple_action')
 
 class GraduationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -25,9 +33,13 @@ class GraduationSerializer(serializers.ModelSerializer):
         fields = ('program', 'ceremony_date')
 
 class AwardSerializer(serializers.ModelSerializer):
+    award_type = serializers.StringRelatedField()
+    status = serializers.StringRelatedField()
+    
     class Meta:
         model = Award
-        fields = ('session', 'award_title')
+        fields = ('session', 'award_title', 'award_amount', 'award_number',
+            'award_type', 'status')
 
 class StudentSerializer(serializers.ModelSerializer):
     most_recent_enrollment = serializers.StringRelatedField()

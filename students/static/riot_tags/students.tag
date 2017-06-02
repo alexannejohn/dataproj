@@ -99,10 +99,16 @@
                     <tr>
                       <th>session</th>
                       <th>award title</th>
+                      <th>Award Amount</th>
+                      <th>Award type</th>
+                      <th>status</th>
                     </tr>
                     <tr each = {award in details.awards} >
                       <td>{ award.session }</td>
                       <td> { award.award_title }</td>
+                      <td> { award.award_amount }</td>
+                      <td> { award.award_type }</td>
+                      <td> { award.status }</td>
                     </tr>
                   </table>
 
@@ -219,9 +225,12 @@
       font-size: 8px;
       font-family: sans-serif;
       min-width: 10px;
+      vertical-align: top;
+      padding-left: 5px;
+      padding-right: 5px;
     }
     .student-section td{
-      text-align: left;
+      text-align: center;
       padding-left: 5px;
       padding-right: 10px;
       margin-bottom: 10px;
