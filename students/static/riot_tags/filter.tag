@@ -1,4 +1,18 @@
 <filtering>
+
+  <div class="filter-panel">
+    <select onchange= {enrollcsv}>
+      <option value=""  >---</option>
+      <option each={ session in enroll_sessions } value={session}  >{session}</option>
+    </select>
+    <a href="/enrollcsv?session={enroll_sess}">Enrollment CSV</a>
+
+    <select onchange= {gradcsv}>
+      <option value=""  >---</option>
+      <option each={ year in grad_years } value={year}>{year}</option>
+    </select>
+    <a href="/gradcsv?year={grad_y}">Graduation CSV</a>
+  </div>
   
   <div class="filter-panel" each={ filter in filters }>
     <div class="title-frame">
@@ -55,6 +69,8 @@
         self.filters.application_options.list = data.application_options;
         self.filters.graduation_options.list = data.graduation_options;
         self.filters.award_options.list = data.award_options;
+        self.grad_years = data.grad_years;
+        self.enroll_sessions = data.enroll_sessions;
         self.update()
     });
 
@@ -63,6 +79,16 @@
             if (myArray[i][property] === searchTerm) return i;
         }
         return -1;
+    }
+
+    enrollcsv(e){
+      var val = $(e.target).val()
+      self.enroll_sess = val
+    }
+
+    gradcsv(e){
+      var val = $(e.target).val()
+      self.grad_y = val
     }
 
     update_search(e){

@@ -47,6 +47,9 @@ class Enroll(AbstractModel):
     sessional_standing = models.ForeignKey(SessionalStanding, blank=True, null=True)
     program_entry_year = models.IntegerField(validators=[MinValueValidator(1111), MaxValueValidator(3000)], blank=True, null=True)
     specializations = models.ManyToManyField(Specialization, through='SpecEnrolled', blank=True, null=True)
+    #calc values
+    specialization_1 = models.ForeignKey(Specialization, blank=True, null=True, related_name="one")
+    specialization_2 = models.ForeignKey(Specialization, blank=True, null=True, related_name="two")
 
     class Meta:
         unique_together = (('student_number', 'session'))
@@ -60,20 +63,6 @@ class Enroll(AbstractModel):
         else:
             string += str(self.program)
         return string
-
-    @property
-    def specialization_1(self):
-        try:
-            return self.specenroll.filter(order=1)[0].specialization
-        except IndexError:
-            return None
-
-    @property
-    def specialization_2(self):
-        try:
-            return self.specenroll.filter(order=2)[0].specialization
-        except IndexError:
-            return None
 
     @property
     def regi_status_name(self):
@@ -102,6 +91,17 @@ class SpecEnrolled(models.Model):
     def __str__(self):
         return '%s %s' % (self.specialization, self.enroll,)
 
+
+def update_spec(sender, instance, **kwargs):
+    enroll = instance.enroll
+    if instance.order == 1:
+        enroll.specialization_1 = instance.specialization
+    elif instance.order == 2:
+        enroll.specialization_2 = instance.specialization
+    enroll.save(force_update=True)
+
+signals.post_save.connect(update_spec, sender=SpecEnrolled)
+
 # graduation details for a student
 class Graduation(AbstractModel):
     student_number = models.ForeignKey('Student', related_name="graduations", db_index=True)
@@ -115,20 +115,9 @@ class Graduation(AbstractModel):
     dual_degree = models.BooleanField(default=False)
     program = models.ForeignKey(Program)
     specializations = models.ManyToManyField(Specialization, through='SpecGrad', blank=True, null=True)
-
-    @property
-    def specialization_1(self):
-        try:
-            return self.specgrad.filter(order=1)[0].specialization
-        except IndexError:
-            return None
-
-    @property
-    def specialization_2(self):
-        try:
-            return self.specgrad.filter(order=2)[0].specialization
-        except IndexError:
-            return None
+    #calc values
+    specialization_1 = models.ForeignKey(Specialization, blank=True, null=True, related_name="one_g")
+    specialization_2 = models.ForeignKey(Specialization, blank=True, null=True, related_name="two_g")
 
     class Meta:
         unique_together = (('student_number', 'conferral_period', 'program'))
@@ -153,6 +142,16 @@ class SpecGrad(models.Model):
 
     def __str__(self):
         return '%s %s' % (self.specialization, self.graduation,)
+
+def update_spec_grad(sender, instance, **kwargs):
+    grad = instance.graduation
+    if instance.order == 1:
+        grad.specialization_1 = instance.specialization
+    elif instance.order == 2:
+        grad.specialization_2 = instance.specialization
+    grad.save(force_update=True)
+
+signals.post_save.connect(update_spec_grad, sender=SpecGrad)
 
 
 def update_graduation_date(sender, instance, **kwargs):

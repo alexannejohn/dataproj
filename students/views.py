@@ -137,12 +137,12 @@ def get_filter_options(request):
 
 
 
-
-
     graduation_options = []
     award_options = []
 
 
+    grad_years = [x['conferral_period_year'] for x in Graduation.objects.all().order_by('conferral_period_year').values('conferral_period_year').distinct()]
+    enroll_sessions = [x['session'] for x in Enroll.objects.all().order_by('session').values('session').distinct()]
 
 
     return Response(
@@ -150,7 +150,10 @@ def get_filter_options(request):
         "student_options": student_options, 
         "application_options": application_options,
         "graduation_options": graduation_options,
-        "award_options": award_options}
+        "award_options": award_options,
+        "enroll_sessions": enroll_sessions,
+        "grad_years": grad_years
+        }
         )
 
 
@@ -310,7 +313,6 @@ def student_detail(request):
 #
 def csv_view(request):
     params = parse_qs(request.META['QUERY_STRING'])
-    print(params['student_number'])
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
@@ -358,4 +360,57 @@ def csv_view(request):
 
 
     return response
-    # return JsonResponse({"test": "test"})
+
+
+def enroll_csv(request):
+    params = parse_qs(request.META['QUERY_STRING'])
+    session = params['session'][0]
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="enroll' + str(session) + '.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['program', 'specialization 1', 'specialization 2', 'students', 'metis', 'first nations', 'inuit'])
+
+    enrolls_in_session = Enroll.objects.filter(session=session, regi_status="REGI").order_by('program')
+
+    enroll_types = enrolls_in_session.values('program', 'specialization_1', 'specialization_2', 'specialization_1__description', 'specialization_2__description').distinct()
+
+    for e_t in enroll_types:
+        program = e_t['program']
+        spec_1 = e_t['specialization_1']
+        spec_2 = e_t['specialization_2']
+        total = enrolls_in_session.filter(program=program, specialization_1=spec_1, specialization_2=spec_2).count()
+        metis = enrolls_in_session.filter(program=program, specialization_1=spec_1, specialization_2=spec_2, student__self_id='METI').count()
+        f_n = enrolls_in_session.filter(program=program, specialization_1=spec_1, specialization_2=spec_2, student__self_id='NATI').count()
+        inuit = enrolls_in_session.filter(program=program, specialization_1=spec_1, specialization_2=spec_2, student__self_id='INUI').count()
+        row = [program, e_t['specialization_1__description'], e_t['specialization_2__description'], total, metis, f_n, inuit]
+        writer.writerow(row)
+
+    return response
+
+
+def grad_csv(request):
+    params = parse_qs(request.META['QUERY_STRING'])
+    year = params['year'][0]
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="grad' + str(year) + '.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['program', 'specialization 1', 'specialization 2', 'students', 'metis', 'first nations', 'inuit'])
+    #TODO: filter by graduation status
+    grad_in_session = Graduation.objects.filter(conferral_period_year=year).order_by('program')
+
+    grad_types = grad_in_session.values('program', 'specialization_1', 'specialization_2', 'specialization_1__description', 'specialization_2__description').distinct()
+
+    for g_t in grad_types:
+        program = g_t['program']
+        spec_1 = g_t['specialization_1']
+        spec_2 = g_t['specialization_2']
+        total = grad_in_session.filter(program=program, specialization_1=spec_1, specialization_2=spec_2).count()
+        metis = grad_in_session.filter(program=program, specialization_1=spec_1, specialization_2=spec_2, student_number__self_id='METI').count()
+        f_n = grad_in_session.filter(program=program, specialization_1=spec_1, specialization_2=spec_2, student_number__self_id='NATI').count()
+        inuit = grad_in_session.filter(program=program, specialization_1=spec_1, specialization_2=spec_2, student_number__self_id='INUI').count()
+        row = [program, g_t['specialization_1__description'], g_t['specialization_2__description'], total, metis, f_n, inuit]
+        writer.writerow(row)
+
+    return response

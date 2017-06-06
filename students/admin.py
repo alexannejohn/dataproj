@@ -110,6 +110,7 @@ class EnrollAdmin(ExtendedAdmin):
     inlines = (SpecEnrolledInline,)
     list_display = ('student_number', 'session', 'program', 'specialization_1', 'specialization_2')
     search_fields = ['student_number__student_number',]
+    readonly_fields = ('specialization_1', 'specialization_2',)
 
 
 admin.site.register(Enroll, EnrollAdmin)
@@ -164,6 +165,7 @@ class GraduationAdmin(ExtendedAdmin):
     inlines = (SpecGradInline,)
     list_display = ('student_number', 'program', 'grad_application_status')
     search_fields = ['student_number__student_number',]
+    readonly_fields = ('specialization_1', 'specialization_2',)
 
 
 admin.site.register(Graduation, GraduationAdmin)
