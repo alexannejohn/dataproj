@@ -1,8 +1,8 @@
 <students>
   <span class="student-count" if={ count }> { count } student<span if={count == 0 || count > 1 }>s</span></span>
   
-  <div class="result-panel" if={ count > 0 }>
-    <table class="student-table">
+  <div class="result-panel" >
+    <table class="student-table" if={ count > 0 }>
       <thead>
         <tr>
           <th></th>
@@ -136,7 +136,7 @@
         </tr>
       <tbody>
     </table>
-    <a href="/downloadcsv?{ numbers }">download csv</a>
+    <a if={ count > 0 } href="/downloadcsv?{ numbers }">download csv</a>
   </div>
 
   <script>

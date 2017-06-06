@@ -105,17 +105,15 @@ class SpecEnrolled(models.Model):
 # graduation details for a student
 class Graduation(AbstractModel):
     student_number = models.ForeignKey('Student', related_name="graduations", db_index=True)
-    session = models.ForeignKey(Session)
+    conferral_period = models.DateField()
+    conferral_period_year = models.IntegerField(blank=True, null=True)
+    conferral_period_month = models.IntegerField(blank=True, null=True)
     grad_application_status = models.ForeignKey(GradAppStatus, blank=True, null=True)
     status_reason = models.ForeignKey(GradAppReason, blank=True, null=True)
-    transfer_credits = models.CharField(max_length=40, blank=True, null=True)
     ceremony_date = models.DateField(blank=True, null=True, db_index=True)
-    conferral_period = models.DateField(blank=True, null=True)
-    attending = models.BooleanField(default=False)
     doctoral_citation = models.CharField(max_length=20, blank=True, null=True)
     dual_degree = models.BooleanField(default=False)
-    program = models.ForeignKey(Program, blank=True, null=True)
-    program_version = models.CharField(max_length=20, blank=True, null=True)
+    program = models.ForeignKey(Program)
     specializations = models.ManyToManyField(Specialization, through='SpecGrad', blank=True, null=True)
 
     @property
@@ -133,10 +131,15 @@ class Graduation(AbstractModel):
             return None
 
     class Meta:
-        unique_together = (('student_number', 'session'))
+        unique_together = (('student_number', 'conferral_period', 'program'))
+
+    def save(self, *args, **kwargs):
+        self.conferral_period_month = self.conferral_period.month
+        self.conferral_period_year = self.conferral_period.year
+        super(Graduation, self).save(*args, **kwargs)
 
     def __str__(self):
-        return '%s %s' % (self.program, self.session,)
+        return '%s' % (self.program)
 
 
 # many-to-many field between Specialization and Graduation
@@ -213,6 +216,18 @@ def update_award_amount(sender, instance, **kwargs):
 signals.post_save.connect(update_award_amount, sender=Award)
 
 
+class PreviousInstitution(AbstractModel):
+    student_number = models.ForeignKey('Student', related_name="previous_institutions", db_index=True)
+    institution_name = models.CharField(max_length=200)
+    transfer_credits = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        unique_together = (('student_number', 'institution_name'))
+
+    def __str__(self):
+        return '%s %s' % (self.student_number, self.institution_name,)
+
+
 # biographical, contact, and other details
 class Student(AbstractModel):
     SUB_TYPE_CHOICES = (
@@ -245,8 +260,15 @@ class Student(AbstractModel):
     preferred_name = models.CharField(max_length=100, null=True, blank=True)
     gender = models.CharField(max_length=10, null=True, blank=True)
     birthdate = models.DateField(null=True, blank=True)
-    sub_type = models.CharField(max_length=4, blank=True, null=True, choices=SUB_TYPE_CHOICES)
+    self_id = models.CharField(max_length=4, blank=True, null=True, choices=SUB_TYPE_CHOICES)
+    city = models.CharField(max_length=100, blank=True, null=True)
     province = models.CharField(max_length=2, blank=True, null=True, choices=PROVINCE_CHOICES)
+    country = models.CharField(max_length=100, blank=True, null=True)
+
+    financial_hold = models.BooleanField(default=False)
+    sponsorship = models.BooleanField(default=False)
+    sponsor = models.CharField(max_length=200, blank=True, null=True)
+
     #signals??
     first_session_applied = models.ForeignKey(Session, blank=True, null=True, related_name='s_applied')
     first_session_admitted = models.ForeignKey(Session, blank=True, null=True, related_name='s_admitted')

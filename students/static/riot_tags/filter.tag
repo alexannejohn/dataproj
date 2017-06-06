@@ -120,6 +120,28 @@
         });
       }
 
+      if (field == 'application_program_type' || field == 'application_program_level'){
+        url = '/enrollprogramtype?'
+          url += 'type='
+          if(self.to_filter['application_program_type']){
+            url += (self.to_filter['application_program_type'].join() || '')
+          }
+          url += '&' 
+          url += 'level='
+          if(self.to_filter['application_program_level']){
+            url += (self.to_filter['application_program_level'].join() || '')
+          } 
+          url += '&'
+        $.get(url, function (data) {
+          var index = arrayObjectIndexOf(self.filters.application_options.list, "application_program", "field")
+          self.filters.application_options.list[index].options = data;
+          self.update()
+          delete self.to_filter['application_program']
+          $('.application_program').find('.expand-text').text("<< see less");
+          $('.application_program').children('.input-check').css("display", "inline-block")
+        });
+      }
+
       if (field == 'enroll_program' || field == 'enroll_subject'){
         url = '/filterspecialization?'
           url += 'program='
@@ -234,6 +256,9 @@
     .enroll_specialization .input-check{
       font-size: 13px;
       width: 320px;
+    }
+    .student_self_id .input-check{
+      width: 120px;
     }
 
     .tooltip {

@@ -4,7 +4,7 @@ from rest_framework.response import Response
 import json
 from .models import Session, Enroll, Student, Application, Graduation, Award
 from studyareas.models import Subject, Specialization, Program
-from codetables.models import RegistrationStatus, SessionalStanding
+from codetables.models import RegistrationStatus, SessionalStanding, AppDecision, AppActionCode, AppStatus, AppReason
 from django.db.models import F
 from django.db.models import Q
 from .serializers import StudentSerializer, StudentDetailSerializer
@@ -34,7 +34,19 @@ def get_filter_options(request):
     provinces = [{"val": a[0], "hover": a[1]} for a in provinces_raw]
     student_provinces = {"field": "student_province", "title": "Province", "options": provinces}
 
+    ids_raw = Student._meta.get_field('self_id').choices
+    ids = [{"val": a[0], "text": a[1]} for a in ids_raw]
+    student_ids = {"field": "student_self_id", "title": "Self ID", "options": ids}
+
+    boolean_options = [{"val": "True", "text":"Yes"}, {"val": "False", "text":"No"}]
+
+    student_band_fundings = {"field": "student_band_funding", "title": "Band Funding", "options": boolean_options}
+    student_financial_holds = {"field": "student_financial_hold", "title": "Financial Hold", "options": boolean_options}
+
     student_options.append(student_provinces)
+    student_options.append(student_ids)
+    student_options.append(student_band_fundings)
+    student_options.append(student_financial_holds)
 
 
     ###
@@ -85,7 +97,48 @@ def get_filter_options(request):
     enroll_options.append(enroll_specializations)
 
 
+    ###
+    #  Options for filtering by application
+    ###
     application_options = []
+
+    application_sessions = {"field": "application_session", "title": "Session Applied", "options": sessions}
+
+    application_program_types = {"field": "application_program_type", "title": "Program Type", "options": program_types}
+
+    application_program_levels = {"field": "application_program_level", "title": "Program Level", "options": program_levels}
+
+    application_programs = {"field": "application_program", "title": "Program Applied", "options": programs}
+
+    app_s = Application.objects.all().values('status').distinct()
+    statii = AppStatus.objects.filter(code__in=app_s).filter(hidden=False).annotate(val=F("code"), hover=F('description')).values("val", "hover")
+    app_statii = {"field": "application_status", "title": "Application Status", "options": statii}
+
+    app_r = Application.objects.all().values('reason').distinct()
+    reasons = AppReason.objects.filter(code__in=app_r).filter(hidden=False).annotate(val=F("code"), hover=F('description')).values("val", "hover")
+    app_reasons = {"field": "application_reason", "title": "Reason", "options": reasons}
+
+    app_d = Application.objects.all().values('applicant_decision').distinct()
+    decisions = AppDecision.objects.filter(code__in=app_d).filter(hidden=False).annotate(val=F("code"), hover=F('description')).values("val", "hover")
+    app_decisions = {"field": "application_decision", "title": "Decision", "options": decisions}
+
+    app_a = Application.objects.all().values('action_code').distinct()
+    action_codes = AppActionCode.objects.filter(code__in=app_a).filter(hidden=False).annotate(val=F("code"), hover=F('description')).values("val", "hover")
+    app_action_codes = {"field": "application_action_code", "title": "Action Code", "options": action_codes}
+
+    application_options.append(application_sessions)
+    application_options.append(application_program_levels)
+    application_options.append(application_program_types)
+    application_options.append(application_programs)
+    application_options.append(app_statii)
+    application_options.append(app_reasons)
+    application_options.append(app_decisions)
+    application_options.append(app_action_codes)
+
+
+
+
+
     graduation_options = []
     award_options = []
 
@@ -153,38 +206,76 @@ def filter_students(request):
     if 'student_province' in filters:
         students = students.filter(province__in=filters['student_province'])
 
+    if 'student_self_id' in filters:
+        students = students.filter(self_id__in=filters['student_self_id'])
+
+    if 'student_band_funding' in filters:
+        students = students.filter(sponsorship__in=filters['student_band_funding'])
+
+    if 'student_financial_hold' in filters:
+        students = students.filter(financial_hold__in=filters['student_financial_hold'])
+
     ###
     #  filtering by enrollment
     ###
 
     if 'enroll_session' in filters:
-        students = students.filter(enroll__session__in=filters['enroll_session']).distinct()
+        students = students.filter(enrolls__session__in=filters['enroll_session']).distinct()
 
     if 'enroll_year_level' in filters:
-        students = students.filter(enroll__year_level__in=filters['enroll_year_level']).distinct()
+        students = students.filter(enrolls__year_level__in=filters['enroll_year_level']).distinct()
 
     if 'enroll_regi_status' in filters:
-        students = students.filter(enroll__regi_status__in=filters['enroll_regi_status']).distinct()
+        students = students.filter(enrolls__regi_status__in=filters['enroll_regi_status']).distinct()
 
     if 'enroll_sessional_standing' in filters:
-        students = students.filter(enroll__sessional_standing__in=filters['enroll_sessional_standing']).distinct()
+        students = students.filter(enrolls__sessional_standing__in=filters['enroll_sessional_standing']).distinct()
 
     if 'enroll_program_type' in filters:
-        students = students.filter(enroll__program__program_type__in=filters['enroll_program_type']).distinct()
+        students = students.filter(enrolls__program__program_type__in=filters['enroll_program_type']).distinct()
 
     if 'enroll_program_level' in filters:
-        students = students.filter(enroll__program__level__in=filters['enroll_program_level']).distinct()
+        students = students.filter(enrolls__program__level__in=filters['enroll_program_level']).distinct()
 
     if 'enroll_program' in filters:
-        students = students.filter(enroll__program__in=filters['enroll_program']).distinct()
+        students = students.filter(enrolls__program__in=filters['enroll_program']).distinct()
 
     if 'enroll_subject' in filters:
         subj_specializations = Specialization.objects.filter(Q(primary_subject__in=filters['enroll_subject']) | Q(secondary_subject__in=filters['enroll_subject']))
-        students = students.filter(enroll__specializations__in=subj_specializations).distinct()
+        students = students.filter(enrolls__specializations__in=subj_specializations).distinct()
 
     if 'enroll_specialization' in filters:
         specializations = Specialization.objects.filter(code__in=filters['enroll_specialization'])
-        students = students.filter(enroll__specializations__in=specializations).distinct()
+        students = students.filter(enrolls__specializations__in=specializations).distinct()
+
+
+    ###
+    #  filtering by application
+    ###
+
+    if 'application_session' in filters:
+        students = students.filter(applications__session__in=filters['application_session']).distinct()
+
+    if 'application_program_type' in filters:
+        students = students.filter(applications__program__program_type__in=filters['application_program_type']).distinct()
+
+    if 'application_program_level' in filters:
+        students = students.filter(applications__program__level__in=filters['application_program_level']).distinct()
+
+    if 'application_program' in filters:
+        students = students.filter(applications__program__in=filters['application_program']).distinct()
+
+    if 'application_status' in filters:
+        students = students.filter(applications__status__in=filters['application_status']).distinct()
+
+    if 'application_reason' in filters:
+        students = students.filter(applications__reason__in=filters['application_reason']).distinct()
+
+    if 'application_decision' in filters:
+        students = students.filter(applications__applicant_decision__in=filters['application_decision']).distinct()
+
+    if 'application_action_code' in filters:
+        students = students.filter(applications__action_code__in=filters['application_action_code']).distinct()
 
 
     ###

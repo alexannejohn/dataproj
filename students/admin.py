@@ -141,7 +141,7 @@ class GraduationResource(ExtendedResource):
 
     class Meta:
         model = Graduation
-        import_id_fields = ['student_number', 'session']
+        import_id_fields = ['student_number', 'conferral_period', 'program']
 
 class SpecGradForm(ModelForm):
 
@@ -160,9 +160,9 @@ class SpecGradInline(admin.TabularInline):
 
 class GraduationAdmin(ExtendedAdmin):
     resource_class = GraduationResource
-    list_filter = (('session', CheckBoxListFilter), ('program', CheckBoxListFilter))
+    list_filter = (('program', CheckBoxListFilter),)
     inlines = (SpecGradInline,)
-    list_display = ('student_number', 'session', 'program', 'grad_application_status')
+    list_display = ('student_number', 'program', 'grad_application_status')
     search_fields = ['student_number__student_number',]
 
 
