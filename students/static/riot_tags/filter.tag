@@ -2,13 +2,13 @@
 
   <div class="filter-panel">
     <select onchange= {enrollcsv}>
-      <option value=""  >---</option>
+      <option value=""  >-session-</option>
       <option each={ session in enroll_sessions } value={session}  >{session}</option>
     </select>
     <a href="/enrollcsv?session={enroll_sess}">Enrollment CSV</a>
 
     <select onchange= {gradcsv}>
-      <option value=""  >---</option>
+      <option value=""  >-year-</option>
       <option each={ year in grad_years } value={year}>{year}</option>
     </select>
     <a href="/gradcsv?year={grad_y}">Graduation CSV</a>
@@ -31,6 +31,17 @@
         </span>
         <span class="expand-text" if={ row.options.length > 15 } onclick={expand_hide_options } >see more >><span>
       </div>
+
+      <div if={filter.table =='award'} class="award_title">
+        <h2>Award Title</h2>
+        <span>
+          <input  data-message="award_title" type="text" name="award_title" onchange={ update_search }>
+        </span>
+      </div>
+
+
+
+
     </div>  
   </div>
 
@@ -55,11 +66,11 @@
 
     self.to_filter = {};
     self.filters = {};
-    self.filters.student_options = {"header": "Filter by Student Details"};
-    self.filters.enroll_options = {"header": "Filter by Enrollment"};
-    self.filters.application_options = {"header": "Filter by Applications"};
-    self.filters.graduation_options = {"header": "Filter by Graduation"};
-    self.filters.award_options = {"header": "Filter by Awards"}
+    self.filters.student_options = {"header": "Filter by Student Details", "table": "student"};
+    self.filters.enroll_options = {"header": "Filter by Enrollment", "table": "enroll"};
+    self.filters.application_options = {"header": "Filter by Applications", "table": "application"};
+    self.filters.graduation_options = {"header": "Filter by Graduation", "table": "graduation"};
+    self.filters.award_options = {"header": "Filter by Awards", "table": "award"}
 
 
     url = "/filters"
@@ -167,6 +178,29 @@
           $('.application_program').children('.input-check').css("display", "inline-block")
         });
       }
+
+      if (field == 'graduation_program_type' || field == 'graduation_program_level'){
+        url = '/enrollprogramtype?'
+          url += 'type='
+          if(self.to_filter['graduation_program_type']){
+            url += (self.to_filter['graduation_program_type'].join() || '')
+          }
+          url += '&' 
+          url += 'level='
+          if(self.to_filter['graduation_program_level']){
+            url += (self.to_filter['graduation_program_level'].join() || '')
+          } 
+          url += '&'
+        $.get(url, function (data) {
+          var index = arrayObjectIndexOf(self.filters.graduation_options.list, "graduation_program", "field")
+          self.filters.graduation_options.list[index].options = data;
+          self.update()
+          delete self.to_filter['graduation_program']
+          $('.graduation_program').find('.expand-text').text("<< see less");
+          $('.graduation_program').children('.input-check').css("display", "inline-block")
+        });
+      }
+
 
       if (field == 'enroll_program' || field == 'enroll_subject'){
         url = '/filterspecialization?'

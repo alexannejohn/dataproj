@@ -4,7 +4,8 @@ from rest_framework.response import Response
 import json
 from .models import Session, Enroll, Student, Application, Graduation, Award
 from studyareas.models import Subject, Specialization, Program
-from codetables.models import RegistrationStatus, SessionalStanding, AppDecision, AppActionCode, AppStatus, AppReason
+from codetables.models import RegistrationStatus, SessionalStanding, AppDecision, AppActionCode, AppStatus, AppReason, GradAppStatus
+from codetables.models import AwardType
 from django.db.models import F
 from django.db.models import Q
 from .serializers import StudentSerializer, StudentDetailSerializer
@@ -69,6 +70,9 @@ def get_filter_options(request):
     sessional_standings = SessionalStanding.objects.filter(standing_code__in=es).filter(hidden=False).annotate(val=F("standing_code"), hover=F('description')).values("val", "hover")
     enroll_sessional_standings = {"field": "enroll_sessional_standing", "title": "Sessional Standing", "options": sessional_standings}
 
+    averages = [{"val": (0,50), "text": "<50"}, {"val": (50.1,70), "text": "50.1-70"}, {"val": (70.1,90), "text": "70.1-90"}]
+    enroll_averages = {"field": "enroll_average", "title": "Sessional Average", "options": averages}
+
     program_types = Program.objects.all().order_by("program_type").annotate(val=F('program_type')).values("val").distinct()
     enroll_program_types = {"field": "enroll_program_type", "title": "Program Type", "options": program_types}
 
@@ -85,11 +89,12 @@ def get_filter_options(request):
     specializations = Specialization.objects.all().order_by('description').filter(hidden=False).annotate(text=F('description'), val=F('code'), hover=F('code')).values('val', 'text', 'hover')
     enroll_specializations = {"field": "enroll_specialization", "title": "Specializations", "options": specializations}
 
-
+    
     enroll_options.append(enroll_sessions)
     enroll_options.append(enroll_year_levels)
     enroll_options.append(enroll_regi_statii)
     enroll_options.append(enroll_sessional_standings)
+    enroll_options.append(enroll_averages)
     enroll_options.append(enroll_program_types)
     enroll_options.append(enroll_program_levels)
     enroll_options.append(enroll_programs)
@@ -137,8 +142,50 @@ def get_filter_options(request):
 
 
 
+    ###
+    #  Options for filtering by graduation
+    ###
     graduation_options = []
+
+    years = [{"val": x['conferral_period_year']} for x in Graduation.objects.all().values('conferral_period_year').distinct()]
+    graduation_years = {"field": "graduation_year", "title": "Conferral Period Year", "options": years}
+
+    months = [{"val": x['conferral_period_month']} for x in Graduation.objects.all().values('conferral_period_month').distinct()]
+    graduation_months = {"field": "graduation_month", "title": "Conferral Period Month", "options": months}
+
+    g_s = Graduation.objects.all().values('grad_application_status').distinct()
+    g_statii = GradAppStatus.objects.filter(code__in=g_s).filter(hidden=False).annotate(val=F("code"), hover=F('description')).values("val", "hover")
+    graduation_statii = {"field": "graduation_status", "title": "Status", "options": g_statii}
+
+    graduation_program_types = {"field": "graduation_program_type", "title": "Program Type", "options": program_types}
+
+    graduation_program_levels = {"field": "graduation_program_level", "title": "Program Level", "options": program_levels}
+
+    graduation_programs = {"field": "graduation_program", "title": "Program Graduating", "options": programs}
+
+
+    graduation_options.append(graduation_years)
+    graduation_options.append(graduation_months)
+    graduation_options.append(graduation_statii)
+    graduation_options.append(graduation_program_types)
+    graduation_options.append(graduation_program_levels)
+    graduation_options.append(graduation_programs)
+
+
+    ###
+    #  Options for filtering by awards
+    ###
     award_options = []
+
+    award_sessions = {"field": "award_session", "title": "Session", "options": sessions}
+
+    aw_t = Award.objects.all().values('award_type').distinct()
+    aw_types = AwardType.objects.filter(code__in=aw_t).filter(hidden=False).annotate(val=F("code"), hover=F('description')).values("val", "hover")
+    award_types = {"field": "award_type", "title": "Award Type", "options": aw_types}
+
+    award_options.append(award_sessions)
+    award_options.append(award_types)
+
 
 
     grad_years = [x['conferral_period_year'] for x in Graduation.objects.all().order_by('conferral_period_year').values('conferral_period_year').distinct()]
@@ -251,6 +298,14 @@ def filter_students(request):
         specializations = Specialization.objects.filter(code__in=filters['enroll_specialization'])
         students = students.filter(enrolls__specializations__in=specializations).distinct()
 
+    if 'enroll_average' in filters:
+        queries = [Q(enrolls__sessional_average__range=x) for x in filters['enroll_average']]
+        query = queries.pop() 
+        for item in queries:
+            query |= item
+        students=students.filter(query).distinct()
+
+
 
     ###
     #  filtering by application
@@ -282,6 +337,44 @@ def filter_students(request):
 
 
     ###
+    #  filtering by graduation
+    ###
+
+    if 'graduation_program_type' in filters:
+        students = students.filter(graduations__program__program_type__in=filters['graduation_program_type']).distinct()
+
+    if 'graduation_program_level' in filters:
+        students = students.filter(graduations__program__level__in=filters['graduation_program_level']).distinct()
+
+    if 'graduation_program' in filters:
+        students = students.filter(graduations__program__in=filters['graduation_program']).distinct()
+
+    if 'graduation_status' in filters:
+        students = students.filter(graduations__grad_application_status__in=filters['graduation_status']).distinct()
+
+    if 'graduation_year' in filters:
+        students = students.filter(graduations__conferral_period_year__in=filters['graduation_year']).distinct()
+
+    if 'graduation_month' in filters:
+        students = students.filter(graduations__conferral_period_month__in=filters['graduation_month']).distinct()
+
+
+    ###
+    #  filtering by awards
+    ###
+
+    if 'award_session' in filters:
+        students = students.filter(awards__session__in=filters['award_session']).distinct()
+
+    if 'award_type' in filters:
+        students = students.filter(awards__award_type__in=filters['award_type']).distinct()
+
+    if 'award_title' in filters:
+        students = students.filter(awards__award_title__icontains=filters['award_title']).distinct()
+
+
+
+    ###
     #  search by student number
     ###
     if 'student_number' in filters:
@@ -290,7 +383,6 @@ def filter_students(request):
     ###
     #  return list of students
     ###
-    # response = {"count": students.count(), "students": students.values('given_name', 'student_number')}
 
     serializer = StudentSerializer(students, many=True)
     numbers = ''.join(["student_number=" + str(x['student_number']) + "&" for x in serializer.data])
