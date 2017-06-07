@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Student, Enroll, Application, Graduation, Award
+from .models import Student, Enroll, Application, Graduation, Award, PreviousInstitution
 
 
 class EnrollSerializer(serializers.ModelSerializer):
@@ -27,10 +27,15 @@ class ApplicationSerializer(serializers.ModelSerializer):
         fields = ('session', 'program', 'year_level', 're_admission', 'status', 'reason', 
             'applicant_decision', 'action_code', 'multiple_action')
 
+
 class GraduationSerializer(serializers.ModelSerializer):
+    specialization_1 = serializers.StringRelatedField()
+    specialization_2 = serializers.StringRelatedField()
     class Meta:
         model = Graduation
-        fields = ('program', 'ceremony_date')
+        fields = ('program', 'ceremony_date', 'conferral_period_year', 'conferral_period_month', 
+            'grad_application_status', 'status_reason', 'doctoral_citation', 'dual_degree', 
+            'specialization_1', 'specialization_2')
 
 class AwardSerializer(serializers.ModelSerializer):
     award_type = serializers.StringRelatedField()
@@ -40,6 +45,11 @@ class AwardSerializer(serializers.ModelSerializer):
         model = Award
         fields = ('session', 'award_title', 'award_amount', 'award_number',
             'award_type', 'status')
+
+class PreviousInstitutionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PreviousInstitution
+        fields = ('institution_name', 'transfer_credits')
 
 class StudentSerializer(serializers.ModelSerializer):
     most_recent_enrollment = serializers.StringRelatedField()
@@ -54,7 +64,10 @@ class StudentDetailSerializer(serializers.ModelSerializer):
     applications = ApplicationSerializer(read_only=True, many=True)
     graduations = GraduationSerializer(read_only=True, many=True)
     awards = AwardSerializer(read_only=True, many=True)
+    previous_institutions = PreviousInstitutionSerializer(read_only=True, many=True)
 
     class Meta:
         model = Student
-        fields = ('student_number', 'given_name', 'enrolls', 'applications', 'graduations', 'awards', 'province')
+        fields = ('student_number', 'given_name', 'surname', 'preferred_name', 'gender', 'birthdate',
+            'self_id', 'city', 'province', 'country', 'financial_hold', 'sponsorship', 'sponsor',
+            'enrolls', 'applications', 'graduations', 'awards', 'province', 'previous_institutions')

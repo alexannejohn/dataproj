@@ -29,16 +29,53 @@
             <td colspan="7" if={details} >
               <div class="student-section">
 
+<!-- 'student_number', 'given_name', 'surname', 'preferred_name', 'gender', 'birthdate',
+            'self_id', 'city', 'province', 'country', 'financial_hold', 'sponsorship', 'sponsor' -->
 
                 <h2>Student Details</h2>
                   <table>
                     <tr>
                       <th>given name</th>
+                      <th>surname</th>
+                      <th>preferred name</th>
                       <th>student number</th>
+                      <th>gender</th>
+                      <th>birthdate</th>
+                      <th>self-ID</th>
+                      <th>city</th>
+                      <th>province</th>
+                      <th>country</th>
+                      <th>financial_hold</th>
+                      <th>sponsorship</th>
+                      <th>sponsor</th>
                     </tr>
                     <tr>
                       <td>{ details.given_name }</td>
-                      <td> {details.student_number}</td>
+                      <td>{ details.surname }</td>
+                      <td>{ details.preferred_name }</td>
+                      <td>{ details.student_number }</td>
+                      <td>{ details.gender }</td>
+                      <td>{ details.birthdate }</td>
+                      <td>{ details.self_id }</td>
+                      <td>{ details.city }</td>
+                      <td>{ details.province }</td>
+                      <td>{ details.country }</td>
+                      <td><span if={ details.financial_hold }>Yes</span><span if={ !details.financial_hold }>No</span></td>
+                      <td><span if={ details.sponsorship }>Yes</span><span if={ !details.sponsorship }>No</span></td>
+                      <td>{ details.sponsor }</td>
+
+                    </tr>
+                  </table>
+
+                <h2>Previous Institutions</h2>
+                  <table if={details.previous_institutions.length > 0}>
+                    <tr>
+                      <th>institution name</th>
+                      <th>transfer credits</th>
+                    </tr>
+                    <tr each = {pi in details.previous_institutions}>
+                      <td>{ pi.institution_name }</td>
+                      <td> { pi.transfer_credits }</td>
                     </tr>
                   </table>
                 
@@ -95,15 +132,30 @@
                     </tr>
                   </table>
 
-
                 <h2>Graduation</h2>
                   <table if={details.graduations.length > 0}>
                     <tr>
                       <th>program</th>
+                      <th>specialization 1</th>
+                      <th>specialization 2</th>
+                      <th>conferral period year</th>
+                      <th>month</th>
+                      <th>status</th>
+                      <th>reason</th>
+                      <th>doctoral citation</th>
+                      <th>dual degree</th>
                       <th>ceremony date</th>
                     </tr>
                     <tr each = {grad in details.graduations} >
                       <td>{ grad.program }</td>
+                      <td> { grad.specialization_1 }</td>
+                      <td> { grad.specialization_2 }</td>
+                      <td> { grad.conferral_period_year }</td>
+                      <td> { grad.conferral_period_month }</td>
+                      <td> { grad.grad_application_status }</td>
+                      <td> { grad.status_reason }</td>
+                      <td> { grad.doctoral_citation }</td>
+                      <td> { grad.dual_degree }</td>
                       <td> { grad.ceremony_date }</td>
                     </tr>
                   </table>
@@ -222,6 +274,9 @@
     .student-table tr{
       border-bottom: solid #D9D9D9 1px;
       border-top: solid #D9D9D9 2px;
+    }
+    .student-table{
+      margin-bottom: 30px;
     }
     table{
       border-collapse: collapse;

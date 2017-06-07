@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Student, Enroll, Session, SpecEnrolled, Graduation, SpecGrad, Application, Award
+from .models import Student, Enroll, Session, SpecEnrolled, Graduation, SpecGrad, Application, Award, PreviousInstitution
 from studyareas.models import Subject, Program, Specialization
 from codetables.models import RegistrationStatus, SessionalStanding
 from import_export import resources
@@ -34,10 +34,23 @@ class StudentResource(ExtendedResource):
         import_id_fields = ['student_number']
 
 
+class PIForm(ModelForm):
+    class Meta:
+        model = PreviousInstitution
+        exclude = ('created_by',)
+
+
+class PreviousInstitutionInline(admin.TabularInline):
+    model = PreviousInstitution
+    form = PIForm
+    extra = 1
+
+
 class StudentAdmin(ExtendedAdmin):
     resource_class = StudentResource
     list_display = ('student_number', 'given_name', 'enrolled')
     search_fields = ['student_number__student_number',]
+    inlines = [PreviousInstitutionInline,]
 
     def make_link(self, enroll):
         if enroll:
