@@ -1,7 +1,7 @@
 <students>
   <span class="student-count" if={ count }> { count } student<span if={count == 0 || count > 1 }>s</span></span>
 
-  <a if={ count > 0 } href="/downloadcsv?{ numbers }">download csv</a>
+  <a if={ count > 0  && numbers } href="/downloadcsv?{ numbers }">download csv</a>
   
   <div class="result-panel" >
     <table class="student-table" if={ count > 0 }>

@@ -400,8 +400,9 @@ def filter_students(request):
     ###
     #  return list of students
     ###
-
-    numbers = ''.join(["student_number=" + str(x.student_number) + "&" for x in students])
+    numbers = ''
+    if students.count() <= 200:
+        numbers = ''.join(["student_number=" + str(x.student_number) + "&" for x in students])
 
     paginator = CustomPagination()
     result_page = paginator.paginate_queryset(students, request)
