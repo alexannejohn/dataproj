@@ -1,6 +1,7 @@
 from rest_framework.decorators import api_view
 from django.shortcuts import render
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
 import json
 from .models import Session, Enroll, Student, Application, Graduation, Award
 from studyareas.models import Subject, Specialization, Program
@@ -241,11 +242,27 @@ def filter_specialization(request):
     return Response(specializations)
 
 
+class CustomPagination(PageNumberPagination):
+    page_size = 20
+
+    def get_paginated_response(self, data, numbers):
+        return Response({
+            'links': {
+               'next': self.get_next_link(),
+               'previous': self.get_previous_link()
+            },
+            'count': self.page.paginator.count,
+            'students': data,
+            'numbers': numbers
+        })
+
+
 #
 # Takes json with all filter parameters as payload, returns list of students
 #
 @api_view(['POST'])
 def filter_students(request):
+    print (request)
     filters = json.loads(request.data['filters'])
     students = Student.objects.all()
 
@@ -384,9 +401,13 @@ def filter_students(request):
     #  return list of students
     ###
 
-    serializer = StudentSerializer(students, many=True)
-    numbers = ''.join(["student_number=" + str(x['student_number']) + "&" for x in serializer.data])
-    return JsonResponse({"count": students.count(), "students": serializer.data, "numbers": numbers }, safe=False)
+    numbers = ''.join(["student_number=" + str(x.student_number) + "&" for x in students])
+
+    paginator = CustomPagination()
+    result_page = paginator.paginate_queryset(students, request)
+
+    serializer = StudentSerializer(result_page, many=True)
+    return paginator.get_paginated_response(serializer.data, numbers)
 
 
     # return Response(response)

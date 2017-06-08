@@ -187,6 +187,10 @@
         </tr>
       <tbody>
     </table>
+    <span if={links}>
+      <button data-message="{ links.previous }" disabled="{!links.previous}"  onclick={page_next}>previous</button>
+      <button data-message="{ links.next }" disabled="{!links.next}" onclick={page_next}>next</button>
+    </span>
   </div>
 
   <script>
@@ -198,6 +202,25 @@
             if (myArray[i][property] === searchTerm) return i;
         }
         return -1;
+    }
+
+    page_next(e){
+      var form = InitializeForm();
+      form.append('filters', JSON.stringify(filter_form.to_filter))
+      var url = e.target.dataset.message;
+      var settings = getPostSettings(url, form);
+
+      $.ajax(settings).done(function (response) {
+          data = JSON.parse(response)
+          console.log(data)
+          self.students = data.students
+          self.count = data.count
+          self.numbers = data.numbers
+          self.links = data.links
+          self.update();
+      }).fail(function (jqXHR) {
+          console.log(jqXHR);
+      });
     }
 
     student_detail(e){
