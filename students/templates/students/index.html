@@ -24,6 +24,7 @@
             <script type="riot/tag" src={% static "riot_tags/filter.tag" %}></script>
 
             <button class="ver-top" onclick="filter_students()">Filter</button>
+            <button class="ver-top" onclick="uncheck_all()">Clear filters</button>
             <students></students>
             <script type="riot/tag" src={% static "riot_tags/students.tag" %}></script>
         {% else %}
@@ -48,6 +49,12 @@
       filter_form = riot.mount('filtering')[0]
       student_list = riot.mount('students')[0]
     })
+
+    var uncheck_all = function(){
+       $('input:checkbox').prop('checked', false);
+       $('input:text').val("");
+       filter_form.to_filter = {};
+    }
     
 
     var filter_students = function(){

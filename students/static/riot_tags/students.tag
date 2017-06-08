@@ -29,9 +29,6 @@
             <td colspan="7" if={details} >
               <div class="student-section">
 
-<!-- 'student_number', 'given_name', 'surname', 'preferred_name', 'gender', 'birthdate',
-            'self_id', 'city', 'province', 'country', 'financial_hold', 'sponsorship', 'sponsor' -->
-
                 <h2>Student Details</h2>
                   <table>
                     <tr>
