@@ -11,9 +11,9 @@
           <th>Name</th>
           <th>Student #</th>
           <th>Most recent Program/Specialization</th>
+          <th>Sponsorship</th>
+          <th>Sponsor</th>
           <th>Graduation</th>
-          <th>Applied</th>
-          <th>Awards</th>
         </tr>
       <thead>
       <tbody each={students}>
@@ -22,9 +22,9 @@
           <td>{ given_name }</td>
           <td>{ student_number }</td>
           <td>{ most_recent_enrollment}</td>
+          <td><span if={ sponsorship }>Yes</span><span if={ !sponsorship }>No</span></td>
+          <td>{ sponsor }</td>
           <td>{ graduation_date }</td>
-          <td>{ applied }</td>
-          <td>{ total_award_amount }</td>
         </tr>
         <tr class="student-details"  >
           

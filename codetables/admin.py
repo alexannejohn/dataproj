@@ -14,6 +14,7 @@ class RegistrationStatusResource(ExtendedResource):
 class RegistrationStatusAdmin(ExtendedAdmin):
     resource_class = RegistrationStatusResource
     list_display = ('status_code', 'description')
+    ordering = ('status_code',)
 
 admin.site.register(RegistrationStatus, RegistrationStatusAdmin)
 
@@ -26,6 +27,7 @@ class SessionalStandingResource(ExtendedResource):
 class SessionalStandingAdmin(ExtendedAdmin):
     resource_class = SessionalStandingResource
     list_display = ('standing_code', 'description')
+    ordering = ('standing_code',)
 
 admin.site.register(SessionalStanding, SessionalStandingAdmin)
 
@@ -38,6 +40,7 @@ class AwardTypeResource(ExtendedResource):
 class AwardTypeAdmin(ExtendedAdmin):
     resource_class = AwardTypeResource
     list_display = ('code', 'description')
+    ordering = ('code',)
 
 admin.site.register(AwardType, AwardTypeAdmin)
 
@@ -50,6 +53,7 @@ class AwardStatusResource(ExtendedResource):
 class AwardStatusAdmin(ExtendedAdmin):
     resource_class = AwardStatusResource
     list_display = ('code', 'description')
+    ordering = ('code',)
 
 admin.site.register(AwardStatus, AwardStatusAdmin)
 
@@ -62,6 +66,7 @@ class AppStatusResource(ExtendedResource):
 class AppStatusAdmin(ExtendedAdmin):
     resource_class = AppStatusResource
     list_display = ('code', 'description')
+    ordering = ('code',)
 
 admin.site.register(AppStatus, AppStatusAdmin)
 
@@ -74,6 +79,7 @@ class AppReasonResource(ExtendedResource):
 class AppReasonAdmin(ExtendedAdmin):
     resource_class = AppReasonResource
     list_display = ('code', 'description')
+    ordering = ('code',)
 
 admin.site.register(AppReason, AppReasonAdmin)
 
@@ -86,6 +92,7 @@ class AppDecisionResource(ExtendedResource):
 class AppDecisionAdmin(ExtendedAdmin):
     resource_class = AppDecisionResource
     list_display = ('code', 'description')
+    ordering = ('code',)
 
 admin.site.register(AppDecision, AppDecisionAdmin)
 
@@ -98,6 +105,7 @@ class AppReAdmissionResource(ExtendedResource):
 class AppReAdmissionAdmin(ExtendedAdmin):
     resource_class = AppReAdmissionResource
     list_display = ('code', 'description')
+    ordering = ('code',)
 
 admin.site.register(AppReAdmission, AppReAdmissionAdmin)
 
@@ -110,6 +118,7 @@ class AppActionCodeResource(ExtendedResource):
 class AppActionCodeAdmin(ExtendedAdmin):
     resource_class = AppActionCodeResource
     list_display = ('code', 'description')
+    ordering = ('code',)
 
 admin.site.register(AppActionCode, AppActionCodeAdmin)
 
@@ -122,6 +131,7 @@ class AppMultipleActionResource(ExtendedResource):
 class AppMultipleActionAdmin(ExtendedAdmin):
     resource_class = AppMultipleActionResource
     list_display = ('code', 'description')
+    ordering = ('code',)
 
 admin.site.register(AppMultipleAction, AppMultipleActionAdmin)
 
@@ -134,6 +144,7 @@ class GradAppStatusResource(ExtendedResource):
 class GradAppStatusAdmin(ExtendedAdmin):
     resource_class = GradAppStatusResource
     list_display = ('code', 'description')
+    ordering = ('code',)
 
 admin.site.register(GradAppStatus, GradAppStatusAdmin)
 
@@ -146,6 +157,7 @@ class GradAppReasonResource(ExtendedResource):
 class GradAppReasonAdmin(ExtendedAdmin):
     resource_class = GradAppReasonResource
     list_display = ('code', 'description')
+    ordering = ('code',)
 
 admin.site.register(GradAppReason, GradAppReasonAdmin)
 
