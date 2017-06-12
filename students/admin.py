@@ -139,6 +139,7 @@ class GraduationResource(ExtendedResource):
     def before_import_row(self, row, **kwargs):
         self.code_1 = row['code_1']
         self.code_2 = row['code_2']
+        row['conferral_period'] = str(row['conferral_period']) + "-01"
 
     def after_save_instance(self, instance, using_transactions, dry_run, *args, **kwargs):
         SpecGrad.objects.filter(graduation=instance).delete()
