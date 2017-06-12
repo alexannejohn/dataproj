@@ -28,9 +28,15 @@ class ExtendedResource(resources.ModelResource):
 
 class StudentResource(ExtendedResource):
 
+    def before_import_row(self, row, **kwargs):
+        if str(row['financial_hold']).lower() == 'true' or str(row['financial_hold']).lower() == 'yes':
+            row['financial_hold'] = True
+        if str(row['sponsorship']).lower() == 'true' or str(row['sponsorship']).lower() == 'yes':
+            row['sponsorship'] = True
+
+
     class Meta:
         model = Student
-        fields = ('student_number', 'given_name')
         import_id_fields = ['student_number']
 
 
