@@ -235,3 +235,19 @@ class SessionAdmin(ExtendedAdmin):
 admin.site.register(Session, SessionAdmin)
 
 
+class PreviousInstitutionResource(ExtendedResource):
+
+    class Meta:
+        model = PreviousInstitution
+        import_id_fields = ['student_number', 'institution_name']
+
+
+class PreviousInstitutionAdmin(ExtendedAdmin):
+    resource_class = PreviousInstitutionResource
+    list_display = ('student_number', 'institution_name', 'transfer_credits')
+    search_fields = ['student_number__student_number',]
+
+
+admin.site.register(PreviousInstitution, PreviousInstitutionAdmin)
+
+
