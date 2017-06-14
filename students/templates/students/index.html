@@ -11,6 +11,7 @@
                 {% if user.is_authenticated %}
                     <p>hello, {{ user.username }}</p>
                     <a href="/logout/?next={{ request.path }}">Logout</a>
+                    <a href="/admin">Admin</a>
                 {% else %}
                     <a href="/login/?next={{ request.path }}">Login</a>
                 {% endif %}
