@@ -6,12 +6,14 @@
       <option each={ session in enroll_sessions } value={session}  >{session}</option>
     </select>
     <a href="/enrollcsv?session={enroll_sess}">Enrollment CSV</a>
+    <a href="/enrollcsv?health=true&session={enroll_sess}">Enrollment CSV - health only</a>
 
     <select onchange= {gradcsv}>
       <option value=""  >-year-</option>
       <option each={ year in grad_years } value={year}>{year}</option>
     </select>
     <a href="/gradcsv?year={grad_y}">Graduation CSV</a>
+    <a href="/gradcsv?health=true&year={grad_y}">Graduation CSV - health only</a>
   </div>
   
   <div class="filter-panel" each={ filter in filters }>

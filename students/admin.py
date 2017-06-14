@@ -12,18 +12,24 @@ from django.forms.models import BaseInlineFormSet
 
 
 class ExtendedAdmin(ImportExportModelAdmin):
-    exclude = ('created_by',)
+    readonly_fields = ('created_by', 'created_on', 'last_modified')
+
+    def save_model(self, request, obj, form, change):
+        obj.created_by = request.user
+        obj.save()
 
 
 class ExtendedResource(resources.ModelResource):
     user = None
 
     def before_save_instance(self, instance, using_transactions, dry_run, *args, **kwargs):
-        print (self.user)
+        print(self.user)
+        instance.created_by = self.user
 
     def before_import(self, dataset, dry_run, *args, **kwargs):
         self.user = kwargs['user']
         return super(ExtendedResource, self).before_import(dataset, dry_run, *args, **kwargs)
+
 
 
 class StudentResource(ExtendedResource):

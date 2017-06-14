@@ -11,7 +11,7 @@ from django.db.models import signals
 
 # automatic timestamps for all models
 class AbstractModel(models.Model):
-    created_by = models.ForeignKey(User, blank=True, null=True)
+    created_by = models.ForeignKey(User, blank=True, null=True, verbose_name='created or edited by')
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
