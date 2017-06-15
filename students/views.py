@@ -13,7 +13,7 @@ from .serializers import StudentSerializer, StudentDetailSerializer
 from django.http import HttpResponse, JsonResponse
 import csv
 from urllib.parse import parse_qs
-from geojson import GeometryCollection, Point
+from geojson import FeatureCollection, Point, Feature
 # Create your views here.
 
 
@@ -407,8 +407,8 @@ def filter_students(request):
         numbers = ''.join(["student_number=" + str(x.student_number) + "&" for x in students])
 
     student_geom = students.exclude(latcoord__isnull=True).exclude(longcoord__isnull=True)
-    points = [Point((x.latcoord, x.longcoord)) for x in student_geom]
-    geo_collection = GeometryCollection(points)
+    points = [Feature(geometry=Point((x.longcoord, x.latcoord)), id=x.student_number) for x in student_geom]
+    geo_collection = FeatureCollection(points)
 
     paginator = CustomPagination()
     result_page = paginator.paginate_queryset(students, request)

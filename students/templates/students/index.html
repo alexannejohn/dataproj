@@ -2,6 +2,15 @@
 <html>
   <head>
     <title>dataproj</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"
+       integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ=="
+       crossorigin=""/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.0.5/dist/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.0.5/dist/MarkerCluster.Default.css"/>
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"
+       integrity="sha512-A7vV8IFfih/D732iSSKi20u/ooOfj/AGehOKq0f4vLT1Zr2Y+RX7C+w8A1gaSasGtRUZpF/NZgzSAu4/Gc41Lg=="
+       crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.0.5/dist/leaflet.markercluster-src.js"></script>
   </head>
   <body>
     <div class="header-cont">
@@ -28,6 +37,10 @@
             <button class="ver-top" onclick="uncheck_all()">Clear filters</button>
             <students></students>
             <script type="riot/tag" src={% static "riot_tags/students.tag" %}></script>
+            <div class="mapping">
+                <button class="ver-top" onclick="setmap()">View on Map</button>
+                <div id="mapid"></div>
+            </div>
         {% else %}
             Please log in!
         {% endif %}
@@ -46,6 +59,8 @@
 
     var filter_form;
     var student_list;
+    var student_json;
+
     riot.compile(function() {
       filter_form = riot.mount('filtering')[0]
       student_list = riot.mount('students')[0]
@@ -72,15 +87,47 @@
             student_list.numbers = data.numbers
             student_list.links = data.links
             student_list.update();
+            student_json = data.geo_collection;
         }).fail(function (jqXHR) {
             console.log(jqXHR);
         });
+    }
+
+    var setmap = function(){
+        $('#mapid').show();
+        document.getElementById('mapid').innerHTML = "<div id='map' style='height: 380px'</div>";
+        var map = L.map('map').setView([55, -123], 4);
+        var OpenStreetMap_HOT = L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
+        }).addTo(map); 
+        
+
+        var markers = L.markerClusterGroup();
+        var geoJsonLayer = L.geoJson(student_json, {
+            onEachFeature: function (feature, layer) {
+                layer.bindPopup('aha');
+            }
+        });
+        markers.addLayer(geoJsonLayer);
+        map.addLayer(markers);
+        //map.fitBounds(markers.getBounds());
     }
 
 </script>
 
 
 <style>
+    #mapid{ 
+        width: 80%;
+        margin: auto;
+        height: 380px;
+        display: None;
+    }
+    .mapping{
+        margin-top: -430px;
+        margin-bottom: 400px;
+    }
     body{
         background-color: #E0E0E0;
     }
