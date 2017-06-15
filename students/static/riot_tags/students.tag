@@ -263,7 +263,7 @@
       -moz-box-shadow:2px 2px 5px 5px #C9C9C9;
       margin: 10px;
       padding: 7px 8px 7px 3px;
-      margin-bottom: 450px;
+      margin-bottom: 20px;
     }
     .student-count{
       color: #09839E;
