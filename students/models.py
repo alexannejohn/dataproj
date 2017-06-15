@@ -299,8 +299,9 @@ class Student(AbstractModel):
             url = 'http://maps.googleapis.com/maps/api/geocode/json?' + urlq
 
             response = json.loads(urlopen(url).read())
-            self.latcoord = response['results'][0]['geometry']['location']['lat']
-            self.longcoord = response['results'][0]['geometry']['location']['lng']
+            if response['status'] == 'OK':
+                self.latcoord = response['results'][0]['geometry']['location']['lat']
+                self.longcoord = response['results'][0]['geometry']['location']['lng']
 
         super(Student, self).save(*args, **kwargs)
 
