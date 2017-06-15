@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view
 from django.shortcuts import render
 from rest_framework.response import Response
-from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
+from rest_framework.pagination import PageNumberPagination
 import json
 from .models import Session, Enroll, Student, Application, Graduation, Award
 from studyareas.models import Subject, Specialization, Program
@@ -12,7 +12,8 @@ from django.db.models import Q
 from .serializers import StudentSerializer, StudentDetailSerializer
 from django.http import HttpResponse, JsonResponse
 import csv
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import parse_qs
+from geojson import GeometryCollection, Point
 # Create your views here.
 
 
@@ -245,7 +246,7 @@ def filter_specialization(request):
 class CustomPagination(PageNumberPagination):
     page_size = 20
 
-    def get_paginated_response(self, data, numbers):
+    def get_paginated_response(self, data, numbers, geo_collection):
         return Response({
             'links': {
                'next': self.get_next_link(),
@@ -253,7 +254,8 @@ class CustomPagination(PageNumberPagination):
             },
             'count': self.page.paginator.count,
             'students': data,
-            'numbers': numbers
+            'numbers': numbers,
+            'geo_collection': geo_collection
         })
 
 
@@ -404,11 +406,15 @@ def filter_students(request):
     if students.count() <= 200:
         numbers = ''.join(["student_number=" + str(x.student_number) + "&" for x in students])
 
+    student_geom = students.exclude(latcoord__isnull=True).exclude(longcoord__isnull=True)
+    points = [Point((x.latcoord, x.longcoord)) for x in student_geom]
+    geo_collection = GeometryCollection(points)
+
     paginator = CustomPagination()
     result_page = paginator.paginate_queryset(students, request)
 
     serializer = StudentSerializer(result_page, many=True)
-    return paginator.get_paginated_response(serializer.data, numbers)
+    return paginator.get_paginated_response(serializer.data, numbers, geo_collection)
 
 
     # return Response(response)

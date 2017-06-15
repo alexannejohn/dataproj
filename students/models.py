@@ -7,6 +7,9 @@ from codetables.models import AwardType, AwardStatus, AppStatus, AppReason, AppD
 from studyareas.models import Subject, Program, Specialization
 from codetables.models import GradAppStatus, GradAppReason
 from django.db.models import signals
+from urllib.parse import urlencode
+from urllib.request import urlopen
+import json
 
 
 # automatic timestamps for all models
@@ -277,6 +280,29 @@ class Student(AbstractModel):
     graduation_date = models.DateField(blank=True, null=True)
     total_award_amount = models.IntegerField(blank=True, null=True)
     applied = models.CharField(max_length=150, blank=True, null=True)
+    latcoord = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    longcoord = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+
+
+    def save(self, *args, **kwargs):
+        if self.city:
+            if self.country:
+                country = self.country
+            else:
+                country = 'Canada'
+            location = '%s %s %s' % (self.city, self.province, country)
+
+            urlq = {}
+            urlq['sensor'] = 'false'
+            urlq['address'] = location
+            urlq = urlencode(urlq)
+            url = 'http://maps.googleapis.com/maps/api/geocode/json?' + urlq
+
+            response = json.loads(urlopen(url).read())
+            self.latcoord = response['results'][0]['geometry']['location']['lat']
+            self.longcoord = response['results'][0]['geometry']['location']['lng']
+
+        super(Student, self).save(*args, **kwargs)
 
 
     def __str__(self):
