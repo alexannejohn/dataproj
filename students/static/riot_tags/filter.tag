@@ -257,10 +257,10 @@
       margin: 0 auto;
       background: #ffffff;
       min-height: 20px;
-      box-shadow:2px 2px 5px 5px #C9C9C9;
-      -webkit-box-shadow:2px 2px 5px 5x #C9C9C9;
-      -moz-box-shadow:2px 2px 5px 5px #C9C9C9;
-      margin: 10px;
+      box-shadow:1px 1px 2px 2px #C9C9C9;
+      -webkit-box-shadow:1px 1px 2px 2px #C9C9C9;
+      -moz-box-shadow:1px 1px 2px 2px #C9C9C9;
+      margin: 12px;
       padding: 7px 12px;
     }
     .title-frame{
@@ -354,5 +354,9 @@
     .to-hide{
       display: none;
     }
+    input[type=checkbox]{
+      background-color: white
+    }
+
   </style>
 </filtering>
