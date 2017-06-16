@@ -277,11 +277,14 @@
       margin-right: 30px;
     }
     .student-table th{
-      text-align: left;
       color: #09839E;
       font-size: 12px;
       font-family: sans-serif;
       min-width: 10px;
+      padding-left: 5px;
+      padding-right: 10px;
+      text-transform: lowercase;
+      text-align: left;
     }
     .student-table td{
       text-align: left;
@@ -291,14 +294,18 @@
       color: #5B5C5C;
       font-size: 14px;
       font-family: sans-serif;
-      /*border-bottom: solid #D9D9D9 1px;*/
+      padding-top: 4px;
+      padding-bottom: 4px;
     }
     .student-table tr{
-      border-bottom: solid #D9D9D9 1px;
-      border-top: solid #D9D9D9 2px;
+      border-bottom: solid #EDEDED 1px;
+    }
+    .student-table tbody:nth-last-child(2) tr{
+      border-bottom: none;
     }
     .student-table{
-      margin-bottom: 30px;
+      margin-bottom: 10px;
+      width: 100%
     }
     table{
       border-collapse: collapse;
@@ -329,7 +336,6 @@
       color: #5B5C5C;
       font-size: 14px;
       font-family: sans-serif;
-      /*border-bottom: solid #D9D9D9 1px;*/
     }
     .student-section tr{
       border-bottom: none;
