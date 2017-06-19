@@ -493,7 +493,7 @@ def enroll_csv(request):
 
     enrolls_in_session = Enroll.objects.filter(session=session, regi_status="REGI").order_by('program')
     if 'health' in params:
-        enrolls_in_session = enrolls_in_session.filter(program__is_health=True)
+        enrolls_in_session = enrolls_in_session.filter(Q(program__is_health=True) | Q(specialization_1__is_health=True))
 
     enroll_types = enrolls_in_session.values('program', 'specialization_1', 'specialization_2', 'specialization_1__description', 'specialization_2__description').distinct()
 
@@ -522,7 +522,7 @@ def grad_csv(request):
     #TODO: filter by graduation status
     grad_in_session = Graduation.objects.filter(conferral_period_year=year).order_by('program')
     if 'health' in params:
-        grad_in_session = grad_in_session.filter(program__is_health=True)
+        grad_in_session = grad_in_session.filter(Q(program__is_health=True) | Q(specialization_1__is_health=True))
 
     grad_types = grad_in_session.values('program', 'specialization_1', 'specialization_2', 'specialization_1__description', 'specialization_2__description').distinct()
 

@@ -30,6 +30,7 @@ class Session(AbstractModel):
 
     class Meta:
         unique_together = (('year', 'code'))
+        ordering = ['-session']
 
     def save(self, *args, **kwargs):
         self.session = str(self.year) + str(self.code)

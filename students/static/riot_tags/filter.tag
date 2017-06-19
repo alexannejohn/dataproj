@@ -1,19 +1,36 @@
 <filtering>
 
   <div class="filter-panel">
-    <select onchange= {enrollcsv}>
-      <option value=""  >-session-</option>
-      <option each={ session in enroll_sessions } value={session}  >{session}</option>
-    </select>
-    <a href="/enrollcsv?session={enroll_sess}">Enrollment CSV</a>
-    <a href="/enrollcsv?health=true&session={enroll_sess}">Enrollment CSV - health only</a>
+    <div class="set-inline-block">
+      <select onchange= {enrollcsv}>
+        <option value=""  >-session-</option>
+        <option each={ session in enroll_sessions } value={session}  >{session}</option>
+      </select>
+    </div>
+    <div class="set-inline-block">
+      <img src="static/download-arrow-with-bar.svg" alt="download" height="30" width="30">
+    </div>
+    <div class="set-inline-block download-link">
+      <a href="/enrollcsv?session={enroll_sess}">Enrollment CSV</a><br>
+      <a href="/enrollcsv?health=true&session={enroll_sess}">Enrollment CSV - health only</a>
+    </div>
 
-    <select onchange= {gradcsv}>
-      <option value=""  >-year-</option>
-      <option each={ year in grad_years } value={year}>{year}</option>
-    </select>
-    <a href="/gradcsv?year={grad_y}">Graduation CSV</a>
-    <a href="/gradcsv?health=true&year={grad_y}">Graduation CSV - health only</a>
+    <div class="set-inline-block">
+      <select onchange= {gradcsv}>
+        <option value=""  >-year-</option>
+        <option each={ year in grad_years } value={year}>{year}</option>
+      </select>
+    </div>
+    <div class="set-inline-block">
+      <img src="static/download-arrow-with-bar.svg" alt="download" height="30" width="30">
+    </div>
+    <div class="set-inline-block download-link">
+      <a href="/gradcsv?year={grad_y}">Graduation CSV</a><br>
+      <a href="/gradcsv?health=true&year={grad_y}">Graduation CSV - health only</a>
+    </div>
+
+    
+    
   </div>
   
   <div class="filter-panel" each={ filter in filters }>
@@ -252,6 +269,23 @@
   </script>
 
   <style>
+    .download-link{
+      margin-right: 20px;
+    }
+    .download-link a{
+      color: #09839E;
+      font-style: italic;
+      text-decoration: underline;
+    }
+    .download-link a:hover{
+      color: #254299;
+      font-style: italic;
+      text-decoration: none;
+    }
+    .set-inline-block{
+      display: inline-block;
+      vertical-align: middle;
+    }
     .filter-panel{
       width: 80%
       margin: 0 auto;

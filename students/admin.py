@@ -135,7 +135,7 @@ class EnrollAdmin(ExtendedAdmin):
     inlines = (SpecEnrolledInline,)
     list_display = ('student_number', 'session', 'program', 'specialization_1', 'specialization_2', 'sessional_average')
     search_fields = ['student_number__student_number',]
-    readonly_fields = ('specialization_1', 'specialization_2',)
+    readonly_fields = ('created_by', 'created_on', 'last_modified', 'specialization_1', 'specialization_2',)
 
 
 admin.site.register(Enroll, EnrollAdmin)

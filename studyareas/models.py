@@ -40,7 +40,11 @@ class Specialization(AbstractModel):
     secondary_type = models.CharField(max_length=5, blank=True, null=True)
     secondary_subject = models.ForeignKey(Subject, blank=True, null=True, related_name="specializations_sec")
     description = models.CharField(max_length=150, blank=True, null=True)
+    is_health = models.BooleanField(default=False)
     hidden = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['description']
 
     def __str__(self):
         return '%s' % (self.description,)

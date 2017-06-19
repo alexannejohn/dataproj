@@ -1,7 +1,11 @@
 <students>
   <span class="student-count" if={ count }> { count } student<span if={count == 0 || count > 1 }>s</span></span>
 
-  <a if={ count > 0  && numbers } href="/downloadcsv?{ numbers }">download csv</a>
+  <div if={ count > 0  && numbers } class="download-link">
+    <img src="static/download-arrow-with-bar.svg" alt="download" height="15" width="15">
+    <a  href="/downloadcsv?{ numbers }">download csv</a>
+  </div>
+  
   
   <div class="result-panel" >
     <table class="student-table" if={ count > 0 }>
@@ -248,6 +252,23 @@
   </script>
 
   <style>
+    .download-link{
+      display: inline-block;
+    }
+    .download-link img{
+      margin-bottom: -3px;
+    }
+    .download-link a{
+      margin-bottom: 4px;
+      color: #09839E;
+      font-style: italic;
+      text-decoration: underline;
+    }
+    .download-link a:hover{
+      color: #254299;
+      font-style: italic;
+      text-decoration: none;
+    }
     .student-details{
       display: none;
       height:40px;
