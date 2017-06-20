@@ -1,6 +1,6 @@
 <filtering>
 
-  <div class="filter-panel">
+  <div class="filter-panel no-border">
     <div class="set-inline-block">
       <select onchange= {enrollcsv}>
         <option value=""  >-session-</option>
@@ -296,6 +296,10 @@
       -moz-box-shadow:1px 1px 2px 2px #C9C9C9;
       margin: 12px;
       padding: 7px 12px;
+      border-left: sienna 2px solid;
+    }
+    .filter-panel.no-border{
+      border-left:none;
     }
     .title-frame{
       height: 20px;

@@ -32,15 +32,15 @@
         {% if user.is_authenticated %}
             <filtering></filtering>
             <script type="riot/tag" src={% static "riot_tags/filter.tag" %}></script>
-
-            <button class="ver-top" onclick="filter_students()">Filter</button>
-            <button class="ver-top" onclick="uncheck_all()">Clear filters</button>
+            <div class="button-wrapper">
+                <button class="ver-top" onclick="filter_students()">Filter</button>
+                <button class="ver-top lesser-button" onclick="uncheck_all()">Clear filters</button>
+            </div>
             <students></students>
             <script type="riot/tag" src={% static "riot_tags/students.tag" %}></script>
-            <div class="mapping">
-                <button class="map-button" onclick="setmap()">View on Map</button>
-                <div id="mapid"></div>
-            </div>
+
+            <div class="licence">Icons made by <a href="http://www.flaticon.com/authors/plainicon" title="Plainicon">Plainicon</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+
         {% else %}
             Please log in!
         {% endif %}
@@ -181,6 +181,37 @@
         color: #09839E;
         font-size: 20px;
         display: inline-block;
+    }
+    button {
+      color: #fff;
+      background-color:#09839E;
+      border: none;
+      padding: 5px;
+      font-size: 17px;
+    }
+
+    button:hover,
+    button.hover {
+      background-color: #346392;
+    }
+
+    button:active,
+    button.active {
+      background-color: #27496d;
+    }
+    .button-wrapper{
+        margin-left: 10px;
+    }
+    .lesser-button{
+        background-color: sienna;
+        position: absolute;
+        right:40px;
+    }
+    .licence{
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        font-size: 10;
     }
 </style>
 

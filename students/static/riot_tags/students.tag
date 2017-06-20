@@ -7,7 +7,7 @@
   </div>
   
   
-  <div class="result-panel" >
+  <div class="result-panel" if={ count }>
     <table class="student-table" if={ count > 0 }>
       <thead>
         <tr>
@@ -191,10 +191,15 @@
         </tr>
       <tbody>
     </table>
-    <span if={links}>
+    <span if={links} class="next-prev">
       <button data-message="{ links.previous }" disabled="{!links.previous}"  onclick={page_next}>previous</button>
       <button data-message="{ links.next }" disabled="{!links.next}" onclick={page_next}>next</button>
     </span>
+  </div>
+
+  <div class="mapping" if= { count }>
+      <button class="map-button" onclick="setmap()">View on Map</button>
+      <div id="mapid"></div>
   </div>
 
   <script>
@@ -278,13 +283,14 @@
       width: 80%
       margin: 0 auto;
       background: #ffffff;
-      min-height: 20px;
       box-shadow:2px 2px 5px 5px #C9C9C9;
       -webkit-box-shadow:2px 2px 5px 5x #C9C9C9;
       -moz-box-shadow:2px 2px 5px 5px #C9C9C9;
       margin: 10px;
       padding: 7px 8px 7px 3px;
       margin-bottom: 20px;
+      border-right: sienna 1px solid;
+      border-bottom: sienna 1px solid;
     }
     .student-count{
       color: #09839E;
@@ -293,7 +299,7 @@
       font-weight: bold;
       margin: 0;
       display: inline-block;
-      margin-left: 0px;
+      margin-left: 40px;
       margin-top: 50px;
       margin-right: 30px;
     }
@@ -369,6 +375,13 @@
     }
     .student-section table{
       margin-left: 20px;
+    }
+    .next-prev button {
+      padding: 3px;
+      font-size: 14px;
+    }
+    .next-prev button:disabled{
+      opacity: 0.5
     }
   </style>
 
