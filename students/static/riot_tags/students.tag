@@ -1,5 +1,5 @@
 <students>
-  <span class="student-count" if={ count }> { count } student<span if={count == 0 || count > 1 }>s</span></span>
+  <span class="student-count" if={ students }> { count } student<span if={count == 0 || count > 1 }>s</span></span>
 
   <div if={ count > 0  && numbers } class="download-link">
     <img src="static/download-arrow-with-bar.svg" alt="download" height="15" width="15">
