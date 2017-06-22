@@ -34,9 +34,9 @@
   </div>
   
   <div class="filter-panel" each={ filter in filters }>
-    <div class="title-frame">
+    <div class="title-frame" onclick={ expand_hide } >
       <h1>{ filter.header }</h1>
-      <span class="expand-button" onclick={ expand_hide } >+</span>
+      <span class="expand-button" >+</span>
     </div>  
     <div class="filter-frame">
       <div each={ row, i in filter.list } class="{ row.field }">
@@ -65,9 +65,9 @@
   </div>
 
   <div class="filter-panel">
-    <div class="title-frame">
+    <div class="title-frame" onclick={ expand_hide }>
       <h1>Search by Student Number</h1>
-      <span class="expand-button" onclick={ expand_hide } >+</span>
+      <span class="expand-button" >+</span>
     </div>  
     <div class="filter-frame">
         <span> Student number (exact): 
@@ -246,12 +246,13 @@
 
     expand_hide(e){
       e.preventUpdate = true
-      if ($(e.target).text() == "+"){
-        $(e.target).text("-");
+      var button = $($(e.target).children(".expand-button")[0])
+      if (button.text() == "+"){
+        button.text("-");
       }else{
-        $(e.target).text("+");
+        button.text("+");
       }
-      $(e.target).parent().siblings(".filter-frame").toggle()
+      $(e.target).siblings(".filter-frame").toggle()
     }
 
     expand_hide_options(e){
@@ -317,6 +318,7 @@
       font-family: sans-serif;
       margin: 0;
       display: inline-block;
+      pointer-events: none;
     }
     .expand-button{
       color: #09839E;
@@ -325,9 +327,7 @@
       font-family: sans-serif;
       margin: 0 4px;
       display: inline-block;
-    }
-    .expand-button:hover{
-      color: #0B3C75;
+      pointer-events: none;
     }
     .expand-text{
       color: #09839E;
@@ -350,7 +350,7 @@
       margin: 0 3px;
       font-family: sans-serif;
       display: inline-block;
-      width: 100px;
+      width: 110px;
       vertical-align: top;
     }
     .enroll_specialization .input-check{
@@ -363,29 +363,24 @@
 
     .tooltip {
     position: relative;
-    /*display: inline-block;*/
+    vertical-align: text-bottom;
     }
 
-    /* Tooltip text */
     .tooltip .tooltiptext {
-        visibility: hidden;
-        width: 120px;
-        background-color: black;
-        color: #fff;
-        text-align: center;
-        padding: 5px 0;
-        border-radius: 6px;
-     
-        /* Position the tooltip text - see examples below! */
-        position: absolute;
-        z-index: 1;
-        width: 120px;
-        bottom: 100%;
-        left: 50%; 
-        margin-left: -60px;
+      visibility: hidden;
+      width: 120px;
+      background-color: black;
+      color: #fff;
+      text-align: center;
+      padding: 5px 0;
+      border-radius: 6px;
+      position: absolute;
+      z-index: 1;
+      width: 120px;
+      bottom: 100%;
+      left: 50%; 
+      margin-left: -60px;
     }
-
-    /* Show the tooltip text when you mouse over the tooltip container */
     .tooltip:hover .tooltiptext {
         visibility: visible;
     }
@@ -393,7 +388,21 @@
       display: none;
     }
     input[type=checkbox]{
-      background-color: white
+      -webkit-appearance: none;
+      background-color: #fafafa;
+      border: 1px solid #cacece;
+      padding: 8px;
+      display: inline-block;
+      position: relative;
+      vertical-align: bottom;
+    }
+
+    input[type=checkbox]:checked {
+      background-color: sienna;
+    }
+
+    input[type=checkbox]:focus{
+      outline: none;
     }
 
   </style>

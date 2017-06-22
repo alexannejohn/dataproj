@@ -1,5 +1,6 @@
 <students>
-  <span class="student-count" if={ students }> { count } student<span if={count == 0 || count > 1 }>s</span></span>
+  <span class="student-count" if={ count }> { count } student<span if={count == 0 || count > 1 }>s</span></span>
+  <span if={count > 1000 }> Try limiting your query </span>
 
   <div if={ count > 0  && numbers } class="download-link">
     <img src="static/download-arrow-with-bar.svg" alt="download" height="15" width="15">
@@ -7,7 +8,7 @@
   </div>
   
   
-  <div class="result-panel" if={ count }>
+  <div class="result-panel" if={ count && numbers}>
     <table class="student-table" if={ count > 0 }>
       <thead>
         <tr>
@@ -197,7 +198,7 @@
     </span>
   </div>
 
-  <div class="mapping" if= { count }>
+  <div class="mapping" if= { count && numbers}>
       <button class="map-button" onclick="setmap()">View on Map</button>
       <div id="mapid"></div>
   </div>
@@ -382,6 +383,18 @@
     }
     .next-prev button:disabled{
       opacity: 0.5
+    }
+    #mapid{ 
+        width: 80%;
+        margin: auto;
+        height: 380px;
+        display: None;
+        border: 3px solid grey;
+        border-radius: 3px;
+        margin-top: 30px;
+    }
+    .map-button{
+        margin-left: 10px;
     }
   </style>
 

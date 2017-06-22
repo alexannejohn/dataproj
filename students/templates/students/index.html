@@ -39,6 +39,8 @@
             <students></students>
             <script type="riot/tag" src={% static "riot_tags/students.tag" %}></script>
 
+            <div class="scrolling"></div>
+
             <div class="licence">Icons made by <a href="http://www.flaticon.com/authors/plainicon" title="Plainicon">Plainicon</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
 
         {% else %}
@@ -118,20 +120,9 @@
 
 
 <style>
-    #mapid{ 
-        width: 80%;
-        margin: auto;
-        height: 380px;
-        display: None;
-        border: 3px solid grey;
-        border-radius: 3px;
-        margin-top: 30px;
-    }
-    .mapping{
+    
+    .scrolling{
         margin-bottom: 400px;
-    }
-    .map-button{
-        margin-left: 10px;
     }
     body{
         /*background-color: #E0E0E0;*/

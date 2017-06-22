@@ -399,22 +399,30 @@ def filter_students(request):
     if 'student_number' in filters:
         students = students.filter(student_number=filters['student_number'])
 
+
     ###
     #  return list of students
     ###
-    numbers = ''
-    if students.count() <= 200:
+    if students.count() > 1000:
+        return JsonResponse({
+            'links': {},
+            'count':students.count(),
+            'students': '',
+            'numbers': '',
+            'geo_collection': ''
+        })
+    else:
         numbers = ''.join(["student_number=" + str(x.student_number) + "&" for x in students])
 
-    student_geom = students.exclude(latcoord__isnull=True).exclude(longcoord__isnull=True)
-    points = [Feature(geometry=Point((x.longcoord, x.latcoord)), id=x.student_number) for x in student_geom]
-    geo_collection = FeatureCollection(points)
+        student_geom = students.exclude(latcoord__isnull=True).exclude(longcoord__isnull=True)
+        points = [Feature(geometry=Point((x.longcoord, x.latcoord)), id=x.student_number) for x in student_geom]
+        geo_collection = FeatureCollection(points)
 
-    paginator = CustomPagination()
-    result_page = paginator.paginate_queryset(students, request)
+        paginator = CustomPagination()
+        result_page = paginator.paginate_queryset(students, request)
 
-    serializer = StudentSerializer(result_page, many=True)
-    return paginator.get_paginated_response(serializer.data, numbers, geo_collection)
+        serializer = StudentSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data, numbers, geo_collection)
 
 
     # return Response(response)
