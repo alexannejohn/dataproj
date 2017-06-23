@@ -60,7 +60,7 @@ class PreviousInstitutionInline(admin.TabularInline):
 
 class StudentAdmin(ExtendedAdmin):
     resource_class = StudentResource
-    list_display = ('student_number', 'name', 'city', 'financial_hold', 'sponsorship', 'sponsor', 'enrolled')
+    list_display = ('student_number', 'name', 'city', 'get_self_id_display', 'financial_hold', 'sponsorship', 'sponsor', 'enrolled')
     search_fields = ['student_number', 'given_name', 'preferred_name', 'surname', 'email_address', 'sponsor']
     list_filter = ('self_id', 'financial_hold', 'sponsorship')
     inlines = [PreviousInstitutionInline,]

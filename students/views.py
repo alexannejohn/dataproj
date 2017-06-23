@@ -415,7 +415,7 @@ def filter_students(request):
         numbers = ''.join(["student_number=" + str(x.student_number) + "&" for x in students])
 
         student_geom = students.exclude(latcoord__isnull=True).exclude(longcoord__isnull=True)
-        points = [Feature(geometry=Point((x.longcoord, x.latcoord)), id=x.student_number) for x in student_geom]
+        points = [Feature(geometry=Point((x.longcoord, x.latcoord)), id=x.student_number, properties={"name":x.__str__()}) for x in student_geom]
         geo_collection = FeatureCollection(points)
 
         paginator = CustomPagination()

@@ -108,7 +108,7 @@
         var markers = L.markerClusterGroup();
         var geoJsonLayer = L.geoJson(student_json, {
             onEachFeature: function (feature, layer) {
-                layer.bindPopup('a student!');
+                layer.bindPopup(feature.properties.name);
             }
         });
         markers.addLayer(geoJsonLayer);
