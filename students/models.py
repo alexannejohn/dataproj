@@ -108,10 +108,27 @@ signals.post_save.connect(update_spec, sender=SpecEnrolled)
 
 # graduation details for a student
 class Graduation(AbstractModel):
+
+    MONTH_CHOICES = (
+        (1, 'January'),
+        (2, 'February'),
+        (3, 'March'),
+        (4, 'April'),
+        (5, 'May'),
+        (6, 'June'),
+        (7, 'July'),
+        (8, 'August'),
+        (9, 'September'),
+        (10, 'October'),
+        (11, 'November'),
+        (12, 'December')
+    )
+
+
     student_number = models.ForeignKey('Student', related_name="graduations", db_index=True)
     conferral_period = models.DateField()
     conferral_period_year = models.IntegerField(blank=True, null=True)
-    conferral_period_month = models.IntegerField(blank=True, null=True)
+    conferral_period_month = models.IntegerField(blank=True, null=True, choices=MONTH_CHOICES)
     grad_application_status = models.ForeignKey(GradAppStatus, blank=True, null=True)
     status_reason = models.ForeignKey(GradAppReason, blank=True, null=True)
     ceremony_date = models.DateField(blank=True, null=True, db_index=True)
@@ -308,7 +325,11 @@ class Student(AbstractModel):
 
 
     def __str__(self):
-        return '%s' % (self.given_name)
+        if self.preferred_name:
+            name = self.preferred_name
+        else:
+            name = self.given_name
+        return '%s %s (%s)' % (name, self.surname, self.student_number)
 
 
 
