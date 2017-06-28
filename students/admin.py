@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Student, Enroll, Session, SpecEnrolled, Graduation, SpecGrad, Application, Award, PreviousInstitution
+from .models import Student, Enroll, Session, SpecEnrolled, Graduation, SpecGrad, Application
+from .models import Award, PreviousInstitution, SavedSearch
 from studyareas.models import Subject, Program, Specialization
 from codetables.models import RegistrationStatus, SessionalStanding
 from import_export import resources
@@ -279,5 +280,11 @@ class PreviousInstitutionAdmin(ExtendedAdmin):
 
 
 admin.site.register(PreviousInstitution, PreviousInstitutionAdmin)
+
+
+class SavedSearchAdmin(admin.ModelAdmin):
+    readonly_fields = ('created_on', 'user')
+
+admin.site.register(SavedSearch, SavedSearchAdmin)
 
 

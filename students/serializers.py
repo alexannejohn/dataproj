@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Student, Enroll, Application, Graduation, Award, PreviousInstitution
+from .models import Student, Enroll, Application, Graduation, Award, PreviousInstitution, SavedSearch
 
 
 class EnrollSerializer(serializers.ModelSerializer):
@@ -72,3 +72,10 @@ class StudentDetailSerializer(serializers.ModelSerializer):
         fields = ('student_number', 'given_name', 'surname', 'preferred_name', 'gender', 'birthdate',
             'self_id', 'city', 'province', 'country', 'financial_hold', 'sponsorship', 'sponsor',
             'enrolls', 'applications', 'graduations', 'awards', 'province', 'previous_institutions')
+
+
+class SavedSearchSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = SavedSearch
+        fields = ('title', 'created_on', 'search_json')

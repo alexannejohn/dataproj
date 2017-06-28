@@ -77,6 +77,24 @@
   </div>
 
 
+  <div class="filter-panel">
+    <div class="title-frame" onclick={ expand_hide }>
+      <h1>Saved Searches</h1>
+      <span class="expand-button" >+</span>
+    </div>  
+    <div class="filter-frame">
+        <table>
+          <tr each={search in saved_searches}>
+            <td>{search.title}</td>
+            <td>{search.created_on.substring(0,10)}</td>
+            <td onclick={load_filter} >load</td>
+            <td>delete</td>
+          </tr>
+        </table>
+    </div>
+  </div>
+
+
 
   <script>
     
@@ -104,11 +122,21 @@
         self.update()
     });
 
+    url = "/getsearches/"
+    $.get(url, function(data){
+      self.saved_searches = data.searches
+      self.update()
+    });
+
     var arrayObjectIndexOf = function(myArray, searchTerm, property) {
         for(var i = 0, len = myArray.length; i < len; i++) {
             if (myArray[i][property] === searchTerm) return i;
         }
         return -1;
+    }
+
+    load_filter(e){
+      post_filter_students(JSON.stringify(e.item.search.search_json))
     }
 
     enrollcsv(e){

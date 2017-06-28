@@ -3,13 +3,13 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 import json
-from .models import Session, Enroll, Student, Application, Graduation, Award
+from .models import Session, Enroll, Student, Application, Graduation, Award, SavedSearch
 from studyareas.models import Subject, Specialization, Program
 from codetables.models import RegistrationStatus, SessionalStanding, AppDecision, AppActionCode, AppStatus, AppReason, GradAppStatus
 from codetables.models import AwardType
 from django.db.models import F
 from django.db.models import Q
-from .serializers import StudentSerializer, StudentDetailSerializer
+from .serializers import StudentSerializer, StudentDetailSerializer, SavedSearchSerializer
 from django.http import HttpResponse, JsonResponse
 import csv
 from urllib.parse import parse_qs
@@ -264,7 +264,6 @@ class CustomPagination(PageNumberPagination):
 #
 @api_view(['POST'])
 def filter_students(request):
-    print (request)
     filters = json.loads(request.data['filters'])
     students = Student.objects.all()
 
@@ -546,3 +545,26 @@ def grad_csv(request):
         writer.writerow(row)
 
     return response
+
+
+@api_view(['POST'])
+def save_search(request):
+    filters = json.loads(request.data['filters'])
+    title = request.data['title']
+    user = request.user
+
+    search = SavedSearch(search_json=filters, title=title, user=user)
+    search.save()
+
+    searches = SavedSearch.objects.filter(user=request.user)
+    serializer = SavedSearchSerializer(searches, many=True)
+    return JsonResponse({"searches": serializer.data})
+
+
+@api_view(['GET'])
+def get_searches(request):
+    searches = SavedSearch.objects.filter(user=request.user)
+    serializer = SavedSearchSerializer(searches, many=True)
+    return JsonResponse({"searches": serializer.data})
+    
+

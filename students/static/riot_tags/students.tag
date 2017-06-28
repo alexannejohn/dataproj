@@ -1,5 +1,5 @@
 <students>
-  <span class="student-count" if={ count }> { count } student<span if={count == 0 || count > 1 }>s</span></span>
+  <span class="student-count" if={ count || count==0 }> { count } student<span if={count == 0 || count > 1 }>s</span></span>
   <span if={count > 1000 }> Try limiting your query </span>
 
   <div if={ count > 0  && numbers } class="download-link">

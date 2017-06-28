@@ -10,6 +10,19 @@ from django.db.models import signals
 from urllib.parse import urlencode
 from urllib.request import urlopen
 import json
+from django.contrib.postgres.fields import JSONField
+
+
+
+class SavedSearch(models.Model):
+    created_on = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User)
+    title = models.CharField(max_length=100)
+    search_json = JSONField()
+
+    def __str__(self):
+        return '%s' % (self.title)
+
 
 
 # automatic timestamps for all models
@@ -330,6 +343,10 @@ class Student(AbstractModel):
         else:
             name = self.given_name
         return '%s %s (%s)' % (name, self.surname, self.student_number)
+
+
+
+
 
 
 
