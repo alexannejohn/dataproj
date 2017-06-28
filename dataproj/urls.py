@@ -27,6 +27,9 @@ from django.conf import settings
 router = routers.DefaultRouter()
 router.register(r'users', StudentViewSet)
 
+admin.site.site_title = 'CEIH student database'
+admin.site.index_title = 'Admin'
+
 urlpatterns = [
     url(r'^login/$', auth_views.login, {'template_name': 'students/login.html'}),
     url(r'^logout/$', auth_views.logout, ),
