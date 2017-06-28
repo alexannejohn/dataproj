@@ -566,5 +566,16 @@ def get_searches(request):
     searches = SavedSearch.objects.filter(user=request.user)
     serializer = SavedSearchSerializer(searches, many=True)
     return JsonResponse({"searches": serializer.data})
+
+
+@api_view(['POST'])
+def delete_search(request):
+    search_id = request.data['id']
+    search = SavedSearch.objects.get(id=search_id)
+    search.delete()
+
+    searches = SavedSearch.objects.filter(user=request.user)
+    serializer = SavedSearchSerializer(searches, many=True)
+    return JsonResponse({"searches": serializer.data})
     
 

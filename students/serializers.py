@@ -78,4 +78,4 @@ class SavedSearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SavedSearch
-        fields = ('title', 'created_on', 'search_json')
+        fields = ('title', 'created_on', 'search_json', 'id')

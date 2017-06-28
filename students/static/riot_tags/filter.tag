@@ -87,8 +87,8 @@
           <tr each={search in saved_searches}>
             <td>{search.title}</td>
             <td>{search.created_on.substring(0,10)}</td>
-            <td onclick={load_filter} >load</td>
-            <td>delete</td>
+            <td class="load-search" onclick={load_filter} >load</td>
+            <td class="delete-search" onclick={delete_search} >delete</td>
           </tr>
         </table>
     </div>
@@ -147,6 +147,21 @@
     gradcsv(e){
       var val = $(e.target).val()
       self.grad_y = val
+    }
+
+    delete_search(e){
+        var form = InitializeForm();
+        form.append('id', e.item.search.id)
+        var url = '/deletesearch/'
+        var settings = getPostSettings(url, form);
+
+        $.ajax(settings).done(function (response) {
+            data = JSON.parse(response)
+            self.saved_searches = data.searches;
+            self.update()
+        }).fail(function (jqXHR) {
+            console.log(jqXHR);
+        });
     }
 
     update_search(e){
@@ -326,9 +341,32 @@
       margin: 12px;
       padding: 7px 12px;
       border-left: sienna 2px solid;
+      font-family: sans-serif;
     }
     .filter-panel.no-border{
       border-left:none;
+    }
+    .filter-panel table td{
+      padding-right: 15px;
+      padding-left: 15px;
+    }
+    .filter-panel table td.load-search{
+      color: darkblue;
+      font-style: italic;
+      text-decoration: underline;
+    }
+    .filter-panel table td.delete-search{
+      color: red;
+      font-style: italic;
+      text-decoration: underline;
+      padding-left: 30px;
+      font-size: 11px;
+    }
+    .filter-panel table td.load-search:hover{
+      color: black;
+    }
+    .filter-panel table td.delete-search:hover{
+      color: black;
     }
     .title-frame{
       height: 20px;

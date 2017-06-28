@@ -46,6 +46,7 @@ urlpatterns = [
     url(r'^enrollcsv/', views.enroll_csv, name='enroll_csv'),
     url(r'^gradcsv/', views.grad_csv, name='grad_csv'),
     url(r'^savesearch/', views.save_search, name='save_search'),
+    url(r'^deletesearch/', views.delete_search, name='delete_search'),
     url(r'^getsearches/', views.get_searches, name='get_searches'),
     url(r'^favicon\.ico$', RedirectView.as_view(url='/static/favicon.ico')),
 ]

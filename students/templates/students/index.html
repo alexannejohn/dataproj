@@ -151,7 +151,8 @@
 
         $.ajax(settings).done(function (response) {
             data = JSON.parse(response)
-            console.log(data)
+            filter_form.saved_searches = data.searches;
+            filter_form.update()
             close_modal()
         }).fail(function (jqXHR) {
             console.log(jqXHR);
