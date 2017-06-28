@@ -20,6 +20,9 @@ from rest_framework import routers
 from students import views
 from django.contrib.auth import views as auth_views
 
+from django.views.generic.base import RedirectView
+from django.conf import settings
+
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
 router.register(r'users', StudentViewSet)
@@ -39,4 +42,5 @@ urlpatterns = [
     url(r'^studentdetail/', views.student_detail, name='student_detail'),
     url(r'^enrollcsv/', views.enroll_csv, name='enroll_csv'),
     url(r'^gradcsv/', views.grad_csv, name='grad_csv'),
+    url(r'^favicon\.ico$', RedirectView.as_view(url='/static/favicon.ico')),
 ]
