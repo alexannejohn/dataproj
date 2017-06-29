@@ -55,7 +55,7 @@ Django templating capabilities are not used extensively, and forms are not used.
 
 Thus this essentially functions as 1-page app, with ajax calls making up the bulk of interactions between front and back end.
 
-The front end uses JQuery and RiotJS. The riot files are under `/students/static/riot_tags/` and the tags are loaded from `index.html` Each riot file includes html, javascript and css.
+The front end uses JQuery and RiotJS. The riot files are under `/students/static/riot_tags/` and the tags are loaded from `index.html` Each riot file includes html, javascript and css. LeafletJS is used to create the map, as well as leaflet-markerclusters https://github.com/Leaflet/Leaflet.markercluster
 
 #### Admin:
 django-import-export - https://django-import-export.readthedocs.io/en/latest/ - is included in order to allow uploading CSV files. Thus most models have a Resource class defined as well as Admin.
