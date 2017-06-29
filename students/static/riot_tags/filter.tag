@@ -77,7 +77,7 @@
   </div>
 
 
-  <div class="filter-panel">
+  <div class="filter-panel no-border">
     <div class="title-frame" onclick={ expand_hide }>
       <h1>Saved Searches</h1>
       <span class="expand-button" >+</span>

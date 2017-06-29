@@ -38,7 +38,8 @@
             <div class="button-wrapper">
                 <button class="ver-top" onclick="filter_students()">Filter</button>
                 <button class="ver-top lesser-button-2" onclick="open_modal()">Save Search</button>
-                <button class="ver-top lesser-button" onclick="uncheck_all()">Clear filters</button>
+                <button class="ver-top lesser-button" onclick="uncheck_all()">Clear Filters</button><br><br>
+                <button class="ver-top lesser-button" onclick="clear_search()">Clear Search</button>
             </div>
 
 
@@ -111,6 +112,14 @@
        $('input:text').val("");
        filter_form.to_filter = {};
     }
+
+    var clear_search = function(){
+        student_list.students = data.students
+        student_list.count = null;
+        student_list.numbers = null;
+        student_list.links = null;
+        student_list.update();
+    }
     
 
     var post_filter_students = function(student_filter){
@@ -121,7 +130,6 @@
 
         $.ajax(settings).done(function (response) {
             data = JSON.parse(response)
-            console.log(data)
             student_list.students = data.students
             student_list.count = data.count
             student_list.numbers = data.numbers
@@ -162,8 +170,8 @@
 
     var setmap = function(){
         $('#mapid').show();
-        document.getElementById('mapid').innerHTML = "<div id='map' style='height: 380px'</div>";
-        var map = L.map('map').setView([55, -123], 4);
+        document.getElementById('mapid').innerHTML = "<div id='map' style='height: 580px'</div>";
+        var map = L.map('map').setView([55, -123], 5);
         var OpenStreetMap_HOT = L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
@@ -266,7 +274,7 @@
     .lesser-button-2{
         background-color: sienna;
         position: absolute;
-        right:140px;
+        right:160px;
     }
     .licence{
         position: fixed;

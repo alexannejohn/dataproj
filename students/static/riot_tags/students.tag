@@ -222,7 +222,6 @@
 
       $.ajax(settings).done(function (response) {
           data = JSON.parse(response)
-          console.log(data)
           self.students = data.students
           self.count = data.count
           self.numbers = data.numbers
@@ -237,14 +236,10 @@
       index = arrayObjectIndexOf(self.students, e.item.student_number, 'student_number')
       e.preventUpdate = true
       if ($(e.target).text() == "+"){
-
-        console.log(e);
-
         url = '/studentdetail?student_number=' + e.item.student_number;
         $.get(url, function (data) {
           self.students[index].details = data.student_details;
           self.update()
-          console.log(data)
         });
 
         $(e.target).text("-");
@@ -387,7 +382,7 @@
     #mapid{ 
         width: 80%;
         margin: auto;
-        height: 380px;
+        height: 580px;
         display: None;
         border: 3px solid grey;
         border-radius: 3px;
