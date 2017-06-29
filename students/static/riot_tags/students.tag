@@ -3,12 +3,13 @@
   <span class="student-count" if={ count || count==0 }> { count } student<span if={count == 0 || count > 1 }>s</span></span>
   <span if={count > 1000 }> Try limiting your query </span>
 
+  <!-- button to download CSV of students -->
   <div if={ count > 0  && numbers } class="download-link">
     <img src="static/download-arrow-with-bar.svg" alt="download" height="15" width="15">
     <a  href="/downloadcsv?{ numbers }">download csv</a>
   </div>
   
-  
+  <!-- table of students -->
   <div class="result-panel" if={ count && numbers}>
     <table class="student-table" if={ count > 0 }>
       <thead>
@@ -24,7 +25,7 @@
       <thead>
       <tbody each={students}>
         <tr >
-          <td onclick={ student_detail } >+</td>
+          <td onclick={ student_detail } >+</td>  <!-- expand student -->
           <td>{ given_name }</td>
           <td>{ student_number }</td>
           <td>{ most_recent_enrollment}</td>
@@ -32,7 +33,7 @@
           <td>{ sponsor }</td>
           <td>{ graduation_date }</td>
         </tr>
-        <tr class="student-details"  >
+        <tr class="student-details"  > <!-- detailed info for student -->
           
             <td colspan="7" if={details} >
               <div class="student-section">
@@ -193,21 +194,24 @@
         </tr>
       <tbody>
     </table>
+    <!-- paginated list - next and previous buttons -->
     <span if={links} class="next-prev">
       <button data-message="{ links.previous }" disabled="{!links.previous}"  onclick={page_next}>previous</button>
       <button data-message="{ links.next }" disabled="{!links.next}" onclick={page_next}>next</button>
     </span>
   </div>
 
+  <!-- map! -->
   <div class="mapping" if= { count && numbers}>
       <button class="map-button" onclick="setmap()">View on Map</button>
       <div id="mapid"></div>
   </div>
 
   <script>
-
+    // so can reference self (riot tag object) within other functions
     var self = this;
 
+    // helper functions
     var arrayObjectIndexOf = function(myArray, searchTerm, property) {
         for(var i = 0, len = myArray.length; i < len; i++) {
             if (myArray[i][property] === searchTerm) return i;
@@ -215,6 +219,7 @@
         return -1;
     }
 
+    // go to next or previous page of results
     page_next(e){
       var form = InitializeForm();
       form.append('filters', JSON.stringify(filter_form.to_filter))
@@ -233,6 +238,7 @@
       });
     }
 
+    // load detailed info for student
     student_detail(e){
       index = arrayObjectIndexOf(self.students, e.item.student_number, 'student_number')
       e.preventUpdate = true

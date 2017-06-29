@@ -1,5 +1,6 @@
 <filtering>
 
+<!-- download enrollment and graduation CSV's -->
   <div class="filter-panel no-border">
     <div class="set-inline-block">
       <select onchange= {enrollcsv}>
@@ -27,12 +28,10 @@
     <div class="set-inline-block download-link">
       <a href="/gradcsv?year={grad_y}">Graduation CSV</a><br>
       <a href="/gradcsv?health=true&year={grad_y}">Graduation CSV - health only</a>
-    </div>
-
-    
-    
+    </div>  
   </div>
   
+  <!-- All the filter panels -->
   <div class="filter-panel" each={ filter in filters }>
     <div class="title-frame" onclick={ expand_hide } >
       <h1>{ filter.header }</h1>
@@ -57,13 +56,10 @@
           <input  data-message="award_title" type="text" name="award_title" onchange={ update_search }>
         </span>
       </div>
-
-
-
-
     </div>  
   </div>
 
+<!-- and search by student number -->
   <div class="filter-panel">
     <div class="title-frame" onclick={ expand_hide }>
       <h1>Search by Student Number</h1>
@@ -76,7 +72,7 @@
     </div>
   </div>
 
-
+<!-- Saved searches panel -->
   <div class="filter-panel no-border">
     <div class="title-frame" onclick={ expand_hide }>
       <h1>Saved Searches</h1>
@@ -101,15 +97,15 @@
 
     var self = this;
 
-    self.to_filter = {};
-    self.filters = {};
+    self.to_filter = {}; //Stores which filters are checked
+    self.filters = {}; //all the the possible filter options
     self.filters.student_options = {"header": "Filter by Student Details", "table": "student"};
     self.filters.enroll_options = {"header": "Filter by Enrollment", "table": "enroll"};
     self.filters.application_options = {"header": "Filter by Applications", "table": "application"};
     self.filters.graduation_options = {"header": "Filter by Graduation", "table": "graduation"};
     self.filters.award_options = {"header": "Filter by Awards", "table": "award"}
 
-
+    // load all the filter options
     url = "/filters"
     $.get(url, function (data) {
         self.filters.enroll_options.list = data.enroll_options;
@@ -122,12 +118,14 @@
         self.update()
     });
 
+    // load list of previously saved searches
     url = "/getsearches/"
     $.get(url, function(data){
       self.saved_searches = data.searches
       self.update()
     });
 
+    // helper function
     var arrayObjectIndexOf = function(myArray, searchTerm, property) {
         for(var i = 0, len = myArray.length; i < len; i++) {
             if (myArray[i][property] === searchTerm) return i;
@@ -135,20 +133,24 @@
         return -1;
     }
 
+    // execute a saved search - post_filter_students is defined in index.html
     load_filter(e){
       post_filter_students(JSON.stringify(e.item.search.search_json))
     }
 
+    // set url/button for downloading enrollment csv to specific session
     enrollcsv(e){
       var val = $(e.target).val()
       self.enroll_sess = val
     }
 
+    // set url/button for downloading graduation csv to specific year
     gradcsv(e){
       var val = $(e.target).val()
       self.grad_y = val
     }
 
+    // delete a saved search
     delete_search(e){
         var form = InitializeForm();
         form.append('id', e.item.search.id)
@@ -164,6 +166,7 @@
         });
     }
 
+    // used to update filters for text fields (student number, award title)
     update_search(e){
       e.preventUpdate = true
       var field = e.target.dataset.message;
@@ -175,12 +178,15 @@
       }
     }
 
+    // called on every checkbox click. updates self.to_filter
+    // depending on what is clicked, updates programs or specializations with filtered options
     update_to_filter(e){
       e.preventUpdate = true
       var checked = e.target.checked;
       var val = e.item.check.val;
       var field = e.target.dataset.message;
       
+      // add/delete from to_filter
       if (checked == true){
         if (!self.to_filter[field]){
           self.to_filter[field] = []
@@ -197,8 +203,9 @@
         }
       }
 
+      // update program/specialization
       if (field == 'enroll_program_type' || field == 'enroll_program_level'){
-        url = '/enrollprogramtype?'
+        url = '/filterprogram?'
           url += 'type='
           if(self.to_filter['enroll_program_type']){
             url += (self.to_filter['enroll_program_type'].join() || '')
@@ -218,9 +225,8 @@
           $('.enroll_program').children('.input-check').css("display", "inline-block")
         });
       }
-
       if (field == 'application_program_type' || field == 'application_program_level'){
-        url = '/enrollprogramtype?'
+        url = '/filterprogram?'
           url += 'type='
           if(self.to_filter['application_program_type']){
             url += (self.to_filter['application_program_type'].join() || '')
@@ -240,9 +246,8 @@
           $('.application_program').children('.input-check').css("display", "inline-block")
         });
       }
-
       if (field == 'graduation_program_type' || field == 'graduation_program_level'){
-        url = '/enrollprogramtype?'
+        url = '/filterprogram?'
           url += 'type='
           if(self.to_filter['graduation_program_type']){
             url += (self.to_filter['graduation_program_type'].join() || '')
@@ -262,8 +267,6 @@
           $('.graduation_program').children('.input-check').css("display", "inline-block")
         });
       }
-
-
       if (field == 'enroll_program' || field == 'enroll_subject'){
         url = '/filterspecialization?'
           url += 'program='
@@ -287,6 +290,7 @@
       }
     }
 
+    // expands or hides filter panel
     expand_hide(e){
       e.preventUpdate = true
       var button = $($(e.target).children(".expand-button")[0])
@@ -298,6 +302,7 @@
       $(e.target).siblings(".filter-frame").toggle()
     }
 
+    // when many options, can expand/hide some of them
     expand_hide_options(e){
       e.preventUpdate = true
       if ($(e.target).text().includes("more")){
@@ -307,7 +312,6 @@
         $(e.target).text("see more >>");
         $(e.target).siblings(".to-hide").css("display", "none")
       }
-      // $(e.target).siblings(".to-hide").toggle()
     }
 
   </script>

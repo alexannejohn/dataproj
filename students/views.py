@@ -14,9 +14,9 @@ from django.http import HttpResponse, JsonResponse
 import csv
 from urllib.parse import parse_qs
 from geojson import FeatureCollection, Point, Feature
-# Create your views here.
 
 
+# Basic view for index page
 def index(request):
     context = {'user': request.user}
     return render(request, 'students/index.html', context)  
@@ -189,7 +189,7 @@ def get_filter_options(request):
     award_options.append(award_types)
 
 
-
+    # For enrollment and Graduation CSV download
     grad_years = [x['conferral_period_year'] for x in Graduation.objects.all().order_by('conferral_period_year').values('conferral_period_year').distinct()]
     enroll_sessions = [x['session'] for x in Enroll.objects.all().order_by('session').values('session').distinct()]
 
@@ -210,7 +210,7 @@ def get_filter_options(request):
 # Filters programs bases on program types and levels selected
 #
 @api_view(['GET'])
-def filter_enroll_program_type(request):
+def filter_program(request):
     programs = Program.objects.all()
 
     f_type = request.query_params['type'].split(',')
@@ -242,7 +242,10 @@ def filter_specialization(request):
     specializations = specializations.annotate(text=F('description'), val=F('code'), hover=F('code')).values('val', 'text', 'hover')
     return Response(specializations)
 
-
+#
+# Define custome pagination for student list
+# Includes full (not just current page) geojson and list of student numbers, for map and CSV respectively
+#
 class CustomPagination(PageNumberPagination):
     page_size = 20
 
@@ -321,8 +324,7 @@ def filter_students(request):
         query = queries.pop() 
         for item in queries:
             query |= item
-        students=students.filter(query).distinct()
-
+        students = students.filter(query).distinct()
 
 
     ###
@@ -424,9 +426,9 @@ def filter_students(request):
         return paginator.get_paginated_response(serializer.data, numbers, geo_collection)
 
 
-    # return Response(response)
-
-
+#
+# get detailed info for one student
+#
 @api_view(['GET'])
 def student_detail(request):
     params = parse_qs(request.META['QUERY_STRING'])
@@ -489,6 +491,9 @@ def csv_view(request):
     return response
 
 
+#
+# Download CSV with enrollment during one session
+#
 def enroll_csv(request):
     params = parse_qs(request.META['QUERY_STRING'])
     session = params['session'][0]
@@ -517,7 +522,9 @@ def enroll_csv(request):
 
     return response
 
-
+#
+# Download CSV with graduation during one year
+#
 def grad_csv(request):
     params = parse_qs(request.META['QUERY_STRING'])
     year = params['year'][0]
@@ -546,7 +553,9 @@ def grad_csv(request):
 
     return response
 
-
+#
+# Save a search
+#
 @api_view(['POST'])
 def save_search(request):
     filters = json.loads(request.data['filters'])
@@ -561,6 +570,9 @@ def save_search(request):
     return JsonResponse({"searches": serializer.data})
 
 
+#
+# Get list of searches
+#
 @api_view(['GET'])
 def get_searches(request):
     searches = SavedSearch.objects.filter(user=request.user)
@@ -568,6 +580,9 @@ def get_searches(request):
     return JsonResponse({"searches": serializer.data})
 
 
+#
+# Delete a previously saved search
+#
 @api_view(['POST'])
 def delete_search(request):
     search_id = request.data['id']
