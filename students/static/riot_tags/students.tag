@@ -1,4 +1,5 @@
 <students>
+  <!-- shows number of students returned by query -->
   <span class="student-count" if={ count || count==0 }> { count } student<span if={count == 0 || count > 1 }>s</span></span>
   <span if={count > 1000 }> Try limiting your query </span>
 

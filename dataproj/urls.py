@@ -37,16 +37,16 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^api/', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^filters/', views.get_filter_options, name='filters'),
-    url(r'^filterstudents/', views.filter_students, name='filterstudents'),
-    url(r'^enrollprogramtype/', views.filter_enroll_program_type, name='enrollprogramtype'),
-    url(r'^filterspecialization/', views.filter_specialization, name='filterspecialization'),
-    url(r'^downloadcsv/', views.csv_view, name='csv_view'),
-    url(r'^studentdetail/', views.student_detail, name='student_detail'),
-    url(r'^enrollcsv/', views.enroll_csv, name='enroll_csv'),
-    url(r'^gradcsv/', views.grad_csv, name='grad_csv'),
-    url(r'^savesearch/', views.save_search, name='save_search'),
-    url(r'^deletesearch/', views.delete_search, name='delete_search'),
-    url(r'^getsearches/', views.get_searches, name='get_searches'),
-    url(r'^favicon\.ico$', RedirectView.as_view(url='/static/favicon.ico')),
+    url(r'^filters/', views.get_filter_options, name='filters'), #Get filters
+    url(r'^filterstudents/', views.filter_students, name='filterstudents'), #send filter json, get list of students
+    url(r'^enrollprogramtype/', views.filter_enroll_program_type, name='enrollprogramtype'), #filter possible programs due to type, etc
+    url(r'^filterspecialization/', views.filter_specialization, name='filterspecialization'), #filter possible specializations due to subject, etc
+    url(r'^downloadcsv/', views.csv_view, name='csv_view'), #download csv of students
+    url(r'^studentdetail/', views.student_detail, name='student_detail'), #get detailed info on one student
+    url(r'^enrollcsv/', views.enroll_csv, name='enroll_csv'), #download csv of enrollments
+    url(r'^gradcsv/', views.grad_csv, name='grad_csv'), #download csv of graduations
+    url(r'^savesearch/', views.save_search, name='save_search'), # save a search
+    url(r'^deletesearch/', views.delete_search, name='delete_search'), # delete a search
+    url(r'^getsearches/', views.get_searches, name='get_searches'),  # get all searches
+    url(r'^favicon\.ico$', RedirectView.as_view(url='/static/favicon.ico')),  # favicon redirect
 ]

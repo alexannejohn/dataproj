@@ -1,7 +1,9 @@
 from rest_framework import serializers
 from .models import Student, Enroll, Application, Graduation, Award, PreviousInstitution, SavedSearch
 
-
+# 
+# Serializers for detailed information on one student
+#
 class EnrollSerializer(serializers.ModelSerializer):
     specialization_1 = serializers.StringRelatedField()
     specialization_2 = serializers.StringRelatedField()
@@ -51,14 +53,6 @@ class PreviousInstitutionSerializer(serializers.ModelSerializer):
         model = PreviousInstitution
         fields = ('institution_name', 'transfer_credits')
 
-class StudentSerializer(serializers.ModelSerializer):
-    most_recent_enrollment = serializers.StringRelatedField()
-
-    class Meta:
-        model = Student
-        fields = ('student_number', 'given_name', 'most_recent_enrollment', 'graduation_date', 
-            'applied', 'total_award_amount', 'sponsorship', 'sponsor')
-
 
 class StudentDetailSerializer(serializers.ModelSerializer):
     enrolls = EnrollSerializer(read_only=True, many=True)
@@ -73,7 +67,16 @@ class StudentDetailSerializer(serializers.ModelSerializer):
             'self_id', 'city', 'province', 'country', 'financial_hold', 'sponsorship', 'sponsor',
             'enrolls', 'applications', 'graduations', 'awards', 'province', 'previous_institutions')
 
+# Serializer for list of students
+class StudentSerializer(serializers.ModelSerializer):
+    most_recent_enrollment = serializers.StringRelatedField()
 
+    class Meta:
+        model = Student
+        fields = ('student_number', 'given_name', 'most_recent_enrollment', 'graduation_date', 
+            'applied', 'total_award_amount', 'sponsorship', 'sponsor')
+
+# Serializer for list of saved searches
 class SavedSearchSerializer(serializers.ModelSerializer):
 
     class Meta:

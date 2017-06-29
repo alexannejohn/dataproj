@@ -16,6 +16,8 @@
     
   </head>
   <body>
+
+    <!-- header - includes link to login/logout, link to admin -->
     <div class="header-cont">
         <div class="header">
             <i>CEIH Student Database</i>
@@ -32,9 +34,13 @@
     </div>
 
     <div class="content">
+        <!-- only show bulk of page if user is logged in -->
         {% if user.is_authenticated %}
+            <!-- riot tag - filter.tag -->
             <filtering></filtering>
             <script type="riot/tag" src={% static "riot_tags/filter.tag" %}></script>
+
+            <!-- buttons to filter, clear search, save search, etc -->
             <div class="button-wrapper">
                 <button class="ver-top" onclick="filter_students()">Filter</button>
                 <button class="ver-top lesser-button-2" onclick="open_modal()">Save Search</button>
@@ -43,10 +49,8 @@
             </div>
 
 
-            <!-- The Modal -->
+            <!-- pop-up for saving search-->
             <div id="myModal" class="modal">
-
-              <!-- Modal content -->
               <div class="modal-content">
                 <span class="close" onclick="close_modal()">&times;</span>
                 <div class="title-input">
@@ -54,17 +58,16 @@
                 </div>
                 <button class="ver-top" onclick="save_search()">SAVE</button>
               </div>
-
             </div>
 
-
-
-
+            <!-- riot tag - students,tag -->
             <students></students>
             <script type="riot/tag" src={% static "riot_tags/students.tag" %}></script>
 
+            <!-- div with large margin-bottom to ensure scrolling -->
             <div class="scrolling"></div>
 
+            <!-- licence for download icon -->
             <div class="licence">Icons made by <a href="http://www.flaticon.com/authors/plainicon" title="Plainicon">Plainicon</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
 
         {% else %}
@@ -72,7 +75,7 @@
         {% endif %}
     </div>
     
-    <!-- include riot.js -->
+    <!-- include riot.js, Jquery, ajaxhelpers.js -->
     <script src="https://cdn.jsdelivr.net/riot/3.2/riot+compiler.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
     <script src={% static "javascript/ajaxhelpers.js" %}></script>
@@ -83,7 +86,7 @@
 
 <script>
 
-    //modal
+    // Functions to open and close modal - save search popup
     var modal = document.getElementById('myModal');
     var open_modal = function() {
         modal.style.display = "block";
@@ -97,22 +100,24 @@
         }
     }
 
+    var filter_form; //Riot Tag filter.tag
+    var student_list;  //Riot tag students.tag
+    var student_json;  //Stores geojson of students for map
 
-    var filter_form;
-    var student_list;
-    var student_json;
-
+    // load riot tags
     riot.compile(function() {
       filter_form = riot.mount('filtering')[0]
       student_list = riot.mount('students')[0]
     })
 
+    // unchecks all filters, clears filter json object
     var uncheck_all = function(){
        $('input:checkbox').prop('checked', false);
        $('input:text').val("");
        filter_form.to_filter = {};
     }
 
+    //remove search results
     var clear_search = function(){
         student_list.students = data.students
         student_list.count = null;
@@ -121,7 +126,7 @@
         student_list.update();
     }
     
-
+    //send search json to database, loads student list result
     var post_filter_students = function(student_filter){
         var form = InitializeForm();
         form.append('filters', student_filter)
@@ -141,11 +146,13 @@
         });
     }
 
+    // filters from checkboxes checkboxes
     var filter_students = function(){
         var student_filter = JSON.stringify(filter_form.to_filter)
         post_filter_students(student_filter)
     }
 
+    // Save a search to the database
     var save_search = function(){
         var form = InitializeForm();
         form.append('filters', JSON.stringify(filter_form.to_filter))
@@ -168,6 +175,7 @@
         });
     }
 
+    // Creates the map
     var setmap = function(){
         $('#mapid').show();
         document.getElementById('mapid').innerHTML = "<div id='map' style='height: 580px'</div>";
@@ -177,7 +185,6 @@
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
         }).addTo(map); 
         
-
         var markers = L.markerClusterGroup();
         var geoJsonLayer = L.geoJson(student_json, {
             onEachFeature: function (feature, layer) {
