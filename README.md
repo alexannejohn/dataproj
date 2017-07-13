@@ -11,7 +11,7 @@ Django project running in a docker container
   
   `docker-compose up -d db`    *database container needs to be started first
   
-  `docker-compose up web`
+  `docker-compose up -d web`
   
   
   
@@ -34,6 +34,16 @@ Django project running in a docker container
   `python manage.py makemigrations codetables`
   
   `python manage.py migrate`
+
+
+
+  can run a dev and production environment. for prod env (port 8002):
+  
+  `docker-compose -f production.yml up -d livedb`
+  
+  `docker-compose -f production.yml up -d liveweb`
+
+  `docker exec -it dataproj_liveweb_1 bash`
 
 
 ### notes:
