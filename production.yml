@@ -1,0 +1,8 @@
+version: '2'
+services:
+  db:
+    volumes:
+      - livedata:/var/lib/postgresql/data
+  web:
+    ports:
+      - "8002:8000"
