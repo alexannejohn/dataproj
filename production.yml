@@ -1,8 +1,21 @@
 version: '2'
 services:
-  db:
+  livedb:
+    image: postgres
     volumes:
       - livedata:/var/lib/postgresql/data
-  web:
+  liveweb:
+    build: .
+    environment:
+      - DJANGO_SETTINGS_MODULE=dataproj.settings_prod
+    command: python3 manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
     ports:
       - "8002:8000"
+    depends_on:
+      - livedb
+
+volumes:
+  livedata:
+    driver: local
