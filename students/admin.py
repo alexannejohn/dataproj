@@ -31,6 +31,11 @@ class ExtendedResource(resources.ModelResource):
         self.user = kwargs['user']
         return super(ExtendedResource, self).before_import(dataset, dry_run, *args, **kwargs)
 
+    def before_import_row(self, row, **kwargs):
+        for field in row:
+            if field == '':
+                field = None
+
 
 
 class StudentResource(ExtendedResource):
