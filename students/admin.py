@@ -33,8 +33,9 @@ class ExtendedResource(resources.ModelResource):
 
     def before_import_row(self, row, **kwargs):
         for fieldname, field in row.items():
-            if field.isspace() is True:
-                row[fieldname] = None
+            if isinstance(field, str):
+                if field.isspace() is True:
+                    row[fieldname] = None
 
 
 
