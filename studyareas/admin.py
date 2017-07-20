@@ -14,6 +14,7 @@ class ProgramResource(ExtendedResource):
     def before_import_row(self, row, **kwargs):
         if str(row['is_health']).lower() == 'true' or str(row['is_health']).lower() == 'yes':
             row['is_health'] = True
+        return super(ProgramResource, self).before_import_row(row, **kwargs)
 
     class Meta:
         model = Program
@@ -35,6 +36,7 @@ class SpecializationResource(ExtendedResource):
     def before_import_row(self, row, **kwargs):
         if str(row['is_health']).lower() == 'true' or str(row['is_health']).lower() == 'yes':
             row['is_health'] = True
+        return super(SpecializationResource, self).before_import_row(row, **kwargs)
 
     class Meta:
         model = Specialization

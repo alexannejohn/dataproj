@@ -33,8 +33,8 @@ class ExtendedResource(resources.ModelResource):
 
     def before_import_row(self, row, **kwargs):
         for fieldname, field in row.items():
-            if field == '':
-                field = None
+            if field.isspace() is True:
+                row[fieldname] = None
 
 
 
@@ -45,6 +45,7 @@ class StudentResource(ExtendedResource):
             row['financial_hold'] = True
         if str(row['sponsorship']).lower() == 'true' or str(row['sponsorship']).lower() == 'yes':
             row['sponsorship'] = True
+        return super(StudentResource, self).before_import_row(row, **kwargs)
 
 
     class Meta:
@@ -103,6 +104,7 @@ class EnrollResource(ExtendedResource):
     def before_import_row(self, row, **kwargs):
         self.code_1 = row['code_1']
         self.code_2 = row['code_2']
+        return super(EnrollResource, self).before_import_row(row, **kwargs)
 
     def after_save_instance(self, instance, using_transactions, dry_run, *args, **kwargs):
         SpecEnrolled.objects.filter(enroll=instance).delete()
@@ -170,6 +172,7 @@ class GraduationResource(ExtendedResource):
         row['conferral_period'] = str(row['conferral_period']) + "-01"
         if str(row['dual_degree']).lower() == 'true' or str(row['dual_degree']).lower() == 'yes':
             row['dual_degree'] = True
+        return super(GraduationResource, self).before_import_row(row, **kwargs)
 
     def after_save_instance(self, instance, using_transactions, dry_run, *args, **kwargs):
         SpecGrad.objects.filter(graduation=instance).delete()
