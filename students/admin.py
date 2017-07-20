@@ -32,7 +32,7 @@ class ExtendedResource(resources.ModelResource):
         return super(ExtendedResource, self).before_import(dataset, dry_run, *args, **kwargs)
 
     def before_import_row(self, row, **kwargs):
-        for field in row:
+        for fieldname, field in row.items():
             if field == '':
                 field = None
 
