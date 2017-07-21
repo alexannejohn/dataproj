@@ -24,7 +24,6 @@ class ExtendedResource(resources.ModelResource):
     user = None
 
     def before_save_instance(self, instance, using_transactions, dry_run, *args, **kwargs):
-        print(self.user)
         instance.created_by = self.user
 
     def before_import(self, dataset, dry_run, *args, **kwargs):
@@ -103,17 +102,23 @@ class EnrollResource(ExtendedResource):
     code_2 = None
 
     def before_import_row(self, row, **kwargs):
-        self.code_1 = row['code_1']
-        self.code_2 = row['code_2']
+        try:
+            self.code_1 = int(row['code_1'])
+        except ValueError:
+            self.code_1 = None
+        try:
+            self.code_2 = int(row['code_2'])
+        except ValueError:
+            self.code_2 = None
         return super(EnrollResource, self).before_import_row(row, **kwargs)
 
     def after_save_instance(self, instance, using_transactions, dry_run, *args, **kwargs):
         SpecEnrolled.objects.filter(enroll=instance).delete()
-        if self.code_1 != None and len(self.code_1) > 0:
+        if self.code_1 != None:
             specialization = Specialization.objects.get(code=self.code_1)
             enrollspec = SpecEnrolled.objects.create(enroll=instance, specialization=specialization, order=1)
             enrollspec.save()
-        if self.code_2 != None and len(self.code_2) > 0:
+        if self.code_2 != None:
             specialization = Specialization.objects.get(code=self.code_2)
             enrollspec = SpecEnrolled.objects.create(enroll=instance, specialization=specialization, order=2)
             enrollspec.save()
@@ -168,8 +173,14 @@ class GraduationResource(ExtendedResource):
     code_2 = None
 
     def before_import_row(self, row, **kwargs):
-        self.code_1 = row['code_1']
-        self.code_2 = row['code_2']
+        try:
+            self.code_1 = int(row['code_1'])
+        except ValueError:
+            self.code_1 = None
+        try:
+            self.code_2 = int(row['code_2'])
+        except ValueError:
+            self.code_2 = None
         row['conferral_period'] = str(row['conferral_period']) + "-01"
         if str(row['dual_degree']).lower() == 'true' or str(row['dual_degree']).lower() == 'yes':
             row['dual_degree'] = True
@@ -177,11 +188,11 @@ class GraduationResource(ExtendedResource):
 
     def after_save_instance(self, instance, using_transactions, dry_run, *args, **kwargs):
         SpecGrad.objects.filter(graduation=instance).delete()
-        if self.code_1 != None and len(self.code_1) > 0:
+        if self.code_1 != None:
             specialization = Specialization.objects.get(code=self.code_1)
             enrollgrad = SpecGrad.objects.create(graduation=instance, specialization=specialization, order=1)
             enrollgrad.save()
-        if self.code_2 != None and len(self.code_2) > 0:
+        if self.code_2 != None:
             specialization = Specialization.objects.get(code=self.code_2)
             enrollgrad = SpecGrad.objects.create(graduation=instance, specialization=specialization, order=2)
             enrollgrad.save()
