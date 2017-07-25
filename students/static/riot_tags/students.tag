@@ -15,7 +15,9 @@
       <thead>
         <tr>
           <th></th>
-          <th>Name</th>
+          <th>Given name</th>
+          <th>Surname</th>
+          <th>Preferred name</th>
           <th>Student #</th>
           <th>Most recent Program/Specialization</th>
           <th>Sponsorship</th>
@@ -27,6 +29,8 @@
         <tr >
           <td onclick={ student_detail } >+</td>  <!-- expand student -->
           <td>{ given_name }</td>
+          <td>{ surname }</td>
+          <td>{ preferred_name }</td>
           <td>{ student_number }</td>
           <td>{ most_recent_enrollment}</td>
           <td><span if={ sponsorship }>Yes</span><span if={ !sponsorship }>No</span></td>
@@ -51,9 +55,6 @@
                       <th>city</th>
                       <th>province</th>
                       <th>country</th>
-                      <th>financial_hold</th>
-                      <th>sponsorship</th>
-                      <th>sponsor</th>
                     </tr>
                     <tr>
                       <td>{ details.given_name }</td>
@@ -66,8 +67,19 @@
                       <td>{ details.city }</td>
                       <td>{ details.province }</td>
                       <td>{ details.country }</td>
+                    </tr>
+                    <tr>
+                      <th>financial_hold</th>
+                      <th>sponsorship</th>
+                      <th>sponsorship start</th>
+                      <th>sponsorship end</th>
+                      <th>sponsor</th>
+                    </tr>
+                    <tr>
                       <td><span if={ details.financial_hold }>Yes</span><span if={ !details.financial_hold }>No</span></td>
                       <td><span if={ details.sponsorship }>Yes</span><span if={ !details.sponsorship }>No</span></td>
+                      <td>{ details.sponsorship_start }</td>
+                      <td>{ details.sponsorship_end }</td>
                       <td>{ details.sponsor }</td>
 
                     </tr>
@@ -127,7 +139,7 @@
                       <th>Average</th>
                     </tr>
                     <tr each = {enroll in details.enrolls} >
-                      <td>{ enroll.session }</td>
+                      <td> { enroll.session }</td>
                       <td> { enroll.program }</td>
                       <td> { enroll.specialization_1 }</td>
                       <td> { enroll.specialization_2 }</td>

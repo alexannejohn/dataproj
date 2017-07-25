@@ -300,6 +300,8 @@ class Student(AbstractModel):
 
     financial_hold = models.BooleanField(default=False)
     sponsorship = models.BooleanField(default=False)
+    sponsorship_start = models.ForeignKey(Session, blank=True, null=True, related_name='spons_start')
+    sponsorship_end = models.ForeignKey(Session, blank=True, null=True, related_name='spons_end')
     sponsor = models.CharField(max_length=200, blank=True, null=True)
 
     #signals??

@@ -64,7 +64,8 @@ class StudentDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
         fields = ('student_number', 'given_name', 'surname', 'preferred_name', 'gender', 'birthdate',
-            'self_id', 'city', 'province', 'country', 'financial_hold', 'sponsorship', 'sponsor',
+            'self_id', 'city', 'province', 'country', 'financial_hold', 'sponsorship',
+            'sponsorship_start', 'sponsorship_end', 'sponsor',
             'enrolls', 'applications', 'graduations', 'awards', 'province', 'previous_institutions')
 
 # Serializer for list of students
@@ -73,7 +74,7 @@ class StudentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Student
-        fields = ('student_number', 'given_name', 'most_recent_enrollment', 'graduation_date', 
+        fields = ('student_number', 'given_name', 'preferred_name', 'surname', 'most_recent_enrollment', 'graduation_date', 
             'applied', 'total_award_amount', 'sponsorship', 'sponsor')
 
 # Serializer for list of saved searches

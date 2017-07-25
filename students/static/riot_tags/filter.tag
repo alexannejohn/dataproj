@@ -13,7 +13,7 @@
     </div>
     <div class="set-inline-block download-link">
       <a href="/enrollcsv?session={enroll_sess}">Enrollment CSV</a><br>
-      <a href="/enrollcsv?health=true&session={enroll_sess}">Enrollment CSV - health only</a>
+      <a href="/enrollcsv?health=true&session={enroll_sess}">Enrollment CSV - prof. programs</a>
     </div>
 
     <div class="set-inline-block">
@@ -27,7 +27,7 @@
     </div>
     <div class="set-inline-block download-link">
       <a href="/gradcsv?year={grad_y}">Graduation CSV</a><br>
-      <a href="/gradcsv?health=true&year={grad_y}">Graduation CSV - health only</a>
+      <a href="/gradcsv?health=true&year={grad_y}">Graduation CSV - prof. programs</a>
     </div>  
   </div>
   
