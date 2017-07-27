@@ -270,6 +270,10 @@ def filter_students(request):
     filters = json.loads(request.data['filters'])
     students = Student.objects.all()
 
+    params = parse_qs(request.META['QUERY_STRING'])
+    if 'enroll' in params:
+        students = students.exclude(most_recent_enrollment__isnull=True)
+
     ###
     #  filtering by student details
     ###

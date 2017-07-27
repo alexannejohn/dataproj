@@ -43,6 +43,7 @@
             <!-- buttons to filter, clear search, save search, etc -->
             <div class="button-wrapper">
                 <button class="ver-top" onclick="filter_students()">Filter</button>
+                <button class="ver-top" onclick="filter_students_enrolled()">Filter - enrolled only</button>
                 <button class="ver-top lesser-button-2" onclick="open_modal()">Save Search</button>
                 <button class="ver-top lesser-button" onclick="uncheck_all()">Clear Filters</button><br><br>
                 <button class="ver-top lesser-button" onclick="clear_search()">Clear Search</button>
@@ -146,10 +147,34 @@
         });
     }
 
+    var post_filter_students_enrolled = function(student_filter){
+        var form = InitializeForm();
+        form.append('filters', student_filter)
+        var url = '/filterstudents/?enroll=true'
+        var settings = getPostSettings(url, form);
+
+        $.ajax(settings).done(function (response) {
+            data = JSON.parse(response)
+            student_list.students = data.students
+            student_list.count = data.count
+            student_list.numbers = data.numbers
+            student_list.links = data.links
+            student_list.update();
+            student_json = data.geo_collection;
+        }).fail(function (jqXHR) {
+            console.log(jqXHR);
+        });
+    }
+
     // filters from checkboxes checkboxes
     var filter_students = function(){
         var student_filter = JSON.stringify(filter_form.to_filter)
         post_filter_students(student_filter)
+    }
+
+    var filter_students_enrolled = function(){
+        var student_filter = JSON.stringify(filter_form.to_filter)
+        post_filter_students_enrolled(student_filter)
     }
 
     // Save a search to the database
