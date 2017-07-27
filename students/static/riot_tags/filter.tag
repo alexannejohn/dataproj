@@ -83,7 +83,8 @@
           <tr each={search in saved_searches}>
             <td>{search.title}</td>
             <td>{search.created_on.substring(0,10)}</td>
-            <td class="load-search" onclick={load_filter} >load</td>
+            <td class="load-search" onclick={load_filter} >filter</td>
+            <td class="load-search" onclick={load_filter_enrolled} >filter - enrolled only</td>
             <td class="delete-search" onclick={delete_search} >delete</td>
           </tr>
         </table>
@@ -136,6 +137,10 @@
     // execute a saved search - post_filter_students is defined in index.html
     load_filter(e){
       post_filter_students(JSON.stringify(e.item.search.search_json))
+    }
+
+    load_filter_enrolled(e){
+      post_filter_students_enrolled(JSON.stringify(e.item.search.search_json))
     }
 
     // set url/button for downloading enrollment csv to specific session
