@@ -143,7 +143,7 @@ class Graduation(AbstractModel):
     conferral_period_year = models.IntegerField(blank=True, null=True)
     conferral_period_month = models.IntegerField(blank=True, null=True, choices=MONTH_CHOICES)
     grad_application_status = models.ForeignKey(GradAppStatus, blank=True, null=True)
-    status_reason = models.ForeignKey(GradAppReason, blank=True, null=True)
+    status_reason = models.CharField(max_length=20, blank=True, null=True)
     ceremony_date = models.DateField(blank=True, null=True, db_index=True)
     doctoral_citation = models.CharField(max_length=20, blank=True, null=True)
     dual_degree = models.BooleanField(default=False)
