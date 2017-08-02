@@ -104,11 +104,11 @@ class EnrollResource(ExtendedResource):
     def before_import_row(self, row, **kwargs):
         try:
             self.code_1 = int(row['code_1'])
-        except ValueError:
+        except (ValueError, TypeError) as e:
             self.code_1 = None
         try:
             self.code_2 = int(row['code_2'])
-        except ValueError:
+        except (ValueError, TypeError) as e:
             self.code_2 = None
         return super(EnrollResource, self).before_import_row(row, **kwargs)
 
@@ -175,11 +175,11 @@ class GraduationResource(ExtendedResource):
     def before_import_row(self, row, **kwargs):
         try:
             self.code_1 = int(row['code_1'])
-        except ValueError:
+        except (ValueError, TypeError) as e:
             self.code_1 = None
         try:
             self.code_2 = int(row['code_2'])
-        except ValueError:
+        except (ValueError, TypeError) as e:
             self.code_2 = None
         row['conferral_period'] = str(row['conferral_period']) + "-01"
         if str(row['dual_degree']).lower() == 'true' or str(row['dual_degree']).lower() == 'yes':
