@@ -40,6 +40,7 @@
     <div class="filter-frame">
       <div each={ row, i in filter.list } class="{ row.field }">
         <h2>{ row.title }</h2>
+        
         <span each={ check, i in row.options} class={i > 14 ? 'input-check to-hide' : 'input-check'}>
           <input  data-message="{ row.field }" type="checkbox" name="{check.val}" value="{check.val}" onclick={ parent.update_to_filter }>
             <span class='tooltip'>
@@ -47,7 +48,8 @@
               <span if={ check.hover } class="tooltiptext">{ check.hover }</span>
             </span>
         </span>
-        <span class="expand-text" if={ row.options.length > 15 } onclick={expand_hide_options } >see more >><span>
+        <span class="expand-text" if={ row.options.length > 15 } onclick={expand_hide_options } >see more >></span><br>
+        <span data-message="{ row.field }" class="uncheck-all" onclick={uncheck_field}>uncheck all</span><br>
       </div>
 
       <div if={filter.table =='award'} class="award_title">
@@ -155,6 +157,7 @@
       self.grad_y = val
     }
 
+
     // delete a saved search
     delete_search(e){
         var form = InitializeForm();
@@ -183,32 +186,10 @@
       }
     }
 
-    // called on every checkbox click. updates self.to_filter
-    // depending on what is clicked, updates programs or specializations with filtered options
-    update_to_filter(e){
-      e.preventUpdate = true
-      var checked = e.target.checked;
-      var val = e.item.check.val;
-      var field = e.target.dataset.message;
-      
-      // add/delete from to_filter
-      if (checked == true){
-        if (!self.to_filter[field]){
-          self.to_filter[field] = []
-        }
-        self.to_filter[field].push(val)
-      }
-      else{
-        var index = self.to_filter[field].indexOf(val);
-        if (index > -1) {
-           self.to_filter[field].splice(index, 1);
-        }
-        if (self.to_filter[field].length < 1){
-          delete self.to_filter[field];
-        }
-      }
 
-      // update program/specialization
+    // update program/specialization
+    var update_program_spec = function(field){
+      
       if (field == 'enroll_program_type' || field == 'enroll_program_level'){
         url = '/filterprogram?'
           url += 'type='
@@ -293,6 +274,42 @@
           $('.enroll_specialization').children('.input-check').css("display", "inline-block")
         });
       }
+    }
+
+    // called on every checkbox click. updates self.to_filter
+    // depending on what is clicked, updates programs or specializations with filtered options
+    update_to_filter(e){
+      e.preventUpdate = true
+      var checked = e.target.checked;
+      var val = e.item.check.val;
+      var field = e.target.dataset.message;
+      
+      // add/delete from to_filter
+      if (checked == true){
+        if (!self.to_filter[field]){
+          self.to_filter[field] = []
+        }
+        self.to_filter[field].push(val)
+      }
+      else{
+        var index = self.to_filter[field].indexOf(val);
+        if (index > -1) {
+           self.to_filter[field].splice(index, 1);
+        }
+        if (self.to_filter[field].length < 1){
+          delete self.to_filter[field];
+        }
+      }
+
+      update_program_spec(field)
+    }
+
+    //remove filters for one field
+    uncheck_field(e){
+      $(e.target).parent().find('input:checkbox:checked').prop('checked', false)
+      var field = e.target.dataset.message;
+      delete self.to_filter[field];
+      update_program_spec(field)
     }
 
     // expands or hides filter panel
@@ -414,6 +431,17 @@
     .expand-text:hover{
       color: #0B3C75;
     }
+    .uncheck-all{
+      color: #09839E;
+      font-size: 12px;
+      font-family: sans-serif;
+      margin: 0 4px;
+      display: inline-block;
+      font-style: italic;
+    }
+    .uncheck-all:hover{
+      color: #0B3C75;
+    }
     .filter-frame h2{
       font-family: sans-serif;
       font-size: 14px;
@@ -479,6 +507,7 @@
     input[type=checkbox]:focus{
       outline: none;
     }
+
 
   </style>
 </filtering>

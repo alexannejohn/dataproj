@@ -208,8 +208,10 @@ class SpecGradForm(ModelForm):
     def __init__(self, *args, parent_object, **kwargs): 
         self.parent_object = parent_object     
         super(SpecGradForm, self).__init__(*args, **kwargs)
-        self.fields['specialization'].queryset = Specialization.objects.filter(program=self.parent_object.program)
-
+        try:
+            self.fields['specialization'].queryset = Specialization.objects.filter(program=self.parent_object.program)
+        except AttributeError:
+            self.fields['specialization'].queryset = Specialization.objects.all()
 
 class SpecGradInline(admin.TabularInline):
     model = SpecGrad
@@ -238,7 +240,7 @@ class ApplicationResource(ExtendedResource):
 
     class Meta:
         model = Application
-        import_id_fields = ['student_number', 'session']
+        import_id_fields = ['student_number', 'session', 'award_title']
 
 
 class ApplicationAdmin(ExtendedAdmin):
