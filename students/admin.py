@@ -181,7 +181,8 @@ class GraduationResource(ExtendedResource):
             self.code_2 = int(row['code_2'])
         except (ValueError, TypeError) as e:
             self.code_2 = None
-        row['conferral_period'] = str(row['conferral_period']) + "-01"
+        datestr = str(row['conferral_period'])
+        row['conferral_period'] = datestr[:4] + '-' + datestr[4:] + '-01'
         if str(row['dual_degree']).lower() == 'true' or str(row['dual_degree']).lower() == 'yes':
             row['dual_degree'] = True
         return super(GraduationResource, self).before_import_row(row, **kwargs)
