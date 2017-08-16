@@ -145,7 +145,7 @@ class Graduation(AbstractModel):
     grad_application_status = models.ForeignKey(GradAppStatus, blank=True, null=True)
     status_reason = models.CharField(max_length=20, blank=True, null=True)
     ceremony_date = models.DateField(blank=True, null=True, db_index=True)
-    doctoral_citation = models.CharField(max_length=20, blank=True, null=True)
+    doctoral_citation = models.CharField(max_length=500, blank=True, null=True)
     dual_degree = models.BooleanField(default=False)
     program = models.ForeignKey(Program)
     specializations = models.ManyToManyField(Specialization, through='SpecGrad', blank=True, null=True)
@@ -235,7 +235,7 @@ class Award(AbstractModel):
     status = models.ForeignKey(AwardStatus, blank=True, null=True)
 
     class Meta:
-        unique_together = (('student_number', 'session'))
+        unique_together = (('student_number', 'session', 'award_title'))
 
     def __str__(self):
         return '%s %s' % (self.award_title, self.session,)
