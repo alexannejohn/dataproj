@@ -181,8 +181,10 @@ class GraduationResource(ExtendedResource):
             self.code_2 = int(row['code_2'])
         except (ValueError, TypeError) as e:
             self.code_2 = None
-        datestr = str(row['conferral_period'])
-        row['conferral_period'] = datestr[:4] + '-' + datestr[4:] + '-01'
+        con_datestr = str(row['conferral_period'])
+        cer_datestr = str(row['ceremony_date'])
+        row['conferral_period'] = con_datestr[:4] + '-' + con_datestr[4:] + '-01'
+        row['ceremony_date'] = cer_datestr[:4] + '-' + cer_datestr[4:] + '-01'
         if str(row['dual_degree']).lower() == 'true' or str(row['dual_degree']).lower() == 'yes':
             row['dual_degree'] = True
         return super(GraduationResource, self).before_import_row(row, **kwargs)
@@ -241,7 +243,7 @@ class ApplicationResource(ExtendedResource):
 
     class Meta:
         model = Application
-        import_id_fields = ['student_number', 'session', 'award_title']
+        import_id_fields = ['student_number', 'session']
 
 
 class ApplicationAdmin(ExtendedAdmin):
@@ -260,7 +262,7 @@ class AwardResource(ExtendedResource):
 
     class Meta:
         model = Award
-        import_id_fields = ['student_number', 'session']
+        import_id_fields = ['student_number', 'session', 'award_title']
 
 
 class AwardAdmin(ExtendedAdmin):
