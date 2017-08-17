@@ -149,10 +149,10 @@ def get_filter_options(request):
     ###
     graduation_options = []
 
-    years = [{"val": x['conferral_period_year']} for x in Graduation.objects.all().values('conferral_period_year').distinct()]
+    years = [{"val": x['conferral_period_year']} for x in Graduation.objects.all().order_by('conferral_period_year').reverse().values('conferral_period_year').distinct()]
     graduation_years = {"field": "graduation_year", "title": "Conferral Period Year", "options": years}
 
-    months = [{"val": x['conferral_period_month']} for x in Graduation.objects.all().values('conferral_period_month').distinct()]
+    months = [{"val": x['conferral_period_month']} for x in Graduation.objects.all().order_by('conferral_period_month').values('conferral_period_month').distinct()]
     graduation_months = {"field": "graduation_month", "title": "Conferral Period Month", "options": months}
 
     g_s = Graduation.objects.all().values('grad_application_status').distinct()
@@ -294,107 +294,157 @@ def filter_students(request):
     #  filtering by enrollment
     ###
 
+    enrolls = Enroll.objects.all()
+    enroll_bool = False
+
     if 'enroll_session' in filters:
-        students = students.filter(enrolls__session__in=filters['enroll_session']).distinct()
+        enrolls = enrolls.filter(session__in=filters['enroll_session'])
+        enroll_bool = True
 
     if 'enroll_year_level' in filters:
-        students = students.filter(enrolls__year_level__in=filters['enroll_year_level']).distinct()
+        enrolls = enrolls.filter(year_level__in=filters['enroll_year_level'])
+        enroll_bool = True
 
     if 'enroll_regi_status' in filters:
-        students = students.filter(enrolls__regi_status__in=filters['enroll_regi_status']).distinct()
+        enrolls = enrolls.filter(regi_status__in=filters['enroll_regi_status'])
+        enroll_bool = True
 
     if 'enroll_sessional_standing' in filters:
-        students = students.filter(enrolls__sessional_standing__in=filters['enroll_sessional_standing']).distinct()
+        enrolls = enrolls.filter(sessional_standing__in=filters['enroll_sessional_standing'])
+        enroll_bool = True
 
     if 'enroll_program_type' in filters:
-        students = students.filter(enrolls__program__program_type__in=filters['enroll_program_type']).distinct()
+        enrolls = enrolls.filter(program__program_type__in=filters['enroll_program_type'])
+        enroll_bool = True
 
     if 'enroll_program_level' in filters:
-        students = students.filter(enrolls__program__level__in=filters['enroll_program_level']).distinct()
+        enrolls = enrolls.filter(program__level__in=filters['enroll_program_level'])
+        enroll_bool = True
 
     if 'enroll_program' in filters:
-        students = students.filter(enrolls__program__in=filters['enroll_program']).distinct()
+        enrolls = enrolls.filter(program__in=filters['enroll_program'])
+        enroll_bool = True
 
     if 'enroll_subject' in filters:
         subj_specializations = Specialization.objects.filter(Q(primary_subject__in=filters['enroll_subject']) | Q(secondary_subject__in=filters['enroll_subject']))
-        students = students.filter(enrolls__specializations__in=subj_specializations).distinct()
+        enrolls = enrolls.filter(specializations__in=subj_specializations)
+        enroll_bool = True
 
     if 'enroll_specialization' in filters:
         specializations = Specialization.objects.filter(code__in=filters['enroll_specialization'])
-        students = students.filter(enrolls__specializations__in=specializations).distinct()
+        enrolls = enrolls.filter(specializations__in=specializations)
+        enroll_bool = True
 
     if 'enroll_average' in filters:
-        queries = [Q(enrolls__sessional_average__range=x) for x in filters['enroll_average']]
+        queries = [Q(sessional_average__range=x) for x in filters['enroll_average']]
         query = queries.pop() 
         for item in queries:
             query |= item
-        students = students.filter(query).distinct()
+        enrolls = enrolls.filter(query).distinct()
+        enroll_bool = True
+
+    if enroll_bool == True:
+        students = students.filter(enrolls__in=enrolls).distinct()
 
 
     ###
     #  filtering by application
     ###
 
+    applications = Application.objects.all()
+    app_bool = False
+
     if 'application_session' in filters:
-        students = students.filter(applications__session__in=filters['application_session']).distinct()
+        applications = applications.filter(session__in=filters['application_session'])
+        app_bool = True
 
     if 'application_program_type' in filters:
-        students = students.filter(applications__program__program_type__in=filters['application_program_type']).distinct()
+        applications = applications.filter(program__program_type__in=filters['application_program_type'])
+        app_bool = True
 
     if 'application_program_level' in filters:
-        students = students.filter(applications__program__level__in=filters['application_program_level']).distinct()
+        applications = applications.filter(program__level__in=filters['application_program_level'])
+        app_bool = True
 
     if 'application_program' in filters:
-        students = students.filter(applications__program__in=filters['application_program']).distinct()
+        applications = applications.filter(program__in=filters['application_program'])
+        app_bool = True
 
     if 'application_status' in filters:
-        students = students.filter(applications__status__in=filters['application_status']).distinct()
+        applications = applications.filter(status__in=filters['application_status'])
+        app_bool = True
 
     if 'application_reason' in filters:
-        students = students.filter(applications__reason__in=filters['application_reason']).distinct()
+        applications = applications.filter(reason__in=filters['application_reason'])
+        app_bool = True
 
     if 'application_decision' in filters:
-        students = students.filter(applications__applicant_decision__in=filters['application_decision']).distinct()
+        applications = applications.filter(applicant_decision__in=filters['application_decision'])
+        app_bool = True
 
     if 'application_action_code' in filters:
-        students = students.filter(applications__action_code__in=filters['application_action_code']).distinct()
+        applications = applications.filter(action_code__in=filters['application_action_code'])
+        app_bool = True
+
+    if app_bool == True:
+        students = students.filter(applications__in=applications).distinct()
 
 
     ###
     #  filtering by graduation
     ###
+    grads = Graduation.objects.all()
+    grad_bool = False
 
     if 'graduation_program_type' in filters:
-        students = students.filter(graduations__program__program_type__in=filters['graduation_program_type']).distinct()
+        grads = grads.filter(program__program_type__in=filters['graduation_program_type'])
+        grad_bool = True
 
     if 'graduation_program_level' in filters:
-        students = students.filter(graduations__program__level__in=filters['graduation_program_level']).distinct()
+        grads = grads.filter(program__level__in=filters['graduation_program_level'])
+        grad_bool = True
 
     if 'graduation_program' in filters:
-        students = students.filter(graduations__program__in=filters['graduation_program']).distinct()
+        grads = grads.filter(program__program__in=filters['graduation_program'])
+        grad_bool = True
 
     if 'graduation_status' in filters:
-        students = students.filter(graduations__grad_application_status__in=filters['graduation_status']).distinct()
+        grads = grads.filter(grad_application_status__in=filters['graduation_status'])
+        grad_bool = True
 
     if 'graduation_year' in filters:
-        students = students.filter(graduations__conferral_period_year__in=filters['graduation_year']).distinct()
+        grads = grads.filter(conferral_period_year__in=filters['graduation_year'])
+        grad_bool = True
 
     if 'graduation_month' in filters:
-        students = students.filter(graduations__conferral_period_month__in=filters['graduation_month']).distinct()
+        grads = grads.filter(conferral_period_month__in=filters['graduation_month'])
+        grad_bool = True
+
+    if grad_bool == True:
+        students = students.filter(graduations__in=grads).distinct()
 
 
     ###
     #  filtering by awards
     ###
 
+    awards = Award.objects.all()
+    award_bool = False
+
     if 'award_session' in filters:
-        students = students.filter(awards__session__in=filters['award_session']).distinct()
+        awards = awards.filter(session__in=filters['award_session'])
+        award_bool = True
 
     if 'award_type' in filters:
-        students = students.filter(awards__award_type__in=filters['award_type']).distinct()
+        awards = awards.filter(award_type__in=filters['award_type'])
+        award_bool = True
 
     if 'award_title' in filters:
-        students = students.filter(awards__award_title__icontains=filters['award_title']).distinct()
+        awards = awards.filter(award_title__icontains=filters['award_title'])
+        award_bool = True
+
+    if award_bool == True:
+        students = students.filter(awards__in=awards)
 
 
 
@@ -483,10 +533,11 @@ def enroll_csv(request):
         program = e_t['program']
         spec_1 = e_t['specialization_1']
         spec_2 = e_t['specialization_2']
-        total = enrolls_in_session.filter(program=program, specialization_1=spec_1, specialization_2=spec_2).count()
-        metis = enrolls_in_session.filter(program=program, specialization_1=spec_1, specialization_2=spec_2, student__self_id='METI').count()
-        f_n = enrolls_in_session.filter(program=program, specialization_1=spec_1, specialization_2=spec_2, student__self_id='NATI').count()
-        inuit = enrolls_in_session.filter(program=program, specialization_1=spec_1, specialization_2=spec_2, student__self_id='INUI').count()
+        total_qs = enrolls_in_session.filter(program=program, specialization_1=spec_1, specialization_2=spec_2)
+        total = total_qs.count()
+        metis = total_qs.filter(student_number__self_id='METI').count()
+        f_n = total_qs.filter(student_number__self_id__in=['NATI','NSIN','STIN']).count()
+        inuit = total_qs.filter(student_number__self_id='INUI').count()
         row = [program, e_t['specialization_1__description'], e_t['specialization_2__description'], total, metis, f_n, inuit]
         writer.writerow(row)
 
@@ -514,10 +565,11 @@ def grad_csv(request):
         program = g_t['program']
         spec_1 = g_t['specialization_1']
         spec_2 = g_t['specialization_2']
-        total = grad_in_session.filter(program=program, specialization_1=spec_1, specialization_2=spec_2).count()
-        metis = grad_in_session.filter(program=program, specialization_1=spec_1, specialization_2=spec_2, student_number__self_id='METI').count()
-        f_n = grad_in_session.filter(program=program, specialization_1=spec_1, specialization_2=spec_2, student_number__self_id='NATI').count()
-        inuit = grad_in_session.filter(program=program, specialization_1=spec_1, specialization_2=spec_2, student_number__self_id='INUI').count()
+        total_qs = grad_in_session.filter(program=program, specialization_1=spec_1, specialization_2=spec_2)
+        total = total_qs.count()
+        metis = total_qs.filter(student_number__self_id='METI').count()
+        f_n = total_qs.filter(student_number__self_id__in=['NATI','NSIN','STIN']).count()
+        inuit = total_qs.filter(student_number__self_id='INUI').count()
         row = [program, g_t['specialization_1__description'], g_t['specialization_2__description'], total, metis, f_n, inuit]
         writer.writerow(row)
 

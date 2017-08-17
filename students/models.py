@@ -70,6 +70,7 @@ class Enroll(AbstractModel):
 
     class Meta:
         unique_together = (('student_number', 'session'))
+        ordering = ('session',)
 
     def __str__(self):
         string = str(self.session) + " - "
@@ -88,7 +89,7 @@ class Enroll(AbstractModel):
 
 def update_recent_enrollment(sender, instance, **kwargs):
     student = instance.student_number
-    enroll = student.enrolls.order_by('-session')[0]
+    enroll = student.enrolls.order_by('session')[0]
     student.most_recent_enrollment = enroll
     student.save(force_update=True)
 
@@ -155,6 +156,7 @@ class Graduation(AbstractModel):
 
     class Meta:
         unique_together = (('student_number', 'conferral_period', 'program'))
+        ordering = ('conferral_period',)
 
     def save(self, *args, **kwargs):
         self.conferral_period_month = self.conferral_period.month
@@ -212,6 +214,7 @@ class Application(AbstractModel):
 
     class Meta:
         unique_together = (('student_number', 'session'))
+        ordering = ('session',)
 
     def __str__(self):
         return '%s %s' % (self.program, self.session,)
@@ -236,6 +239,7 @@ class Award(AbstractModel):
 
     class Meta:
         unique_together = (('student_number', 'session', 'award_title'))
+        ordering = ('session',)
 
     def __str__(self):
         return '%s %s' % (self.award_title, self.session,)
@@ -267,6 +271,8 @@ class Student(AbstractModel):
         ('NATI', 'First Nations'),
         ('INUI', 'Inuit'),
         ('METI', 'Métis'),
+        ('STIN', 'Status Indian'),
+        ('NSIN', 'Non-status Indian')
     )
 
     PROVINCE_CHOICES = (
