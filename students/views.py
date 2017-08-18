@@ -190,7 +190,7 @@ def get_filter_options(request):
 
 
     # For enrollment and Graduation CSV download
-    grad_years = [x['conferral_period_year'] for x in Graduation.objects.all().order_by('conferral_period_year').values('conferral_period_year').distinct()]
+    grad_years = [x['conferral_period_year'] for x in Graduation.objects.all().order_by('-conferral_period_year').values('conferral_period_year').distinct()]
     enroll_sessions = [x['session'] for x in Enroll.objects.all().order_by('session').values('session').distinct()]
 
 
@@ -554,8 +554,7 @@ def grad_csv(request):
 
     writer = csv.writer(response)
     writer.writerow(['program', 'specialization 1', 'specialization 2', 'students', 'metis', 'first nations', 'inuit'])
-    #TODO: filter by graduation status
-    grad_in_session = Graduation.objects.filter(conferral_period_year=year).order_by('program')
+    grad_in_session = Graduation.objects.filter(conferral_period_year=year, grad_application_status='CONF').order_by('program')
     if 'health' in params:
         grad_in_session = grad_in_session.filter(Q(program__is_health=True) | Q(specialization_1__is_health=True))
 
