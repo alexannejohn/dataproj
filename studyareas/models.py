@@ -12,10 +12,24 @@ class AbstractModel(models.Model):
 
 
 class Program(AbstractModel):
+
+    TYPE_CHOICES = (
+        ('Degree', 'Degree'),
+        ('Certificate', 'Certificate'),
+        ('Diploma', 'Diploma'),
+        ('Other', 'Other')
+    )
+
+    LEVEL_CHOICES = (
+        ('U', 'Undergraduate'),
+        ('G', 'Graduate')
+    )
+
+
     program = models.CharField(primary_key=True, max_length=7)
     name = models.CharField(max_length=100, blank=True, null=True)
-    program_type = models.CharField(max_length=20, blank=True, null=True)
-    level = models.CharField(max_length=20, blank=True, null=True)
+    program_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default="Other")
+    level = models.CharField(max_length=20, blank=True, null=True, choices=LEVEL_CHOICES)
     is_health = models.BooleanField(default=False)
     hidden = models.BooleanField(default=False)
 

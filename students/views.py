@@ -61,7 +61,9 @@ def get_filter_options(request):
     #sessions = Enroll.objects.all().annotate(val=F('session')).values("val").distinct()
     enroll_sessions = {"field": "enroll_session", "title": "Session Enrolled", "options": sessions}
 
-    year_levels = Enroll.objects.all().order_by("year_level").annotate(val=F("year_level")).values("val").distinct()
+    # year_levels = Enroll.objects.all().order_by("year_level").annotate(val=F("year_level")).values("val").distinct()
+    year_levels = [{"val": str(x['year_level'])} for x in Enroll.objects.all().order_by("year_level").values("year_level").distinct()]
+    year_levels[5]['val'] = "Grad/Other"
     enroll_year_levels = {"field": "enroll_year_level", "title": "Year Level", "options": year_levels}
 
     ee = Enroll.objects.all().values('regi_status').distinct()
@@ -72,7 +74,7 @@ def get_filter_options(request):
     sessional_standings = SessionalStanding.objects.filter(standing_code__in=es).filter(hidden=False).annotate(val=F("standing_code"), hover=F('description')).values("val", "hover")
     enroll_sessional_standings = {"field": "enroll_sessional_standing", "title": "Sessional Standing", "options": sessional_standings}
 
-    averages = [{"val": (0,50), "text": "<50"}, {"val": (50.1,70), "text": "50.1-70"}, {"val": (70.1,90), "text": "70.1-90"}]
+    averages = [{"val": (0,50), "text": "<50"}, {"val": (50.1,70), "text": "50.1-70"}, {"val": (70.1,90), "text": "70.1-90"}, {"val": (90.1,100), "text": ">90"}]
     enroll_averages = {"field": "enroll_average", "title": "Sessional Average", "options": averages}
 
     program_types = Program.objects.all().order_by("program_type").annotate(val=F('program_type')).values("val").distinct()

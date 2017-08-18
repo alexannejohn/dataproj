@@ -155,7 +155,7 @@ class EnrollAdmin(ExtendedAdmin):
     resource_class = EnrollResource
     list_filter = (('session', CheckBoxListFilter), ('program', CheckBoxListFilter))
     inlines = (SpecEnrolledInline,)
-    list_display = ('program', 'specialization_1', 'specialization_2', 'session', 'student_number', 'sessional_average')
+    list_display = ('program', 'year_level', 'specialization_1', 'specialization_2', 'session', 'student_number', 'sessional_average')
     search_fields = ['student_number__student_number', 'student_number__preferred_name',
      'student_number__given_name', 'student_number__surname', 'program__program', 'specialization_1__description', 'specialization_2__description']
     readonly_fields = ('created_by', 'created_on', 'last_modified', 'specialization_1', 'specialization_2',)
