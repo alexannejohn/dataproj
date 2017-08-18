@@ -221,7 +221,7 @@ def filter_program(request):
     if f_level[0] != '':
         programs = programs.filter(level__in=f_level)
 
-    programs = programs.annotate(val=F('program'), hover=F('name')).values("val", "hover")
+    programs = programs.order_by("program").annotate(val=F('program'), hover=F('name')).values("val", "hover")
     return Response(programs)
 
 
@@ -239,7 +239,7 @@ def filter_specialization(request):
     if f_subj[0] != '':
         specializations = specializations.filter(Q(primary_subject__in=f_subj) | Q(secondary_subject__in=f_subj))
 
-    specializations = specializations.annotate(text=F('description'), val=F('code'), hover=F('code')).values('val', 'text', 'hover')
+    specializations = specializations.order_by('description').annotate(text=F('description'), val=F('code'), hover=F('code')).values('val', 'text', 'hover')
     return Response(specializations)
 
 #
