@@ -68,7 +68,7 @@
       <span class="expand-button" >+</span>
     </div>  
     <div class="filter-frame">
-        <span> Student number (exact): 
+        <span> Student number (must match exactly, separate multiple with commas): 
           <input  data-message="student_number" type="text" name="student_number" onchange={ update_search }>
         </span>
     </div>

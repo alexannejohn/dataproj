@@ -454,7 +454,8 @@ def filter_students(request):
     #  search by student number
     ###
     if 'student_number' in filters:
-        students = students.filter(student_number=filters['student_number'])
+        s_list = filters['student_number'].split(",")
+        students = students.filter(student_number__in=s_list)
 
 
     ###
