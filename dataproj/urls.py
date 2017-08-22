@@ -22,6 +22,7 @@ from django.contrib.auth import views as auth_views
 
 from django.views.generic.base import RedirectView
 from django.conf import settings
+from django.conf.urls.static import static
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
@@ -49,4 +50,4 @@ urlpatterns = [
     url(r'^deletesearch/', views.delete_search, name='delete_search'), # delete a search
     url(r'^getsearches/', views.get_searches, name='get_searches'),  # get all searches
     url(r'^favicon\.ico$', RedirectView.as_view(url='/static/favicon.ico')),  # favicon redirect
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -14,6 +14,7 @@ from django.http import HttpResponse, JsonResponse
 import csv
 from urllib.parse import parse_qs
 from geojson import FeatureCollection, Point, Feature
+from django.utils import timezone
 
 
 # Basic view for index page
@@ -93,6 +94,8 @@ def get_filter_options(request):
     specializations = Specialization.objects.all().order_by('description').filter(hidden=False).annotate(text=F('description'), val=F('code'), hover=F('code')).values('val', 'text', 'hover')
     enroll_specializations = {"field": "enroll_specialization", "title": "Specializations", "options": specializations}
 
+    enroll_discontinue = {"field": "enroll_discontinue", "title": "No Longer Enrolled", "options": [{'val':'True', 'text': 'No Longer Enrolled'}]}
+
     
     enroll_options.append(enroll_sessions)
     enroll_options.append(enroll_year_levels)
@@ -104,6 +107,7 @@ def get_filter_options(request):
     enroll_options.append(enroll_programs)
     enroll_options.append(enroll_subjects)
     enroll_options.append(enroll_specializations)
+    enroll_options.append(enroll_discontinue)
 
 
     ###
@@ -347,6 +351,12 @@ def filter_students(request):
 
     if enroll_bool == True:
         students = students.filter(enrolls__in=enrolls).distinct()
+
+    current_year = timezone.now().year
+    if 'enroll_discontinue' in filters:
+        students = students.exclude(most_recent_enrollment__isnull=True)
+        students = students.filter(graduation_date__isnull=True)
+        students = students.filter(most_recent_enrollment__session__year__lt=current_year).distinct()
 
 
     ###

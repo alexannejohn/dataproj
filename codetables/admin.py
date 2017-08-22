@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import RegistrationStatus, SessionalStanding
 from .models import AwardType, AwardStatus, AppStatus, AppReason, AppDecision, AppReAdmission, AppActionCode, AppMultipleAction
-from .models import GradAppStatus, GradAppReason
+from .models import GradAppStatus, GradAppReason, Tutorial
 from students.admin import ExtendedAdmin, ExtendedResource
 
 
@@ -160,6 +160,12 @@ class GradAppReasonAdmin(ExtendedAdmin):
     ordering = ('code',)
 
 admin.site.register(GradAppReason, GradAppReasonAdmin)
+
+
+class TutorialAdmin(admin.ModelAdmin):
+    list_display = ['title', 'file_link']
+
+admin.site.register(Tutorial, TutorialAdmin)
 
 
 

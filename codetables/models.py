@@ -76,3 +76,19 @@ class GradAppStatus(Code):
 
 class GradAppReason(Code):
     pass
+
+
+class Tutorial(models.Model):
+    file = models.FileField('File', upload_to='./files/', blank=True, null=True)
+    title = models.CharField(max_length=100, blank=True, null=True)
+
+    def file_link(self):
+        if self.file:
+            return "<a href='%s'>download</a>" % (self.file.url,)
+        else:
+            return "No attachment"
+
+    file_link.allow_tags = True
+
+    def __str__(self):
+        return '%s' % (self.title,)

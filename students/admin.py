@@ -228,7 +228,7 @@ class GraduationAdmin(ExtendedAdmin):
     list_filter = (('conferral_period_year', CheckBoxListFilter), ('grad_application_status', CheckBoxListFilter), 
         ('status_reason', CheckBoxListFilter), ('program', CheckBoxListFilter),)
     inlines = (SpecGradInline,)
-    list_display = ('program', 'student_number', 'grad_application_status', 'status_reason', 'conferral_period_year', 
+    list_display = ('program', 'student_number', 'grad_application_status', 'status_reason', 'conferral_period_year', 'ceremony_date', 
         'get_conferral_period_month_display',)
     search_fields = ['student_number__student_number', 'student_number__preferred_name',
      'student_number__given_name', 'student_number__surname', 'program__program']
