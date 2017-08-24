@@ -538,7 +538,7 @@ def enroll_csv(request):
     writer = csv.writer(response)
     writer.writerow(['program', 'specialization 1', 'specialization 2', 'students', 'metis', 'first nations', 'inuit'])
 
-    enrolls_in_session = Enroll.objects.filter(session=session, regi_status="REGI").order_by('program')
+    enrolls_in_session = Enroll.objects.filter(session=session).filter(Q(regi_status="REGI") | Q(regi_status="CONT")).order_by('program')
     if 'health' in params:
         enrolls_in_session = enrolls_in_session.filter(Q(program__is_health=True) | Q(specialization_1__is_health=True))
 
