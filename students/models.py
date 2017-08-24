@@ -320,7 +320,7 @@ class Student(AbstractModel):
     )
 
 
-    student_number = models.IntegerField(primary_key=True, validators=[MinValueValidator(11111111), MaxValueValidator(99999999)], db_index=True)
+    student_number = models.IntegerField(primary_key=True, validators=[MinValueValidator(10000000), MaxValueValidator(99999999)], db_index=True)
     given_name = models.CharField(max_length=100)
     surname = models.CharField(max_length=100, null=True, blank=True)
     email_address = models.CharField(max_length=100, null=True, blank=True)
