@@ -253,7 +253,7 @@ def filter_specialization(request):
 # Includes full (not just current page) geojson and list of student numbers, for map and CSV respectively
 #
 class CustomPagination(PageNumberPagination):
-    page_size = 20
+    page_size = 50
 
     def get_paginated_response(self, data, numbers, geo_collection):
         return Response({
@@ -456,7 +456,7 @@ def filter_students(request):
         award_bool = True
 
     if award_bool == True:
-        students = students.filter(awards__in=awards)
+        students = students.filter(awards__in=awards).distinct()
 
 
 
@@ -514,10 +514,12 @@ def csv_view(request):
     response['Content-Disposition'] = 'attachment; filename="searchresults.csv"'
 
     writer = csv.writer(response)
-    writer.writerow(['student_number', 'given name', 'preferred name', 'surname', 'email address'])
+    writer.writerow(['student_number', 'given name', 'preferred name', 'surname', 'email address', 
+        'total award amount', 'number of awards', 'most recent enrollment', 'graduation date'])
     for student_number in params['student_number']:
         student = Student.objects.get(student_number=student_number)
-        row = [student_number, student.given_name, student.preferred_name, student.surname, student.email_address]
+        row = [student_number, student.given_name, student.preferred_name, student.surname, student.email_address, 
+        student.total_award_amount, student.awards.count(), student.most_recent_enrollment, student.graduation_date]
            
         writer.writerow(row) 
 

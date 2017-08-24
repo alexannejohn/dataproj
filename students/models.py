@@ -89,12 +89,15 @@ class Enroll(AbstractModel):
 
 def update_recent_enrollment(sender, instance, **kwargs):
     student = instance.student_number
-    enroll = student.enrolls.order_by('session')[0]
-    student.most_recent_enrollment = enroll
+    try:
+        enroll = student.enrolls.order_by('session')[0]
+        student.most_recent_enrollment = enroll
+    except IndexError:
+        student.most_recent_enrollment = None
     student.save(force_update=True)
 
 signals.post_save.connect(update_recent_enrollment, sender=Enroll)
-
+signals.post_delete.connect(update_recent_enrollment, sender=Enroll)
 
 
 # Many-to-many table between Specialization and Enroll - can be enrolled in multiple specializations at once
@@ -118,7 +121,17 @@ def update_spec(sender, instance, **kwargs):
         enroll.specialization_2 = instance.specialization
     enroll.save(force_update=True)
 
+def del_spec(sender, instance, **kwargs):
+    enroll = instance.enroll
+    if instance.order == 1:
+        enroll.specialization_1 = None
+    elif instance.order == 2:
+        enroll.specialization_2 = None
+    enroll.save(force_update=True)
+
 signals.post_save.connect(update_spec, sender=SpecEnrolled)
+signals.post_delete.connect(del_spec, sender=SpecEnrolled)
+
 
 # graduation details for a student
 class Graduation(AbstractModel):
@@ -187,16 +200,29 @@ def update_spec_grad(sender, instance, **kwargs):
         grad.specialization_2 = instance.specialization
     grad.save(force_update=True)
 
+def del_spec_grad(sender, instance, **kwargs):
+    grad = instance.graduation
+    if instance.order == 1:
+        grad.specialization_1 = None
+    elif instance.order == 2:
+        grad.specialization_2 = None
+    grad.save(force_update=True)
+
 signals.post_save.connect(update_spec_grad, sender=SpecGrad)
+signals.post_delete.connect(del_spec_grad, sender=SpecGrad)
 
 
 def update_graduation_date(sender, instance, **kwargs):
     student = instance.student_number
-    grad = student.graduations.order_by('-ceremony_date')[0]
-    student.graduation_date = grad.ceremony_date
+    try:
+        grad = student.graduations.order_by('-ceremony_date')[0]
+        student.graduation_date = grad.ceremony_date
+    except IndexError:
+        student.graduation_date = None
     student.save(force_update=True)
 
 signals.post_save.connect(update_graduation_date, sender=Graduation)
+signals.post_delete.connect(update_graduation_date, sender=Graduation)
 
 
 # Application details for a student 
@@ -226,6 +252,7 @@ def update_applied(sender, instance, **kwargs):
     student.save(force_update=True)
 
 signals.post_save.connect(update_applied, sender=Application)
+signals.post_delete.connect(update_applied, sender=Application)
 
 # a student's awards
 class Award(AbstractModel):
@@ -251,6 +278,7 @@ def update_award_amount(sender, instance, **kwargs):
     student.save(force_update=True)
 
 signals.post_save.connect(update_award_amount, sender=Award)
+signals.post_delete.connect(update_award_amount, sender=Award)
 
 
 class PreviousInstitution(AbstractModel):
@@ -315,7 +343,7 @@ class Student(AbstractModel):
     first_session_admitted = models.ForeignKey(Session, blank=True, null=True, related_name='s_admitted')
     first_session_registered = models.ForeignKey(Session, blank=True, null=True, related_name='s_reg')
 
-    most_recent_enrollment = models.ForeignKey(Enroll, blank=True, null=True)
+    most_recent_enrollment = models.ForeignKey(Enroll, models.SET_NULL, blank=True, null=True)
     graduation_date = models.DateField(blank=True, null=True)
     total_award_amount = models.IntegerField(blank=True, null=True)
     applied = models.CharField(max_length=150, blank=True, null=True)

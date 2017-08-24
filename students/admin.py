@@ -71,6 +71,7 @@ class StudentAdmin(ExtendedAdmin):
     search_fields = ['student_number', 'given_name', 'preferred_name', 'surname', 'email_address', 'sponsor']
     list_filter = ('self_id', 'financial_hold', 'sponsorship')
     inlines = [PreviousInstitutionInline,]
+    readonly_fields = ('most_recent_enrollment', 'graduation_date', 'total_award_amount', 'applied', 'latcoord', 'longcoord')
 
     def make_link(self, enroll):
         if enroll:
@@ -160,6 +161,7 @@ class EnrollAdmin(ExtendedAdmin):
      'student_number__given_name', 'student_number__surname', 'program__program', 'specialization_1__description', 'specialization_2__description']
     readonly_fields = ('created_by', 'created_on', 'last_modified', 'specialization_1', 'specialization_2',)
     ordering = ('student_number', 'session')
+    raw_id_fields = ('student_number',)
 
 
 admin.site.register(Enroll, EnrollAdmin)
@@ -234,6 +236,7 @@ class GraduationAdmin(ExtendedAdmin):
      'student_number__given_name', 'student_number__surname', 'program__program']
     readonly_fields = ('specialization_1', 'specialization_2',)
     ordering = ('conferral_period_year', 'student_number')
+    raw_id_fields = ('student_number',)
 
 
 admin.site.register(Graduation, GraduationAdmin)
@@ -253,6 +256,7 @@ class ApplicationAdmin(ExtendedAdmin):
      'student_number__given_name', 'student_number__surname', 'program__program', 'session__session']
     list_filter = ('session', ('status', CheckBoxListFilter), ('applicant_decision', CheckBoxListFilter), ('program', CheckBoxListFilter),)
     ordering = ('student_number', 'session')
+    raw_id_fields = ('student_number',)
 
 
 admin.site.register(Application, ApplicationAdmin)
@@ -272,6 +276,7 @@ class AwardAdmin(ExtendedAdmin):
     list_filter = (('status', CheckBoxListFilter), 'session')
     list_display = ('award_title', 'award_number', 'award_amount', 'session', 'student_number', 'status')
     ordering = ('student_number', 'session')
+    raw_id_fields = ('student_number',)
 
 
 admin.site.register(Award, AwardAdmin)
