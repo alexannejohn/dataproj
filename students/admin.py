@@ -11,7 +11,7 @@ from django.forms import ModelForm
 from django.forms.models import BaseInlineFormSet
 
 
-
+# automatically saves user who created/edited object when saving using admin form
 class ExtendedAdmin(ImportExportModelAdmin):
     readonly_fields = ('created_by', 'created_on', 'last_modified')
 
@@ -19,7 +19,8 @@ class ExtendedAdmin(ImportExportModelAdmin):
         obj.created_by = request.user
         obj.save()
 
-
+# automatically saves user who created/edited object when importing from csv
+# changes any fields containing whitespace to be None - needs to still be included if overriding before_import_row ie. 
 class ExtendedResource(resources.ModelResource):
     user = None
 
@@ -40,6 +41,7 @@ class ExtendedResource(resources.ModelResource):
 
 class StudentResource(ExtendedResource):
 
+    # 'yes' and 'true', any case, all work for boolean True value (False generally blank in csv)
     def before_import_row(self, row, **kwargs):
         if str(row['financial_hold']).lower() == 'true' or str(row['financial_hold']).lower() == 'yes':
             row['financial_hold'] = True
@@ -52,7 +54,7 @@ class StudentResource(ExtendedResource):
         model = Student
         import_id_fields = ['student_number']
 
-
+# Inline form for previous institutions
 class PIForm(ModelForm):
     class Meta:
         model = PreviousInstitution
@@ -73,6 +75,7 @@ class StudentAdmin(ExtendedAdmin):
     inlines = [PreviousInstitutionInline,]
     readonly_fields = ('most_recent_enrollment', 'graduation_date', 'total_award_amount', 'applied', 'latcoord', 'longcoord')
 
+    # create link to enrollment object in admin
     def make_link(self, enroll):
         if enroll:
             link = urlresolvers.reverse("admin:students_enroll_change", args=[enroll.id])
@@ -84,6 +87,7 @@ class StudentAdmin(ExtendedAdmin):
         return "\n".join([self.make_link(p) for p in obj.enrolls.all()])
     enrolled.allow_tags = True
 
+    # preferred name if exists, otherwise given name
     def name(self, obj):
         if obj.preferred_name:
             name = obj.preferred_name
@@ -97,7 +101,8 @@ admin.site.register(Student, StudentAdmin)
 
 class EnrollResource(ExtendedResource):
 
-    # saving specializations in many-to-many table
+    # saving specializations in many-to-many table (EnrollSpec)
+    # specialization codes are under headings code_1 and code_2 in csv file, need to be saved to EnrollSpec table
 
     code_1 = None
     code_2 = None
@@ -130,14 +135,17 @@ class EnrollResource(ExtendedResource):
         model = Enroll
         import_id_fields = ['student_number', 'session']
 
-class MyFormSet(BaseInlineFormSet):
-    def get_form_kwargs(self, index):
+
+# Inline form for Specializations
+
+class MyFormSet(BaseInlineFormSet): #giving form access to parent object
+    def get_form_kwargs(self, index): 
         kwargs = super().get_form_kwargs(index)
         kwargs['parent_object'] = self.instance
         return kwargs
 
 
-class SpecEnrolledForm(ModelForm):
+class SpecEnrolledForm(ModelForm): # if program is saved, can filter specializations
 
     def __init__(self, *args, parent_object, **kwargs): 
         self.parent_object = parent_object     
@@ -170,6 +178,7 @@ admin.site.register(Enroll, EnrollAdmin)
 class GraduationResource(ExtendedResource):
 
     # saving specializations in many-to-many table
+    # similar to Enroll
 
     code_1 = None
     code_2 = None

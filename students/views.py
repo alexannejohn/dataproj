@@ -471,7 +471,7 @@ def filter_students(request):
     ###
     #  return list of students
     ###
-    if students.count() > 1000:
+    if students.count() > 1000: #If more than 1000 students, return just the number
         return JsonResponse({
             'links': {},
             'count':students.count(),
@@ -495,6 +495,7 @@ def filter_students(request):
 
 #
 # get detailed info for one student
+# called when expanding student in table
 #
 @api_view(['GET'])
 def student_detail(request):

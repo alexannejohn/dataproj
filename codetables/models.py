@@ -78,6 +78,7 @@ class GradAppReason(Code):
     pass
 
 
+# allows uploading any documents, in order to include any instructional documents in one place
 class Tutorial(models.Model):
     file = models.FileField('File', upload_to='./files/', blank=True, null=True)
     title = models.CharField(max_length=100, blank=True, null=True)
