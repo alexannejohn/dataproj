@@ -37,13 +37,59 @@ Django project running in a docker container
 
 
 
-  can run a dev and production environment. for prod env (port 8002):
+  Can run a development and a production environment. For the production environment (port 8002) replace docker commands above with:
   
   `docker-compose -f production.yml up -d livedb`
   
   `docker-compose -f production.yml up -d liveweb`
 
   `docker exec -it dataproj_liveweb_1 bash`
+
+
+  To dump and load database:
+
+  Dev environment:
+
+  dump (replace db.sql with path to file where you want to store it. Spaces in directory or file names may cause errors) :
+
+  `docker exec -u postgres -i dataproj_db_1 pg_dump postgres > db.sql`
+
+  To load, first need to remove existing database volume:
+  
+  `docker-compose down`
+
+  `docker volume rm dataproj_pgdata`
+
+  `docker-compose up -d db`
+
+  `docker-compose up -d web`
+
+  `docker exec -u postgres -i dataproj_db_1 psql postgres < db.sql`
+
+
+
+  Production environment:
+
+  dump:
+
+  `docker exec -u postgres -i dataproj_livedb_1 pg_dump postgres > livedb.sql`
+
+  To load, first need to remove existing database volume:
+  
+  `docker-compose -f production.yml down`
+
+  `docker volume rm dataproj_livedata`
+
+  `docker-compose -f production.yml up -d livedb`
+
+  `docker-compose -f production.yml up -d liveweb`
+
+  `docker exec -u postgres -i dataproj_livedb_1 psql postgres < livedb.sql`
+
+
+
+
+
 
 
 ### notes:
