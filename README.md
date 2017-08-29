@@ -71,16 +71,6 @@ Django project running in a docker container
   `docker exec -u postgres -i dataproj_db_1 psql postgres < db.sql`
 
 
-  #### Automatic database backup:
-
-  Create a .bat file with the following text (again, replace path to file):
-
-  ` docker exec -u postgres -i dataproj_livedb_1 pg_dump postgres > "C:\Users\UBC Worklearn\work\db.sql"  `
-
-  Use Task Scheduler to run it automatically.
-
-  Computer must stay on. Windows-L locks computer while keeping all applications running.
-
 
 
   Production environment:
@@ -103,6 +93,16 @@ Django project running in a docker container
 
 
 
+
+#### Automatic database backup:
+
+  Create a .bat file with the following text (again, replace path to file):
+
+  ` docker exec -u postgres -i dataproj_livedb_1 pg_dump postgres > "C:\Users\UBC Worklearn\work\db.sql"  `
+
+  Use Task Scheduler to run it automatically.
+
+  Computer must stay on. Windows-L locks computer while keeping all applications running.
 
 
 
