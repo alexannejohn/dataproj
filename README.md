@@ -16,6 +16,8 @@ Django project running in a docker container
   
   
   should now be running on port 8001, but still need to run some django commands
+
+  For an empty database, do the following. Otherwise skip to loading database.
   
   need to 'ssh' into docker container:
   
